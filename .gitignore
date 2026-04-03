@@ -1,0 +1,33 @@
+﻿# Python
+__pycache__/
+*.pyc
+
+# Databases
+*.db
+*.sqlite
+*.jsonl
+
+# Logs
+*.log
+logs/
+
+# SSL / secrets
+*.pem
+*.key
+.env
+
+# Runtime data
+user/
+core/system_v1/data/
+
+# Temp
+tmp_*
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
