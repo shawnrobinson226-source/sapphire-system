@@ -1,0 +1,37 @@
+{
+  "name": "toolmaker",
+  "version": "1.1.0",
+  "description": "Tool Maker — create, read, and activate custom tools",
+  "author": "sapphire",
+  "url": "https://sapphireblue.dev",
+  "priority": 50,
+  "capabilities": {
+    "tools": ["tools/toolmaker.py"],
+    "settings": [
+      {
+        "key": "validation",
+        "type": "string",
+        "label": "Validation Level",
+        "default": "strict",
+        "widget": "select",
+        "options": [
+          {"label": "Strict — safe imports only (recommended)", "value": "strict"},
+          {"label": "Moderate — subprocess + any non-dangerous import", "value": "moderate"},
+          {"label": "System Killer — no restrictions, syntax check only", "value": "system_killer"}
+        ],
+        "help": "How strictly to validate AI-written tool code. Strict allows ~60 safe modules including requests, json, numpy, openai, anthropic, PIL, datetime. Moderate adds subprocess.",
+        "confirm": {
+          "values": ["moderate", "system_killer"],
+          "title": "Reduced Validation",
+          "warnings": [
+            "Moderate unlocks subprocess and all non-dangerous imports",
+            "System Killer has ZERO restrictions — AI code can do anything on your system",
+            "Both modes allow imports that could access system resources",
+            "Only use this if you fully trust your LLM and prompt setup"
+          ],
+          "buttonLabel": "I understand the risks"
+        }
+      }
+    ]
+  }
+}

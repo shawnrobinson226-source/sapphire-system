@@ -1,0 +1,22 @@
+{
+  "name": "webcam",
+  "version": "1.0.0",
+  "description": "Webcam capture — lets the AI see through your camera",
+  "author": "sapphire",
+  "priority": 50,
+  "capabilities": {
+    "tools": ["tools/webcam.py"],
+    "routes": [
+      {
+        "method": "GET",
+        "path": "pending",
+        "handler": "routes/capture.py:get_pending"
+      },
+      {
+        "method": "POST",
+        "path": "capture",
+        "handler": "routes/capture.py:handle_capture"
+      }
+    ]
+  }
+}

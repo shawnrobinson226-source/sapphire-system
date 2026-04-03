@@ -1,0 +1,28 @@
+{
+  "name": "voice-commands",
+  "version": "1.0.0",
+  "description": "Voice Commands — stop, reset, and other instant voice actions",
+  "author": "sapphire",
+  "url": "https://sapphireblue.dev",
+  "priority": 1,
+  "default_enabled": true,
+  "managed_hide": true,
+  "capabilities": {
+    "voice_commands": [
+      {
+        "triggers": ["stop", "halt", "be quiet", "shut up"],
+        "match": "exact",
+        "bypass_llm": true,
+        "handler": "hooks/stop.py",
+        "description": "Stop TTS and cancel generation"
+      },
+      {
+        "triggers": ["reset", "reset chat", "clear chat", "clear history"],
+        "match": "exact",
+        "bypass_llm": true,
+        "handler": "hooks/reset.py",
+        "description": "Clear current chat history"
+      }
+    ]
+  }
+}

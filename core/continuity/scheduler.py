@@ -1,0 +1,748 @@
+# core/continuity/scheduler.py
+"""
+Continuity Scheduler - Background thread that checks cron schedules and fires tasks.
+"""
+
+import os
+import re
+import json
+import uuid
+import random
+import logging
+import threading
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+from pathlib import Path
+from typing import Dict, List, Any, Optional
+
+logger = logging.getLogger(__name__)
+
+
+def _strip_think_tags(text: str) -> str:
+    """Strip <think>...</think> blocks from LLM response, return clean content."""
+    if not text:
+        return text
+    # Greedy: first <think> to LAST </think> (handles GLM quirk: <think>A</think>B</think>C)
+    clean = re.sub(r'<(?:seed:)?think[^>]*>[\s\S]*</(?:seed:think|seed:cot_budget_reflect|think)>', '', text, flags=re.IGNORECASE)
+    # Orphan open tag + trailing content
+    clean = re.sub(r'<(?:seed:)?think[^>]*>.*$', '', clean, flags=re.DOTALL | re.IGNORECASE)
+    # Orphan close tag — no open tag, GLM sometimes omits it. Strip everything before last close tag.
+    clean = re.sub(r'^[\s\S]*</(?:seed:think|seed:cot_budget_reflect|think)>', '', clean, flags=re.IGNORECASE)
+    return clean.strip()
+
+
+# Lazy import croniter to avoid startup crash if not installed
+croniter = None
+
+def _get_croniter():
+    global croniter
+    if croniter is None:
+        try:
+            from croniter import croniter as _croniter
+            croniter = _croniter
+        except ImportError:
+            logger.error("croniter not installed. Run: pip install croniter")
+            raise ImportError("croniter required for Continuity. Install with: pip install croniter")
+    return croniter
+
+
+def _user_now():
+    """Get current time in user's configured timezone."""
+    try:
+        import config
+        tz_name = getattr(config, 'USER_TIMEZONE', 'UTC') or 'UTC'
+        return datetime.now(ZoneInfo(tz_name))
+    except Exception:
+        return datetime.now(ZoneInfo('UTC'))
+
+
+class ContinuityScheduler:
+    """
+    Background scheduler for continuity tasks.
+    Checks every 30 seconds, matches cron expressions, respects cooldowns.
+    """
+    
+    CHECK_INTERVAL = 30  # seconds between schedule checks
+    
+    def __init__(self, system, executor):
+        """
+        Args:
+            system: VoiceChatSystem instance
+            executor: ContinuityExecutor instance
+        """
+        self.system = system
+        self.executor = executor
+        
+        self._running = False
+        self._thread: Optional[threading.Thread] = None
+        self._lock = threading.Lock()
+        
+        # Paths
+        self._base_dir = Path(__file__).parent.parent.parent / "user" / "continuity"
+        self._tasks_path = self._base_dir / "tasks.json"
+        self._activity_path = self._base_dir / "activity.json"
+        
+        # In-memory caches
+        self._tasks: Dict[str, Dict] = {}
+        self._activity: List[Dict] = []
+
+        # Per-task run state: tracks busy flag, queued fires, and last matched minute
+        self._task_running: Dict[str, bool] = {}
+        self._task_pending: Dict[str, int] = {}
+        self._task_last_matched: Dict[str, str] = {}  # task_id -> "YYYY-MM-DD HH:MM"
+        self._task_progress: Dict[str, Dict] = {}  # task_id -> {iteration, total}
+        
+        self._ensure_dirs()
+        self._load_tasks()
+        self._load_activity()
+    
+    def _ensure_dirs(self):
+        """Create user/continuity directory if missing."""
+        self._base_dir.mkdir(parents=True, exist_ok=True)
+    
+    # =========================================================================
+    # TASK PERSISTENCE
+    # =========================================================================
+    
+    def _load_tasks(self):
+        """Load tasks from JSON file. Purges plugin-sourced tasks (they re-register on load)."""
+        if not self._tasks_path.exists():
+            self._tasks = {}
+            return
+
+        try:
+            with open(self._tasks_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            all_tasks = {t["id"]: t for t in data.get("tasks", [])}
+
+            # Purge plugin-sourced tasks — plugins re-register theirs via set_scheduler()
+            plugin_count = 0
+            for tid in list(all_tasks):
+                if all_tasks[tid].get("source", "").startswith("plugin:"):
+                    del all_tasks[tid]
+                    plugin_count += 1
+
+            self._tasks = all_tasks
+            if plugin_count:
+                self._save_tasks()
+                logger.info(f"[Continuity] Purged {plugin_count} plugin task(s) from previous session")
+            logger.info(f"[Continuity] Loaded {len(self._tasks)} tasks")
+        except Exception as e:
+            logger.error(f"[Continuity] Failed to load tasks: {e}")
+            self._tasks = {}
+    
+    def _save_tasks(self):
+        """Save tasks to JSON file."""
+        try:
+            data = {"tasks": list(self._tasks.values())}
+            with open(self._tasks_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            logger.error(f"[Continuity] Failed to save tasks: {e}")
+    
+    def _load_activity(self):
+        """Load activity log from JSON file."""
+        if not self._activity_path.exists():
+            self._activity = []
+            return
+        
+        try:
+            with open(self._activity_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            self._activity = data.get("activity", [])[-50:]  # Keep last 50
+        except Exception as e:
+            logger.error(f"[Continuity] Failed to load activity: {e}")
+            self._activity = []
+    
+    def _save_activity(self):
+        """Save activity log to JSON file."""
+        try:
+            data = {"activity": self._activity[-50:]}  # Keep last 50
+            with open(self._activity_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            logger.error(f"[Continuity] Failed to save activity: {e}")
+    
+    def _log_activity(self, task_id: str, task_name: str, status: str, details: Optional[Dict] = None):
+        """Add entry to activity log."""
+        entry = {
+            "timestamp": _user_now().isoformat(),
+            "task_id": task_id,
+            "task_name": task_name,
+            "status": status,
+            "details": details or {}
+        }
+        self._activity.append(entry)
+        self._activity = self._activity[-50:]  # Trim
+        self._save_activity()
+        
+        # Publish event
+        from core.event_bus import publish, Events
+        event_map = {
+            "started": Events.CONTINUITY_TASK_STARTING,
+            "complete": Events.CONTINUITY_TASK_COMPLETE,
+            "skipped": Events.CONTINUITY_TASK_SKIPPED,
+            "error": Events.CONTINUITY_TASK_ERROR,
+        }
+        event_type = event_map.get(status, Events.CONTINUITY_TASK_COMPLETE)
+        publish(event_type, {"task_id": task_id, "task_name": task_name, **entry})
+    
+    # =========================================================================
+    # TASK CRUD
+    # =========================================================================
+    
+    def list_tasks(self) -> List[Dict]:
+        """Get all tasks, with live progress info merged in."""
+        with self._lock:
+            tasks = []
+            for t in self._tasks.values():
+                task = dict(t)  # shallow copy so we don't persist transient fields
+                task["running"] = self._task_running.get(t["id"], False)
+                progress = self._task_progress.get(t["id"])
+                if progress:
+                    task["progress"] = progress
+                    # Use live timestamp from progress (known to reach UI)
+                    if progress.get("timestamp"):
+                        task["last_run"] = progress["timestamp"]
+                tasks.append(task)
+            return tasks
+    
+    def get_task(self, task_id: str) -> Optional[Dict]:
+        """Get single task by ID."""
+        with self._lock:
+            return self._tasks.get(task_id)
+    
+    MAX_TASKS = 25
+    MAX_HEARTBEATS = 4
+
+    def create_task(self, data: Dict) -> Dict:
+        """Create new task, returns the created task."""
+        with self._lock:
+            total = len(self._tasks)
+            heartbeats = sum(1 for t in self._tasks.values() if t.get('heartbeat'))
+            if data.get('heartbeat') and heartbeats >= self.MAX_HEARTBEATS:
+                raise ValueError(f"Maximum heartbeat tasks reached ({self.MAX_HEARTBEATS})")
+            if total >= self.MAX_TASKS:
+                raise ValueError(f"Maximum tasks reached ({self.MAX_TASKS})")
+
+        task = {
+            "id": str(uuid.uuid4()),
+            "name": data.get("name", "Unnamed Task"),
+            "enabled": data.get("enabled", True),
+            "schedule": data.get("schedule", "0 9 * * *"),
+            "chance": data.get("chance", 100),
+            "provider": data.get("provider", "auto"),
+            "model": data.get("model", ""),
+            "prompt": data.get("prompt", "default"),
+            "toolset": data.get("toolset", "none"),
+            "chat_target": data.get("chat_target", ""),  # blank = ephemeral (no chat, no UI)
+            "initial_message": data.get("initial_message", "Hello."),
+            "tts_enabled": data.get("tts_enabled", True),
+            "browser_tts": data.get("browser_tts", False),
+            "inject_datetime": data.get("inject_datetime", False),
+            "persona": data.get("persona", ""),
+            "voice": data.get("voice", ""),
+            "pitch": data.get("pitch", None),
+            "speed": data.get("speed", None),
+            "memory_scope": data.get("memory_scope", "none"),
+            "knowledge_scope": data.get("knowledge_scope", "none"),
+            "people_scope": data.get("people_scope", "none"),
+            "goal_scope": data.get("goal_scope", "none"),
+            "heartbeat": data.get("heartbeat", False),
+            "emoji": data.get("emoji", ""),
+            "context_limit": data.get("context_limit", 0),
+            "max_parallel_tools": data.get("max_parallel_tools", 0),
+            "max_tool_rounds": data.get("max_tool_rounds", 0),
+            "active_hours_start": data.get("active_hours_start", None),
+            "active_hours_end": data.get("active_hours_end", None),
+            "source": data.get("source", ""),  # "plugin:{name}" for plugin-sourced tasks
+            "handler": data.get("handler", ""),  # handler path for plugin tasks
+            "plugin_dir": data.get("plugin_dir", ""),  # plugin directory for handler resolution
+            "last_run": None,
+            "last_response": None,
+            "created": _user_now().isoformat()
+        }
+        
+        # Validate cron
+        try:
+            _get_croniter()(task["schedule"], _user_now())
+        except Exception as e:
+            raise ValueError(f"Invalid cron schedule: {e}")
+        
+        with self._lock:
+            self._tasks[task["id"]] = task
+            self._save_tasks()
+        
+        logger.info(f"[Continuity] Created task: {task['name']} ({task['id']})")
+        return task
+    
+    def update_task(self, task_id: str, data: Dict) -> Optional[Dict]:
+        """Update existing task."""
+        with self._lock:
+            if task_id not in self._tasks:
+                return None
+            
+            task = self._tasks[task_id]
+            
+            # Validate cron if provided
+            if "schedule" in data:
+                try:
+                    _get_croniter()(data["schedule"], _user_now())
+                except Exception as e:
+                    raise ValueError(f"Invalid cron schedule: {e}")
+            
+            # Update allowed fields
+            allowed = {
+                "name", "enabled", "schedule", "chance",
+                "provider", "model", "prompt", "toolset", "chat_target",
+                "initial_message", "tts_enabled", "browser_tts", "inject_datetime",
+                "persona", "voice", "pitch", "speed",
+                "memory_scope", "knowledge_scope", "people_scope", "goal_scope",
+                "heartbeat", "emoji",
+                "context_limit", "max_parallel_tools", "max_tool_rounds",
+                "active_hours_start", "active_hours_end"
+            }
+            for key in allowed:
+                if key in data:
+                    task[key] = data[key]
+            
+            # Reset run state — clears pending queue and allows fresh cron match
+            self._task_pending[task_id] = 0
+            self._task_last_matched.pop(task_id, None)
+
+            self._save_tasks()
+            logger.info(f"[Continuity] Updated task: {task['name']} ({task_id})")
+            return task
+    
+    def delete_task(self, task_id: str) -> bool:
+        """Delete task by ID."""
+        with self._lock:
+            if task_id not in self._tasks:
+                return False
+            
+            name = self._tasks[task_id].get("name", task_id)
+            del self._tasks[task_id]
+            self._task_pending.pop(task_id, None)
+            self._task_running.pop(task_id, None)
+            self._task_last_matched.pop(task_id, None)
+            self._task_progress.pop(task_id, None)
+            self._save_tasks()
+            logger.info(f"[Continuity] Deleted task: {name} ({task_id})")
+            return True
+    
+    # =========================================================================
+    # SCHEDULE CHECKING
+    # =========================================================================
+    
+    def _cron_matches_now(self, cron_expr: str, last_check: datetime) -> bool:
+        """
+        Check if cron expression matches current minute.
+        Uses croniter to get next scheduled time and compares.
+        """
+        try:
+            cron = _get_croniter()(cron_expr, last_check - timedelta(minutes=1))
+            next_time = cron.get_next(datetime)
+            now = _user_now()
+            
+            matched = (next_time.year == now.year and
+                       next_time.month == now.month and
+                       next_time.day == now.day and
+                       next_time.hour == now.hour and
+                       next_time.minute == now.minute)
+            
+            if not matched:
+                logger.debug(f"[Continuity] Cron '{cron_expr}': next={next_time.strftime('%H:%M')}, now={now.strftime('%H:%M')}")
+            
+            return matched
+        except Exception as e:
+            logger.error(f"[Continuity] Cron check failed for '{cron_expr}': {e}")
+            return False
+    
+    def _make_progress_callback(self, task_id: str):
+        """Create a progress callback for the executor."""
+        def callback(iteration: int, total: int):
+            now = _user_now().isoformat()
+            with self._lock:
+                self._task_progress[task_id] = {
+                    "iteration": iteration,
+                    "total": total,
+                    "timestamp": now
+                }
+                if task_id in self._tasks:
+                    self._tasks[task_id]["last_run"] = now
+        return callback
+
+    def _make_response_callback(self, task_id: str):
+        """Create a response callback — stores last_response before TTS blocks."""
+        def callback(response: str):
+            clean = _strip_think_tags(response)
+            with self._lock:
+                if task_id in self._tasks:
+                    self._tasks[task_id]["last_response"] = clean or None
+                    self._save_tasks()
+        return callback
+
+    def _execute_task(self, task: Dict):
+        """Execute a task and drain any pending queue. Runs on a worker thread."""
+        task_id = task["id"]
+        task_name = task.get("name", "Unnamed")
+
+        while True:
+            # Re-check enabled state (task dict is shared, updated by update_task)
+            with self._lock:
+                live_task = self._tasks.get(task_id)
+                if not live_task or not live_task.get("enabled", True):
+                    logger.info(f"[Continuity] '{task_name}' disabled — stopping execution")
+                    self._task_pending[task_id] = 0
+                    self._task_running[task_id] = False
+                    self._task_progress.pop(task_id, None)
+                    break
+
+            self._log_activity(task_id, task_name, "started")
+            try:
+                result = self.executor.run(
+                    task,
+                    progress_callback=self._make_progress_callback(task_id),
+                    response_callback=self._make_response_callback(task_id),
+                )
+
+                with self._lock:
+                    if task_id in self._tasks:
+                        self._tasks[task_id]["last_run"] = _user_now().isoformat()
+                        self._save_tasks()
+                    self._task_progress.pop(task_id, None)
+
+                status = "complete" if result.get("success") else "error"
+
+                self._log_activity(task_id, task_name, status, {
+                    "responses": len(result.get("responses", [])),
+                    "errors": result.get("errors", [])
+                })
+            except Exception as e:
+                logger.error(f"[Continuity] Task '{task_name}' execution failed: {e}", exc_info=True)
+                self._log_activity(task_id, task_name, "error", {"exception": str(e)})
+                with self._lock:
+                    self._task_progress.pop(task_id, None)
+
+            # Check for queued fires
+            with self._lock:
+                if self._task_pending.get(task_id, 0) > 0:
+                    self._task_pending[task_id] -= 1
+                    logger.info(f"[Continuity] '{task_name}' draining queue ({self._task_pending[task_id]} remaining)")
+                    continue  # Run again immediately
+                else:
+                    self._task_running[task_id] = False
+                    break
+
+    def _in_active_hours(self, task, check_hour=None):
+        """Check if an hour is within the task's active hours window."""
+        start = task.get("active_hours_start")
+        end = task.get("active_hours_end")
+        if start is None or end is None:
+            return True  # no restriction
+        hour = check_hour if check_hour is not None else _user_now().hour
+        if start <= end:
+            return start <= hour < end
+        return hour >= start or hour < end  # wrap-around (e.g. 20→04)
+
+    def _check_and_run(self):
+        """Single check cycle - evaluate all tasks, run eligible ones."""
+        now = _user_now()
+
+        with self._lock:
+            tasks_snapshot = list(self._tasks.values())
+
+        if not tasks_snapshot:
+            return
+
+        logger.debug(f"[Continuity] Checking {len(tasks_snapshot)} tasks at {now.strftime('%H:%M:%S')}")
+
+        for task in tasks_snapshot:
+            if not task.get("enabled", True):
+                continue
+
+            task_id = task["id"]
+            task_name = task.get("name", "Unnamed")
+            schedule = task.get("schedule", "")
+
+            # Check cron match
+            cron_matched = self._cron_matches_now(schedule, now - timedelta(seconds=self.CHECK_INTERVAL))
+            if not cron_matched:
+                logger.debug(f"[Continuity] '{task_name}' schedule '{schedule}' - no match at {now.strftime('%H:%M')}")
+                continue
+
+            # Dedup: only fire once per matching minute (scheduler checks every 30s)
+            current_minute = now.strftime('%Y-%m-%d %H:%M')
+            if self._task_last_matched.get(task_id) == current_minute:
+                continue
+            self._task_last_matched[task_id] = current_minute
+
+            # Check active hours window
+            if not self._in_active_hours(task):
+                start = task.get("active_hours_start")
+                end = task.get("active_hours_end")
+                logger.info(f"[Continuity] '{task_name}' outside active hours ({start}:00-{end}:00), skipping")
+                continue
+
+            # Chance roll — gates the entire firing
+            chance = task.get("chance", 100)
+            if chance < 100:
+                roll = random.randint(1, 100)
+                if roll > chance:
+                    logger.info(f"[Continuity] '{task_name}' failed chance roll ({roll} > {chance}%), skipping")
+                    continue
+
+            logger.info(f"[Continuity] '{task_name}' schedule '{schedule}' - MATCHED at {now.strftime('%H:%M')}")
+
+            # If task is already running, queue it instead of overlapping
+            with self._lock:
+                if self._task_running.get(task_id, False):
+                    self._task_pending[task_id] = self._task_pending.get(task_id, 0) + 1
+                    logger.info(f"[Continuity] '{task_name}' busy — queued (pending: {self._task_pending[task_id]})")
+                    self._log_activity(task_id, task_name, "queued", {"pending": self._task_pending[task_id]})
+                    continue
+                self._task_running[task_id] = True
+
+            # Run on a separate thread so different tasks can run concurrently
+            logger.info(f"[Continuity] Triggering task: {task_name}")
+            thread = threading.Thread(
+                target=self._execute_task, args=(task,),
+                daemon=True, name=f"Continuity-{task_name}"
+            )
+            thread.start()
+    
+    # =========================================================================
+    # MANUAL RUN
+    # =========================================================================
+    
+    def run_task_now(self, task_id: str) -> Dict[str, Any]:
+        """Manually trigger a task immediately (for testing). Runs synchronously."""
+        with self._lock:
+            task = self._tasks.get(task_id)
+
+        if not task:
+            return {"success": False, "error": "Task not found"}
+
+        task_name = task.get("name", "Unnamed")
+
+        # Check if already running
+        with self._lock:
+            if self._task_running.get(task_id, False):
+                return {"success": False, "error": f"Task '{task_name}' is already running"}
+            self._task_running[task_id] = True
+
+        logger.info(f"[Continuity] Manual run: {task_name}")
+        self._log_activity(task_id, task_name, "started", {"manual": True})
+
+        try:
+            result = self.executor.run(
+                task,
+                progress_callback=self._make_progress_callback(task_id),
+                response_callback=self._make_response_callback(task_id),
+            )
+
+            with self._lock:
+                if task_id in self._tasks:
+                    self._tasks[task_id]["last_run"] = _user_now().isoformat()
+                    self._save_tasks()
+
+            status = "complete" if result.get("success") else "error"
+
+            self._log_activity(task_id, task_name, status, {
+                "manual": True,
+                "responses": len(result.get("responses", [])),
+                "errors": result.get("errors", [])
+            })
+
+            return result
+
+        except Exception as e:
+            logger.error(f"[Continuity] Manual run failed: {e}", exc_info=True)
+            self._log_activity(task_id, task_name, "error", {"manual": True, "exception": str(e)})
+            return {"success": False, "error": str(e)}
+
+        finally:
+            with self._lock:
+                self._task_running[task_id] = False
+                self._task_progress.pop(task_id, None)
+    
+    # =========================================================================
+    # THREAD CONTROL
+    # =========================================================================
+    
+    def start(self):
+        """Start the scheduler background thread."""
+        if self._running:
+            logger.warning("[Continuity] Scheduler already running")
+            return
+        
+        self._running = True
+        self._thread = threading.Thread(target=self._run_loop, daemon=True, name="ContinuityScheduler")
+        self._thread.start()
+        logger.info("[Continuity] Scheduler started")
+    
+    def stop(self):
+        """Stop the scheduler."""
+        self._running = False
+        if self._thread:
+            self._thread.join(timeout=5)
+            self._thread = None
+        logger.info("[Continuity] Scheduler stopped")
+    
+    def _run_loop(self):
+        """Main scheduler loop."""
+        import time
+        
+        logger.info("[Continuity] Scheduler loop running")
+        check_count = 0
+        
+        while self._running:
+            try:
+                self._check_and_run()
+                check_count += 1
+                
+                # Heartbeat every 120 checks (~1 hour)
+                if check_count % 120 == 0:
+                    with self._lock:
+                        enabled = sum(1 for t in self._tasks.values() if t.get("enabled"))
+                    logger.info(f"[Continuity] Heartbeat: {enabled} enabled tasks, {check_count} checks since start")
+                    
+            except Exception as e:
+                logger.error(f"[Continuity] Scheduler loop error: {e}", exc_info=True)
+            
+            # Sleep in small increments for responsive shutdown
+            for _ in range(self.CHECK_INTERVAL):
+                if not self._running:
+                    break
+                time.sleep(1)
+    
+    def is_running(self) -> bool:
+        """Check if scheduler is running."""
+        return self._running
+    
+    # =========================================================================
+    # STATUS / TIMELINE
+    # =========================================================================
+    
+    def get_status(self) -> Dict[str, Any]:
+        """Get scheduler status."""
+        with self._lock:
+            enabled_count = sum(1 for t in self._tasks.values() if t.get("enabled"))
+            
+        next_task = self._get_next_scheduled()
+        
+        return {
+            "running": self._running,
+            "total_tasks": len(self._tasks),
+            "enabled_tasks": enabled_count,
+            "next_task": next_task
+        }
+    
+    def _get_next_scheduled(self) -> Optional[Dict]:
+        """Get the next task that will run."""
+        now = _user_now()
+        next_task = None
+        next_time = None
+        
+        with self._lock:
+            for task in self._tasks.values():
+                if not task.get("enabled"):
+                    continue
+                
+                try:
+                    cron = _get_croniter()(task.get("schedule", ""), now)
+                    task_next = cron.get_next(datetime)
+                    
+                    if next_time is None or task_next < next_time:
+                        next_time = task_next
+                        next_task = {
+                            "id": task["id"],
+                            "name": task.get("name"),
+                            "scheduled_for": task_next.isoformat()
+                        }
+                except Exception:
+                    continue
+        
+        return next_task
+    
+    def get_activity(self, limit: int = 50) -> List[Dict]:
+        """Get recent activity log."""
+        return self._activity[-limit:]
+    
+    def get_timeline(self, hours: int = 24) -> List[Dict]:
+        """Get timeline of scheduled tasks for next N hours."""
+        now = _user_now()
+        end = now + timedelta(hours=hours)
+        timeline = []
+        
+        with self._lock:
+            for task in self._tasks.values():
+                if not task.get("enabled"):
+                    continue
+                
+                try:
+                    cron = _get_croniter()(task.get("schedule", ""), now)
+                    
+                    # Get next occurrences within window
+                    for _ in range(10):  # Max 10 per task
+                        next_time = cron.get_next(datetime)
+                        if next_time > end:
+                            break
+
+                        if not self._in_active_hours(task, next_time.hour):
+                            continue
+
+                        timeline.append({
+                            "task_id": task["id"],
+                            "task_name": task.get("name"),
+                            "scheduled_for": next_time.isoformat(),
+                            "chance": task.get("chance", 100),
+                            "heartbeat": task.get("heartbeat", False),
+                            "emoji": task.get("emoji", ""),
+                            "type": "upcoming"
+                        })
+                except Exception:
+                    continue
+        
+        # Sort by time
+        timeline.sort(key=lambda x: x["scheduled_for"])
+        return timeline
+
+    def get_merged_timeline(self, hours_back: int = 12, hours_ahead: int = 12) -> Dict[str, Any]:
+        """Get merged timeline: past activity + future schedule with NOW marker."""
+        now = _user_now()
+
+        # Future: reuse existing timeline logic
+        future = self.get_timeline(hours_ahead)
+
+        # Past: pull from activity log, enrich with task info
+        cutoff = now - timedelta(hours=hours_back)
+        past = []
+        with self._lock:
+            task_map = {t["id"]: t for t in self._tasks.values()}
+        for entry in self._activity:
+            try:
+                ts = datetime.fromisoformat(entry["timestamp"])
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=ZoneInfo('UTC'))
+                if ts < cutoff:
+                    continue
+            except (ValueError, KeyError):
+                continue
+            task = task_map.get(entry.get("task_id", ""), {})
+            past.append({
+                "task_id": entry.get("task_id"),
+                "task_name": entry.get("task_name"),
+                "timestamp": entry.get("timestamp"),
+                "status": entry.get("status"),
+                "heartbeat": task.get("heartbeat", False),
+                "emoji": task.get("emoji", ""),
+                "type": "past",
+                "details": entry.get("details", {})
+            })
+
+        return {
+            "now": now.isoformat(),
+            "past": sorted(past, key=lambda x: x["timestamp"], reverse=True),
+            "future": future
+        }

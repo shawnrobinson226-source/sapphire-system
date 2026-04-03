@@ -1,0 +1,236 @@
+# event_bus.py - Central pub/sub event bus for real-time UI updates
+import asyncio
+import threading
+import queue
+import time
+import json
+import logging
+from typing import AsyncGenerator, Generator, Optional, Dict, Any
+from collections import deque
+
+logger = logging.getLogger(__name__)
+
+class EventBus:
+    """Thread-safe pub/sub event bus with replay buffer for late subscribers."""
+    
+    def __init__(self, replay_size: int = 50):
+        self._lock = threading.Lock()
+        self._subscribers: Dict[str, queue.Queue] = {}
+        self._async_subscribers: Dict[str, tuple] = {}  # sub_id -> (asyncio.Queue, loop)
+        self._replay_buffer: deque = deque(maxlen=replay_size)
+        self._subscriber_counter = 0
+        logger.info(f"EventBus initialized (replay_size={replay_size})")
+    
+    def publish(self, event_type: str, data: Optional[Dict[str, Any]] = None):
+        """Publish an event to all subscribers (sync and async)."""
+        event = {
+            "type": event_type,
+            "data": data or {},
+            "timestamp": time.time()
+        }
+
+        with self._lock:
+            self._replay_buffer.append(event)
+            dead_subscribers = []
+
+            # Sync subscribers
+            for sub_id, q in self._subscribers.items():
+                try:
+                    q.put_nowait(event)
+                except queue.Full:
+                    logger.warning(f"Subscriber {sub_id} queue full, dropping event")
+                except Exception as e:
+                    logger.error(f"Error publishing to {sub_id}: {e}")
+                    dead_subscribers.append(sub_id)
+
+            for sub_id in dead_subscribers:
+                del self._subscribers[sub_id]
+
+            # Async subscribers — thread-safe put via event loop
+            dead_async = []
+            for sub_id, (aq, loop) in self._async_subscribers.items():
+                try:
+                    loop.call_soon_threadsafe(aq.put_nowait, event)
+                except RuntimeError:
+                    dead_async.append(sub_id)
+
+            for sub_id in dead_async:
+                del self._async_subscribers[sub_id]
+
+        logger.debug(f"Published: {event_type}")
+    
+    def subscribe(self, replay: bool = True) -> Generator[Dict[str, Any], None, None]:
+        """Subscribe to events. Yields events as they arrive.
+        
+        Args:
+            replay: If True, replay recent events before live stream
+        """
+        sub_id = None
+        q = queue.Queue(maxsize=100)
+        
+        with self._lock:
+            self._subscriber_counter += 1
+            sub_id = f"sub_{self._subscriber_counter}"
+            self._subscribers[sub_id] = q
+            
+            if replay:
+                for event in self._replay_buffer:
+                    try:
+                        q.put_nowait(event)
+                    except queue.Full:
+                        break
+        
+        logger.info(f"New subscriber: {sub_id} (replay={replay}) — total subscribers: {len(self._subscribers)}")
+
+        # Immediate connection event - wakes up client instantly
+        # Include boot_version so frontend can detect server restarts
+        boot_version = None
+        try:
+            from core.api_fastapi import BOOT_VERSION
+            boot_version = BOOT_VERSION
+        except Exception:
+            pass
+        yield {"type": "connected", "data": {"sub_id": sub_id, "boot_version": boot_version}, "timestamp": time.time()}
+
+        try:
+            keepalive_count = 0
+            while True:
+                try:
+                    event = q.get(timeout=15)
+                    yield event
+                except queue.Empty:
+                    # Send keepalive (15s interval)
+                    keepalive_count += 1
+                    logger.debug(f"Keepalive #{keepalive_count} for {sub_id}")
+                    yield {"type": "keepalive", "timestamp": time.time()}
+        except GeneratorExit:
+            logger.info(f"Subscriber {sub_id} generator closed by client")
+        finally:
+            with self._lock:
+                if sub_id in self._subscribers:
+                    del self._subscribers[sub_id]
+            logger.info(f"Subscriber disconnected: {sub_id}")
+    
+    async def async_subscribe(self, replay: bool = True) -> AsyncGenerator[Dict[str, Any], None]:
+        """Async subscribe to events. No threadpool thread consumed."""
+        sub_id = None
+        aq = asyncio.Queue(maxsize=100)
+        loop = asyncio.get_running_loop()
+
+        with self._lock:
+            self._subscriber_counter += 1
+            sub_id = f"async_sub_{self._subscriber_counter}"
+            self._async_subscribers[sub_id] = (aq, loop)
+
+            if replay:
+                for event in self._replay_buffer:
+                    try:
+                        aq.put_nowait(event)
+                    except asyncio.QueueFull:
+                        break
+
+        logger.info(f"New async subscriber: {sub_id} (replay={replay}) — total: {len(self._subscribers) + len(self._async_subscribers)}")
+
+        boot_version = None
+        try:
+            from core.api_fastapi import BOOT_VERSION
+            boot_version = BOOT_VERSION
+        except Exception:
+            pass
+        yield {"type": "connected", "data": {"sub_id": sub_id, "boot_version": boot_version}, "timestamp": time.time()}
+
+        try:
+            keepalive_count = 0
+            while True:
+                try:
+                    event = await asyncio.wait_for(aq.get(), timeout=15)
+                    yield event
+                except asyncio.TimeoutError:
+                    keepalive_count += 1
+                    logger.debug(f"Keepalive #{keepalive_count} for {sub_id}")
+                    yield {"type": "keepalive", "timestamp": time.time()}
+        except GeneratorExit:
+            logger.info(f"Async subscriber {sub_id} generator closed by client")
+        finally:
+            with self._lock:
+                self._async_subscribers.pop(sub_id, None)
+            logger.info(f"Async subscriber disconnected: {sub_id}")
+
+    def subscriber_count(self) -> int:
+        """Return current number of subscribers."""
+        with self._lock:
+            return len(self._subscribers) + len(self._async_subscribers)
+
+
+# Singleton instance
+_bus: Optional[EventBus] = None
+
+def get_event_bus() -> EventBus:
+    """Get or create the singleton event bus."""
+    global _bus
+    if _bus is None:
+        _bus = EventBus()
+    return _bus
+
+def publish(event_type: str, data: Optional[Dict[str, Any]] = None):
+    """Convenience function to publish to the global bus."""
+    get_event_bus().publish(event_type, data)
+
+
+# Event type constants
+class Events:
+    # AI/Chat events
+    AI_TYPING_START = "ai_typing_start"
+    AI_TYPING_END = "ai_typing_end"
+    MESSAGE_ADDED = "message_added"
+    MESSAGE_REMOVED = "message_removed"
+    CHAT_SWITCHED = "chat_switched"
+    CHAT_CLEARED = "chat_cleared"
+    
+    # TTS events
+    TTS_PLAYING = "tts_playing"
+    TTS_STOPPED = "tts_stopped"
+    TTS_SPEAK = "tts_speak"
+    
+    # STT events
+    STT_RECORDING_START = "stt_recording_start"
+    STT_RECORDING_END = "stt_recording_end"
+    STT_PROCESSING = "stt_processing"
+    
+    # Wakeword events
+    WAKEWORD_DETECTED = "wakeword_detected"
+    
+    # Tool events
+    TOOL_EXECUTING = "tool_executing"
+    TOOL_COMPLETE = "tool_complete"
+    
+    # System events
+    PROMPT_CHANGED = "prompt_changed"
+    PROMPT_DELETED = "prompt_deleted"
+    COMPONENTS_CHANGED = "components_changed"
+    TOOLSET_CHANGED = "toolset_changed"
+    SPICE_CHANGED = "spice_changed"
+    SETTINGS_CHANGED = "settings_changed"
+    CHAT_SETTINGS_CHANGED = "chat_settings_changed"
+    
+    # Context threshold events
+    CONTEXT_WARNING = "context_warning"    # 80% threshold
+    CONTEXT_CRITICAL = "context_critical"  # 95% threshold
+    
+    # Connection events
+    CONNECTED = "connected"
+
+    # Error events
+    LLM_ERROR = "llm_error"
+    TTS_ERROR = "tts_error"
+    STT_ERROR = "stt_error"
+    
+    # Continuity events
+    CONTINUITY_TASK_STARTING = "continuity_task_starting"
+    CONTINUITY_TASK_COMPLETE = "continuity_task_complete"
+    CONTINUITY_TASK_SKIPPED = "continuity_task_skipped"
+    CONTINUITY_TASK_ERROR = "continuity_task_error"
+    CONTINUITY_TASK_PROGRESS = "continuity_task_progress"
+
+    # Plugin events
+    PLUGIN_RELOADED = "plugin_reloaded"

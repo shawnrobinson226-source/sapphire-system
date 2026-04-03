@@ -1,0 +1,21 @@
+{
+  "name": "sapphire-store",
+  "version": "1.0.0",
+  "description": "Browse and install plugins from the Sapphire Store",
+  "author": "sapphire",
+  "url": "https://sapphireblue.dev",
+  "priority": 50,
+  "capabilities": {
+    "tools": ["tools/store_tools.py"],
+    "settings": [
+      {
+        "key": "store_url",
+        "type": "string",
+        "label": "Store API URL",
+        "default": "https://sapphireblue.dev/wp-json/sapphire-store/v1/",
+        "widget": "text",
+        "help": "Base URL for the Sapphire Store API"
+      }
+    ]
+  }
+}

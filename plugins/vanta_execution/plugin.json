@@ -1,0 +1,12 @@
+{
+  "name": "vanta-execution",
+  "version": "1.0.0",
+  "description": "System V1 execution plugin for structured task planning and tracking",
+  "author": "Grim",
+  "url": "https://local.plugin",
+  "priority": 60,
+  "managed_hide": false,
+  "capabilities": {
+    "tools": ["tools/vanta_execution.py"]
+  }
+}

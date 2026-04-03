@@ -1,0 +1,12 @@
+{
+  "name": "image-gen",
+  "version": "1.0.0",
+  "description": "Image Generation — SDXL scene rendering with character descriptions",
+  "author": "sapphire",
+  "url": "https://sapphireblue.dev",
+  "priority": 50,
+  "managed_hide": true,
+  "capabilities": {
+    "tools": ["tools/image_tool.py"]
+  }
+}

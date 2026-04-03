@@ -1,0 +1,17 @@
+user/
+user_backups/
+tmp/
+claude/
+infra/
+.claude/
+__pycache__/
+*.pyc
+*.db
+*.log
+.git/
+models/
+CLAUDE.md
+TODO.md
+TODO-DONE.md
+MEMORIES.md
+SAPPHIRE.md
