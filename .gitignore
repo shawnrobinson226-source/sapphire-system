@@ -2,7 +2,7 @@
 __pycache__/
 *.pyc
 
-# Databases
+# Databases / runtime state
 *.db
 *.sqlite
 *.jsonl
@@ -10,14 +10,26 @@ __pycache__/
 # Logs
 *.log
 logs/
+user/logs/
 
-# SSL / secrets
+# Secrets / local certs
 *.pem
 *.key
 .env
+user/ssl/
 
-# Runtime data
-user/
+# Runtime-only user files
+user/settings.json
+user/webui/
+user/history/
+user/public/
+user/prompts/
+user/spice_sets/
+user/goals.db
+user/knowledge.db
+user/memory.db
+
+# Runtime task data
 core/system_v1/data/
 
 # Temp
