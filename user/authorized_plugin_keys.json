@@ -1,0 +1,17 @@
+{
+  "keys": [
+    {
+      "name": "Krem's Evil Twin",
+      "public_key_hex": "96080b396af06ee158ae852d8b6157f12aeb496210e75302b80f5e20678d6b4f",
+      "url": "https://github.com/ddxfish",
+      "added": "2026-03-03"
+    },
+    {
+      "name": "Zeebie",
+      "public_key_hex": "cd5db129c2734134f4903a15a30a639adf5dea21137f3a47263f8b5e3fc10129",
+      "url": "",
+      "added": "2026-03-11"
+    }
+  ],
+  "fetched_at": 1775255127.4946122
+}
