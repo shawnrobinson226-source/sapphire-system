@@ -1,45 +1,25 @@
 ﻿# Python
+venv/
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# Databases / runtime state
-*.db
-*.sqlite
-*.jsonl
-
-# Logs
-*.log
-logs/
-user/logs/
-
-# Secrets / local certs
-*.pem
-*.key
+# Env files
 .env
-user/ssl/
+.env.*
+!.env.example
 
-# Runtime-only user files
-user/settings.json
-user/webui/
-user/history/
-user/public/
-user/prompts/
-user/spice_sets/
-user/goals.db
-user/knowledge.db
-user/memory.db
+# Build / cache
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Runtime task data
-core/system_v1/data/
-
-# Temp
-tmp_*
-*.tmp
-
-# IDE
-.vscode/
-.idea/
-
-# OS
+# OS / editor
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/

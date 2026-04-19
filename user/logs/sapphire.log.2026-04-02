@@ -1,0 +1,648 @@
+2026-04-02 20:46:39,340 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-02 20:46:39,343 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-02 20:46:39,400 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-02 20:46:39,401 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-02 20:46:42,796 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-02 20:46:42,797 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-02 20:46:42,799 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 0 disabled
+2026-04-02 20:46:43,245 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-02 20:46:43,247 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-02 20:46:43,777 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-02 20:46:43,840 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-02 20:46:43,841 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-02 20:46:43,841 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-02 20:46:43,842 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-02 20:46:43,842 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-02 20:46:43,842 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-02 20:46:43,843 - __main__ - INFO - TTS disabled
+2026-04-02 20:46:43,844 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-02 20:46:43,845 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-02 20:46:43,875 - core.chat.history - INFO - Loaded chat 'default' with 0 messages
+2026-04-02 20:46:43,875 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-02 20:46:43,877 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-02 20:46:43,879 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-02 20:46:43,881 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-02 20:46:43,883 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-02 20:46:43,886 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-02 20:46:44,213 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-02 20:46:44,213 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-02 20:46:44,215 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-02 20:46:44,216 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-02 20:46:44,329 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-02 20:46:44,329 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-02 20:46:44,330 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-02 20:46:44,330 - __main__ - INFO - Startup prompt from chat settings: 'sapphire'
+2026-04-02 20:46:44,331 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-02 20:46:44,331 - __main__ - INFO - System primed with 'sapphire' prompt.
+2026-04-02 20:46:44,331 - core.tts.tts_client - INFO - Voice set to: af_heart
+2026-04-02 20:46:44,332 - core.tts.tts_client - INFO - Pitch set to: 0.98
+2026-04-02 20:46:44,332 - core.tts.tts_client - INFO - Speed set to: 1.3
+2026-04-02 20:46:44,333 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-02 20:46:44,333 - __main__ - INFO - Applied toolset on startup: all
+2026-04-02 20:46:44,334 - __main__ - INFO - Applied chat settings on startup
+2026-04-02 20:46:44,334 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-02 20:46:44,335 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-02 20:46:44,335 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-02 20:46:44,336 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-02 20:46:44,357 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-02 20:46:44,544 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-02 20:46:44,632 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 3 tools registered
+2026-04-02 20:46:44,633 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-02 20:46:44,634 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-02 20:46:44,636 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-02 20:46:44,638 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-02 20:46:44,638 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-02 20:46:44,639 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-02 20:46:44,639 - __main__ - INFO - System init took: 1268.0ms
+2026-04-02 20:46:44,640 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-02 20:46:44,640 - __main__ - INFO - Voice components are running.
+2026-04-02 20:46:44,640 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-02 20:46:44,644 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-02 20:46:44,646 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-02 20:46:44,647 - __main__ - INFO - Continuity scheduler started
+2026-04-02 20:46:44,647 - core.settings_manager - INFO - File watcher started
+2026-04-02 20:46:44,648 - core.settings_manager - INFO - File watcher thread started
+2026-04-02 20:46:44,649 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-02 20:46:44,649 - __main__ - INFO - Prompt file watcher started
+2026-04-02 20:46:44,650 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-02 20:46:44,651 - __main__ - INFO - Toolset file watcher started
+2026-04-02 20:46:44,652 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-02 20:46:44,712 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-02 21:01:44,132 - core.api_fastapi - INFO - REQ: GET /
+2026-04-02 21:01:45,533 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:01:45,563 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-02 21:01:45,566 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-02 21:01:45,584 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-02 21:01:45,607 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:01:45,999 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:01:46,055 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:01:46,069 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-02 21:01:46,102 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-02 21:01:46,106 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-02 21:01:46,111 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-02 21:01:46,169 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-02 21:01:46,183 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:01:46,193 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:01:46,215 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-02 21:01:46,235 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:01:46,248 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-02 21:01:46,266 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:01:46,286 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:01:46,315 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-02 21:01:46,336 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-02 21:01:46,343 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-02 21:01:46,350 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-02 21:01:46,362 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-02 21:01:46,376 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:01:46,382 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:01:46,387 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:01:46,395 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:01:46,411 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-02 21:02:50,410 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:02:50,416 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:02:50,424 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:02:50,435 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:02:50,443 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:02:50,450 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:02:50,455 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:02:50,469 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-02 21:02:50,542 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:02:50,550 - core.api_fastapi - INFO - REQ: GET /api/personas/anita/avatar
+2026-04-02 21:02:50,558 - core.api_fastapi - INFO - REQ: GET /api/personas/cantos/avatar
+2026-04-02 21:02:50,570 - core.api_fastapi - INFO - REQ: GET /api/personas/einstein/avatar
+2026-04-02 21:02:50,577 - core.api_fastapi - INFO - REQ: GET /api/personas/nexus/avatar
+2026-04-02 21:02:50,586 - core.api_fastapi - INFO - REQ: GET /api/personas/lovelace/avatar
+2026-04-02 21:02:50,594 - core.api_fastapi - INFO - REQ: GET /api/personas/yuki/avatar
+2026-04-02 21:02:50,606 - core.api_fastapi - INFO - REQ: GET /api/personas/sapphire/avatar
+2026-04-02 21:02:50,614 - core.api_fastapi - INFO - REQ: GET /api/personas/claude/avatar
+2026-04-02 21:02:50,621 - core.api_fastapi - INFO - REQ: GET /api/personas/cobalt/avatar
+2026-04-02 21:02:50,627 - core.api_fastapi - INFO - REQ: GET /api/personas/eddie/avatar
+2026-04-02 21:05:30,478 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:05:30,480 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:05:30,513 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-02 21:05:30,515 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:05:30,525 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:05:30,532 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:05:30,544 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:05:30,552 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:05:30,564 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-02 21:05:30,567 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-02 21:05:30,577 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-02 21:05:30,582 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-02 21:05:30,594 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-02 21:05:30,599 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:05:30,609 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:05:30,611 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:05:30,638 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-02 21:07:45,823 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:07:45,828 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:07:45,833 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:07:45,835 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:07:45,846 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:07:45,849 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:07:45,856 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:07:45,876 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-02 21:07:45,909 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:07:45,916 - core.api_fastapi - INFO - REQ: GET /api/personas/anita/avatar
+2026-04-02 21:07:45,917 - core.api_fastapi - INFO - REQ: GET /api/personas/cantos/avatar
+2026-04-02 21:07:45,917 - core.api_fastapi - INFO - REQ: GET /api/personas/claude/avatar
+2026-04-02 21:07:45,933 - core.api_fastapi - INFO - REQ: GET /api/personas/cobalt/avatar
+2026-04-02 21:07:45,938 - core.api_fastapi - INFO - REQ: GET /api/personas/eddie/avatar
+2026-04-02 21:07:45,942 - core.api_fastapi - INFO - REQ: GET /api/personas/einstein/avatar
+2026-04-02 21:07:45,955 - core.api_fastapi - INFO - REQ: GET /api/personas/lovelace/avatar
+2026-04-02 21:07:45,964 - core.api_fastapi - INFO - REQ: GET /api/personas/nexus/avatar
+2026-04-02 21:07:45,973 - core.api_fastapi - INFO - REQ: GET /api/personas/yuki/avatar
+2026-04-02 21:07:45,980 - core.api_fastapi - INFO - REQ: GET /api/personas/sapphire/avatar
+2026-04-02 21:09:08,987 - core.api_fastapi - INFO - REQ: POST /api/personas/alfred/load
+2026-04-02 21:09:08,999 - core.chat.history - INFO - Updated settings for chat 'default'
+2026-04-02 21:09:08,999 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-02 21:09:09,000 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-02 21:09:09,000 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-02 21:09:09,001 - core.api_fastapi - INFO - Applied prompt: alfred
+2026-04-02 21:09:09,002 - core.prompt_manager - INFO - Saved spices to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\prompts\prompt_spices.json
+2026-04-02 21:09:09,003 - core.api_fastapi - INFO - Applied spice set: professional
+2026-04-02 21:09:09,003 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 42 FUNCTIONS
+2026-04-02 21:09:09,004 - core.api_fastapi - INFO - Applied toolset: all
+2026-04-02 21:09:09,012 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:09:09,023 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:09:09,050 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:09:09,065 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:09:09,076 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:09:09,088 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:09:09,115 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:09:09,629 - core.prompt_manager - INFO - Detected change in prompt_spices.json
+2026-04-02 21:09:10,133 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-02 21:09:10,135 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-02 21:09:10,156 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-02 21:09:10,157 - core.prompt_manager - INFO - Prompt data reloaded
+2026-04-02 21:09:43,070 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:09:43,075 - core.api_fastapi - INFO - REQ: GET /api/toolsets
+2026-04-02 21:09:43,079 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:09:43,081 - core.api_fastapi - INFO - REQ: GET /api/functions
+2026-04-02 21:09:57,723 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:09:57,743 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-02 21:09:57,749 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:09:57,758 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:09:57,768 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:09:57,777 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:09:57,786 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:09:57,793 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-02 21:09:57,798 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-02 21:09:57,803 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-02 21:09:57,810 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-02 21:09:57,817 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-02 21:09:57,822 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:09:57,827 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:09:57,831 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:09:57,844 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-02 21:09:57,850 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-02 21:10:04,737 - core.api_fastapi - INFO - REQ: POST /api/chat/stream
+2026-04-02 21:10:04,741 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:10:04,743 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:10:04,752 - core.routes.chat - INFO - [CHAT-STREAM] Request received at 1775189404.753
+2026-04-02 21:10:04,755 - core.chat.chat_streaming - INFO - [START] [STREAMING START] cancel_flag=False, prefill=False, skip_user=False, images=0, files=0
+2026-04-02 21:10:04,760 - core.chat.chat - INFO - [SPICE] Spice disabled — cleared and reassembled prompt
+2026-04-02 21:10:04,763 - core.chat.chat - INFO - [STORY] _get_system_prompt: enabled=False, engine_exists=False
+2026-04-02 21:10:04,891 - core.chat.llm_providers.openai_compat - INFO - OpenAI-compat provider initialized: http://127.0.0.1:1234/v1
+2026-04-02 21:10:04,892 - core.chat.llm_providers - INFO - Created provider 'lmstudio' [openai]
+2026-04-02 21:10:05,849 - openai._base_client - INFO - Retrying request to /models in 0.476559 seconds
+2026-04-02 21:10:06,628 - openai._base_client - INFO - Retrying request to /models in 0.959416 seconds
+2026-04-02 21:10:07,928 - core.chat.llm_providers.claude - INFO - Claude provider initialized: https://api.anthropic.com
+2026-04-02 21:10:07,929 - core.chat.llm_providers - INFO - Created provider 'claude' [claude]
+2026-04-02 21:10:09,887 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:10:09,949 - core.chat.llm_providers - INFO - Selected provider 'claude' (healthy)
+2026-04-02 21:10:09,964 - core.chat.chat - INFO - Auto mode: using 'claude' (claude-sonnet-4-5)
+2026-04-02 21:10:09,965 - core.chat.chat_streaming - INFO - --- Streaming Iteration 1/7 ---
+2026-04-02 21:10:09,966 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:10:09,969 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:10:11,165 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:10:11,190 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.22s
+2026-04-02 21:10:11,833 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:10:12,007 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 2.04s
+2026-04-02 21:10:12,007 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (6 chunks)
+2026-04-02 21:10:12,008 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:10:12,008 - core.chat.chat_streaming - INFO - [TOOL] Processing 1 tool call(s)
+2026-04-02 21:10:12,016 - core.chat.function_manager - INFO - Executing function: list_tools
+2026-04-02 21:10:12,060 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:10:12,108 - core.api_fastapi - INFO - REQ: GET /api/functions
+2026-04-02 21:10:12,117 - core.chat.chat_streaming - INFO - [OK] [STREAMING] Tool list_tools executed successfully
+2026-04-02 21:10:12,124 - core.chat.chat_streaming - INFO - --- Streaming Iteration 2/7 ---
+2026-04-02 21:10:12,125 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:10:12,126 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:10:12,171 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:10:13,312 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:10:13,317 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.19s
+2026-04-02 21:10:17,497 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 5.37s
+2026-04-02 21:10:17,498 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (11 chunks)
+2026-04-02 21:10:17,499 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:10:17,501 - core.chat.chat_streaming - INFO - [OK] Final response received after 2 iteration(s)
+2026-04-02 21:10:17,508 - core.chat.chat_streaming - INFO - [CLEANUP] [STREAMING FINALLY] Cleaning up, cancel_flag=False
+2026-04-02 21:10:17,508 - core.routes.chat - INFO - STREAMING COMPLETE: 21 chunks, ephemeral=False
+2026-04-02 21:10:17,618 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:10:17,649 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:10:17,655 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:10:18,019 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:10:22,159 - core.api_fastapi - INFO - REQ: POST /api/tts/stop
+2026-04-02 21:10:22,165 - core.api_fastapi - INFO - REQ: POST /api/tts
+2026-04-02 21:10:22,174 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:10:22,974 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:14:28,040 - __main__ - INFO - Shutdown signal received...
+2026-04-02 21:14:28,040 - __main__ - INFO - Stopping voice chat system...
+2026-04-02 21:14:28,069 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-02 21:14:29,532 - core.settings_manager - INFO - File watcher stopped
+2026-04-02 21:14:29,533 - core.settings_manager - INFO - File watcher stopped
+2026-04-02 21:14:30,363 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-02 21:14:31,648 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-02 21:17:01,221 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-02 21:17:01,222 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-02 21:17:01,243 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-02 21:17:01,244 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-02 21:17:03,876 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-02 21:17:03,876 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-02 21:17:03,877 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-02 21:17:04,244 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-02 21:17:04,245 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-02 21:17:04,574 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-02 21:17:04,634 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-02 21:17:04,634 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-02 21:17:04,635 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-02 21:17:04,635 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-02 21:17:04,635 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-02 21:17:04,635 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-02 21:17:04,636 - __main__ - INFO - TTS disabled
+2026-04-02 21:17:04,636 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-02 21:17:04,637 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-02 21:17:04,658 - core.chat.history - INFO - Loaded chat 'default' with 4 messages
+2026-04-02 21:17:04,659 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-02 21:17:04,664 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-02 21:17:04,666 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-02 21:17:04,674 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-02 21:17:04,675 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-02 21:17:04,677 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-02 21:17:04,908 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-02 21:17:04,908 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-02 21:17:04,909 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-02 21:17:04,910 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-02 21:17:05,024 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-02 21:17:05,024 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-02 21:17:05,024 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-02 21:17:05,025 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-02 21:17:05,025 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-02 21:17:05,025 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-02 21:17:05,027 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-02 21:17:05,028 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-02 21:17:05,030 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-02 21:17:05,031 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-02 21:17:05,034 - __main__ - INFO - Applied toolset on startup: all
+2026-04-02 21:17:05,037 - __main__ - INFO - Applied chat settings on startup
+2026-04-02 21:17:05,041 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-02 21:17:05,044 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-02 21:17:05,044 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-02 21:17:05,045 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-02 21:17:05,067 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-02 21:17:05,144 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-02 21:17:05,160 - core.chat.function_manager - WARNING - Plugin tool 'C:\Users\shawn\Downloads\sapphire-main\sapphire-main\plugins\vanta_execution\tools\vanta_execution.py' missing TOOLS or execute()
+2026-04-02 21:17:05,160 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-02 21:17:05,161 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-02 21:17:05,162 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-02 21:17:05,164 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-02 21:17:05,165 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-02 21:17:05,166 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-02 21:17:05,166 - __main__ - INFO - System init took: 871.7ms
+2026-04-02 21:17:05,167 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-02 21:17:05,168 - __main__ - INFO - Voice components are running.
+2026-04-02 21:17:05,170 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-02 21:17:05,175 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-02 21:17:05,175 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-02 21:17:05,179 - __main__ - INFO - Continuity scheduler started
+2026-04-02 21:17:05,180 - core.settings_manager - INFO - File watcher started
+2026-04-02 21:17:05,180 - core.settings_manager - INFO - File watcher thread started
+2026-04-02 21:17:05,181 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-02 21:17:05,181 - __main__ - INFO - Prompt file watcher started
+2026-04-02 21:17:05,182 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-02 21:17:05,182 - __main__ - INFO - Toolset file watcher started
+2026-04-02 21:17:05,183 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-02 21:17:05,228 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-02 21:17:13,195 - core.api_fastapi - INFO - REQ: GET /
+2026-04-02 21:17:13,213 - core.api_fastapi - INFO - REQ: POST /api/tts/stop
+2026-04-02 21:17:14,170 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:17:14,183 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-02 21:17:14,184 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-02 21:17:14,189 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-02 21:17:14,212 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:17:14,214 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:17:14,551 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:17:14,552 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-02 21:17:14,586 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-02 21:17:14,605 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-02 21:17:14,638 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-02 21:17:14,639 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:17:14,640 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:17:14,640 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-02 21:17:14,664 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:17:14,691 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:17:14,723 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-02 21:17:14,735 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:17:14,744 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-02 21:17:14,752 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:17:14,753 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:17:14,769 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-02 21:17:14,775 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-02 21:17:14,786 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-02 21:17:14,788 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-02 21:17:14,806 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-02 21:17:14,818 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:17:14,825 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:17:14,825 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:17:14,838 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:17:14,865 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-02 21:17:14,867 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-02 21:20:21,155 - __main__ - INFO - Shutdown signal received...
+2026-04-02 21:20:21,156 - __main__ - INFO - Stopping voice chat system...
+2026-04-02 21:20:21,329 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-02 21:20:23,285 - core.settings_manager - INFO - File watcher stopped
+2026-04-02 21:20:23,286 - core.settings_manager - INFO - File watcher stopped
+2026-04-02 21:20:23,309 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-02 21:20:25,322 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-02 21:34:54,937 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-02 21:34:54,939 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-02 21:34:54,966 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-02 21:34:54,967 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-02 21:34:57,587 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-02 21:34:57,587 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-02 21:34:57,589 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-02 21:34:58,034 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-02 21:34:58,036 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-02 21:34:58,424 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-02 21:34:58,490 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-02 21:34:58,490 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-02 21:34:58,490 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-02 21:34:58,491 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-02 21:34:58,491 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-02 21:34:58,492 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-02 21:34:58,492 - __main__ - INFO - TTS disabled
+2026-04-02 21:34:58,492 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-02 21:34:58,493 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-02 21:34:58,532 - core.chat.history - INFO - Loaded chat 'default' with 4 messages
+2026-04-02 21:34:58,532 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-02 21:34:58,534 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-02 21:34:58,536 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-02 21:34:58,538 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-02 21:34:58,540 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-02 21:34:58,576 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-02 21:34:58,775 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-02 21:34:58,776 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-02 21:34:58,778 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-02 21:34:58,779 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-02 21:34:58,780 - core.chat.function_manager - ERROR - Failed to load function module 'web': No module named 'bs4'
+2026-04-02 21:34:58,781 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-02 21:34:58,782 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-02 21:34:58,782 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-02 21:34:58,784 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-02 21:34:58,785 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-02 21:34:58,785 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-02 21:34:58,786 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-02 21:34:58,787 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-02 21:34:58,788 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 33 FUNCTIONS
+2026-04-02 21:34:58,799 - __main__ - INFO - Applied toolset on startup: all
+2026-04-02 21:34:58,799 - __main__ - INFO - Applied chat settings on startup
+2026-04-02 21:34:58,800 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-02 21:34:58,802 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-02 21:34:58,803 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-02 21:34:58,804 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-02 21:34:58,828 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-02 21:34:58,905 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-02 21:34:58,921 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 6 tools registered
+2026-04-02 21:34:58,922 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-02 21:34:58,922 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-02 21:34:58,924 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-02 21:34:58,925 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-02 21:34:58,927 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-02 21:34:58,929 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-02 21:34:58,930 - __main__ - INFO - System init took: 827.8ms
+2026-04-02 21:34:58,931 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-02 21:34:58,931 - __main__ - INFO - Voice components are running.
+2026-04-02 21:34:58,932 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-02 21:34:58,938 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-02 21:34:58,938 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-02 21:34:58,941 - __main__ - INFO - Continuity scheduler started
+2026-04-02 21:34:58,943 - core.settings_manager - INFO - File watcher started
+2026-04-02 21:34:58,943 - core.settings_manager - INFO - File watcher thread started
+2026-04-02 21:34:58,946 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-02 21:34:58,946 - __main__ - INFO - Prompt file watcher started
+2026-04-02 21:34:58,947 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-02 21:34:58,947 - __main__ - INFO - Toolset file watcher started
+2026-04-02 21:34:58,948 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-02 21:34:59,009 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-02 21:35:53,225 - core.api_fastapi - INFO - REQ: GET /
+2026-04-02 21:35:54,389 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:35:54,400 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-02 21:35:54,405 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-02 21:35:54,411 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-02 21:35:54,435 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:35:54,442 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:35:54,809 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:35:54,811 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-02 21:35:54,820 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-02 21:35:54,870 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-02 21:35:54,880 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-02 21:35:54,884 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:35:54,887 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:35:54,929 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-02 21:35:54,929 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:35:54,930 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:35:54,960 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-02 21:35:54,989 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:35:54,993 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:35:55,000 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-02 21:35:55,018 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:35:55,029 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-02 21:35:55,043 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-02 21:35:55,056 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-02 21:35:55,060 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-02 21:35:55,076 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-02 21:35:55,079 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:35:55,094 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:35:55,103 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:35:55,104 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:35:55,127 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-02 21:35:55,129 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-02 21:36:16,635 - core.event_bus - INFO - Async subscriber disconnected: async_sub_1
+2026-04-02 21:36:17,281 - core.api_fastapi - INFO - REQ: GET /
+2026-04-02 21:36:17,283 - core.api_fastapi - INFO - REQ: POST /api/tts/stop
+2026-04-02 21:36:17,699 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:36:17,856 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:36:17,860 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:36:17,886 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-02 21:36:17,888 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-02 21:36:17,909 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-02 21:36:17,944 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-02 21:36:17,950 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:36:17,964 - core.event_bus - INFO - New async subscriber: async_sub_2 (replay=False) — total: 1
+2026-04-02 21:36:17,967 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:36:17,998 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-02 21:36:18,003 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-02 21:36:18,019 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-02 21:36:18,030 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-02 21:36:18,050 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-02 21:36:18,059 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-02 21:36:18,083 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-02 21:36:18,085 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-02 21:36:18,103 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-02 21:36:18,112 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-02 21:36:18,130 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-02 21:36:18,132 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-02 21:36:18,149 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-02 21:36:18,151 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:36:18,163 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:36:18,196 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-02 21:36:18,198 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-02 21:37:37,909 - core.api_fastapi - INFO - REQ: POST /api/chat/stream
+2026-04-02 21:37:37,910 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:37:37,914 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:37:37,920 - core.routes.chat - INFO - [CHAT-STREAM] Request received at 1775191057.921
+2026-04-02 21:37:37,922 - core.chat.chat_streaming - INFO - [START] [STREAMING START] cancel_flag=False, prefill=False, skip_user=False, images=0, files=0
+2026-04-02 21:37:37,934 - core.chat.chat - INFO - [SPICE] Spice disabled — cleared and reassembled prompt
+2026-04-02 21:37:37,935 - core.chat.chat - INFO - [STORY] _get_system_prompt: enabled=False, engine_exists=False
+2026-04-02 21:37:38,043 - core.chat.llm_providers.openai_compat - INFO - OpenAI-compat provider initialized: http://127.0.0.1:1234/v1
+2026-04-02 21:37:38,044 - core.chat.llm_providers - INFO - Created provider 'lmstudio' [openai]
+2026-04-02 21:37:39,099 - openai._base_client - INFO - Retrying request to /models in 0.384406 seconds
+2026-04-02 21:37:39,796 - openai._base_client - INFO - Retrying request to /models in 0.981744 seconds
+2026-04-02 21:37:41,116 - core.chat.llm_providers.claude - INFO - Claude provider initialized: https://api.anthropic.com
+2026-04-02 21:37:41,116 - core.chat.llm_providers - INFO - Created provider 'claude' [claude]
+2026-04-02 21:37:42,268 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:37:42,303 - core.chat.llm_providers - INFO - Selected provider 'claude' (healthy)
+2026-04-02 21:37:42,304 - core.chat.chat - INFO - Auto mode: using 'claude' (claude-sonnet-4-5)
+2026-04-02 21:37:42,305 - core.chat.chat_streaming - INFO - --- Streaming Iteration 1/7 ---
+2026-04-02 21:37:42,306 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:37:42,306 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:37:44,093 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:37:44,120 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.81s
+2026-04-02 21:37:44,758 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:37:46,696 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 4.39s
+2026-04-02 21:37:46,697 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (7 chunks)
+2026-04-02 21:37:46,697 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:37:46,697 - core.chat.chat_streaming - INFO - [TOOL] Processing 1 tool call(s)
+2026-04-02 21:37:46,708 - core.chat.function_manager - INFO - Executing function: list_tools
+2026-04-02 21:37:46,758 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:37:46,812 - core.api_fastapi - INFO - REQ: GET /api/functions
+2026-04-02 21:37:46,824 - core.chat.chat_streaming - INFO - [OK] [STREAMING] Tool list_tools executed successfully
+2026-04-02 21:37:46,846 - core.chat.chat_streaming - INFO - --- Streaming Iteration 2/7 ---
+2026-04-02 21:37:46,848 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:37:46,848 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:37:46,888 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:37:49,284 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:37:49,288 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 2.44s
+2026-04-02 21:37:52,466 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 5.62s
+2026-04-02 21:37:52,467 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (6 chunks)
+2026-04-02 21:37:52,467 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:37:52,469 - core.chat.chat_streaming - INFO - [OK] Final response received after 2 iteration(s)
+2026-04-02 21:37:52,479 - core.chat.chat_streaming - INFO - [CLEANUP] [STREAMING FINALLY] Cleaning up, cancel_flag=False
+2026-04-02 21:37:52,480 - core.routes.chat - INFO - STREAMING COMPLETE: 17 chunks, ephemeral=False
+2026-04-02 21:37:52,593 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:37:52,613 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:37:52,620 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:37:52,990 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:37:58,788 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:38:17,055 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:38:17,975 - core.api_fastapi - INFO - REQ: POST /api/history/messages/remove-from-assistant
+2026-04-02 21:38:17,979 - core.chat.history - INFO - Deleted 7 messages from assistant at index 1
+2026-04-02 21:38:17,991 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:38:18,016 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:38:18,099 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:38:18,116 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:38:31,661 - core.api_fastapi - INFO - REQ: POST /api/chat/stream
+2026-04-02 21:38:31,661 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:38:31,663 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:38:31,666 - core.routes.chat - INFO - [CHAT-STREAM] Request received at 1775191111.667
+2026-04-02 21:38:31,669 - core.chat.chat_streaming - INFO - [START] [STREAMING START] cancel_flag=False, prefill=False, skip_user=False, images=0, files=0
+2026-04-02 21:38:31,680 - core.chat.chat - INFO - [STORY] _get_system_prompt: enabled=False, engine_exists=False
+2026-04-02 21:38:31,720 - core.chat.llm_providers.openai_compat - INFO - OpenAI-compat provider initialized: http://127.0.0.1:1234/v1
+2026-04-02 21:38:31,721 - core.chat.llm_providers - INFO - Created provider 'lmstudio' [openai]
+2026-04-02 21:38:32,027 - openai._base_client - INFO - Retrying request to /models in 0.421115 seconds
+2026-04-02 21:38:32,759 - openai._base_client - INFO - Retrying request to /models in 0.814174 seconds
+2026-04-02 21:38:33,913 - core.chat.llm_providers.claude - INFO - Claude provider initialized: https://api.anthropic.com
+2026-04-02 21:38:33,914 - core.chat.llm_providers - INFO - Created provider 'claude' [claude]
+2026-04-02 21:38:36,676 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:38:36,678 - core.chat.llm_providers - INFO - Selected provider 'claude' (healthy)
+2026-04-02 21:38:36,678 - core.chat.chat - INFO - Auto mode: using 'claude' (claude-sonnet-4-5)
+2026-04-02 21:38:36,679 - core.chat.chat_streaming - INFO - --- Streaming Iteration 1/7 ---
+2026-04-02 21:38:36,680 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:38:36,681 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:38:38,752 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:38:38,769 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 2.09s
+2026-04-02 21:38:39,405 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:38:40,039 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 3.36s
+2026-04-02 21:38:40,040 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (7 chunks)
+2026-04-02 21:38:40,040 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:38:40,041 - core.chat.chat_streaming - INFO - [TOOL] Processing 1 tool call(s)
+2026-04-02 21:38:40,048 - core.chat.function_manager - INFO - Executing function: list_tools
+2026-04-02 21:38:40,102 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-02 21:38:40,165 - core.api_fastapi - INFO - REQ: GET /api/functions
+2026-04-02 21:38:40,174 - core.chat.chat_streaming - INFO - [OK] [STREAMING] Tool list_tools executed successfully
+2026-04-02 21:38:40,198 - core.chat.chat_streaming - INFO - --- Streaming Iteration 2/7 ---
+2026-04-02 21:38:40,200 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:38:40,201 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:38:40,256 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:38:41,492 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:38:41,500 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.30s
+2026-04-02 21:38:45,092 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 4.89s
+2026-04-02 21:38:45,093 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (10 chunks)
+2026-04-02 21:38:45,093 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:38:45,094 - core.chat.chat_streaming - INFO - [OK] Final response received after 2 iteration(s)
+2026-04-02 21:38:45,115 - core.chat.chat_streaming - INFO - [CLEANUP] [STREAMING FINALLY] Cleaning up, cancel_flag=False
+2026-04-02 21:38:45,116 - core.routes.chat - INFO - STREAMING COMPLETE: 21 chunks, ephemeral=False
+2026-04-02 21:38:45,227 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:38:45,244 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:38:45,246 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:38:45,626 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:42:53,717 - core.api_fastapi - INFO - REQ: POST /api/chat/stream
+2026-04-02 21:42:53,719 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:42:53,723 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:42:53,726 - core.routes.chat - INFO - [CHAT-STREAM] Request received at 1775191373.726
+2026-04-02 21:42:53,729 - core.chat.chat_streaming - INFO - [START] [STREAMING START] cancel_flag=False, prefill=False, skip_user=False, images=0, files=0
+2026-04-02 21:42:53,735 - core.chat.chat - INFO - [STORY] _get_system_prompt: enabled=False, engine_exists=False
+2026-04-02 21:42:53,766 - core.chat.llm_providers.openai_compat - INFO - OpenAI-compat provider initialized: http://127.0.0.1:1234/v1
+2026-04-02 21:42:53,766 - core.chat.llm_providers - INFO - Created provider 'lmstudio' [openai]
+2026-04-02 21:42:54,081 - openai._base_client - INFO - Retrying request to /models in 0.433947 seconds
+2026-04-02 21:42:54,828 - openai._base_client - INFO - Retrying request to /models in 0.887440 seconds
+2026-04-02 21:42:56,061 - core.chat.llm_providers.claude - INFO - Claude provider initialized: https://api.anthropic.com
+2026-04-02 21:42:56,062 - core.chat.llm_providers - INFO - Created provider 'claude' [claude]
+2026-04-02 21:42:56,814 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:42:56,816 - core.chat.llm_providers - INFO - Selected provider 'claude' (healthy)
+2026-04-02 21:42:56,817 - core.chat.chat - INFO - Auto mode: using 'claude' (claude-sonnet-4-5)
+2026-04-02 21:42:56,817 - core.chat.chat_streaming - INFO - --- Streaming Iteration 1/7 ---
+2026-04-02 21:42:56,819 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:42:56,820 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:42:58,469 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:42:58,485 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.66s
+2026-04-02 21:42:58,499 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:43:00,077 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 3.26s
+2026-04-02 21:43:00,078 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (25 chunks)
+2026-04-02 21:43:00,079 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:43:00,080 - core.chat.chat_streaming - INFO - [TOOL] Processing 1 tool call(s)
+2026-04-02 21:43:00,086 - core.chat.function_manager - INFO - Executing function: create_task_plan
+2026-04-02 21:43:00,106 - core.chat.chat_streaming - INFO - [OK] [STREAMING] Tool create_task_plan executed successfully
+2026-04-02 21:43:00,131 - core.chat.chat_streaming - INFO - --- Streaming Iteration 2/7 ---
+2026-04-02 21:43:00,132 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-02 21:43:00,133 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-02 21:43:00,172 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:43:01,370 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-02 21:43:01,376 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.24s
+2026-04-02 21:43:04,072 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 3.94s
+2026-04-02 21:43:04,073 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (8 chunks)
+2026-04-02 21:43:04,073 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-02 21:43:04,074 - core.chat.chat_streaming - INFO - [OK] Final response received after 2 iteration(s)
+2026-04-02 21:43:04,085 - core.chat.chat_streaming - INFO - [CLEANUP] [STREAMING FINALLY] Cleaning up, cancel_flag=False
+2026-04-02 21:43:04,085 - core.routes.chat - INFO - STREAMING COMPLETE: 18 chunks, ephemeral=False
+2026-04-02 21:43:04,207 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-02 21:43:04,229 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-02 21:43:04,233 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-02 21:43:04,597 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-02 21:49:30,696 - __main__ - INFO - Shutdown signal received...
+2026-04-02 21:49:30,698 - __main__ - INFO - Stopping voice chat system...
+2026-04-02 21:49:30,791 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-02 21:49:31,512 - core.settings_manager - INFO - File watcher stopped
+2026-04-02 21:49:31,513 - core.settings_manager - INFO - File watcher stopped
+2026-04-02 21:49:31,588 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-02 21:49:33,588 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped

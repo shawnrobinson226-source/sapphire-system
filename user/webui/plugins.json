@@ -1,0 +1,7 @@
+{
+  "enabled": [
+    "voice-commands",
+    "vanta-execution",
+    "axis-integration"
+  ]
+}

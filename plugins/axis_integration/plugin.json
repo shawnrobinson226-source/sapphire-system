@@ -1,0 +1,10 @@
+{
+  "name": "axis-integration",
+  "version": "1.0.0",
+  "description": "AXIS (VANTA) API integration plugin",
+  "capabilities": {
+    "tools": [
+      "axis_tools.py"
+    ]
+  }
+}

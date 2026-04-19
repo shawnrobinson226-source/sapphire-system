@@ -1,0 +1,1142 @@
+2026-04-03 13:25:53,339 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 13:25:53,343 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 13:25:53,383 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 13:25:53,413 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 13:25:56,500 - __main__ - CRITICAL - FATAL: Import error during startup: cannot import name 'Request' from 'core.routes.system_v1_api' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\routes\system_v1_api.py)
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 11, in <module>
+    from core.routes.system_v1_api import router as system_v1_api_router, Request, Depends, HTTPException
+ImportError: cannot import name 'Request' from 'core.routes.system_v1_api' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\routes\system_v1_api.py)
+2026-04-03 13:25:58,944 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 13:25:58,945 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 13:25:58,969 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 13:25:58,971 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 13:26:01,358 - __main__ - CRITICAL - FATAL: Import error during startup: cannot import name 'Request' from 'core.routes.system_v1_api' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\routes\system_v1_api.py)
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 11, in <module>
+    from core.routes.system_v1_api import router as system_v1_api_router, Request, Depends, HTTPException
+ImportError: cannot import name 'Request' from 'core.routes.system_v1_api' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\routes\system_v1_api.py)
+2026-04-03 13:26:05,832 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 13:26:05,833 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 13:26:05,857 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 13:26:05,859 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 13:26:08,225 - __main__ - CRITICAL - FATAL: Import error during startup: cannot import name 'Request' from 'core.routes.system_v1_api' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\routes\system_v1_api.py)
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 11, in <module>
+    from core.routes.system_v1_api import router as system_v1_api_router, Request, Depends, HTTPException
+ImportError: cannot import name 'Request' from 'core.routes.system_v1_api' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\routes\system_v1_api.py)
+2026-04-03 13:39:15,448 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 13:39:15,449 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 13:39:15,505 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 13:39:15,506 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 13:39:17,975 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 13:39:17,980 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 13:39:18,008 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 13:39:18,455 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 13:39:18,467 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 13:39:19,047 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 13:39:19,111 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 13:39:19,112 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 13:39:19,113 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 13:39:19,113 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 13:39:19,114 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 13:39:19,114 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 13:39:19,114 - __main__ - INFO - TTS disabled
+2026-04-03 13:39:19,115 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 13:39:19,115 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 13:39:19,150 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 13:39:19,150 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 13:39:19,153 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 13:39:19,155 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 13:39:19,157 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 13:39:19,160 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 13:39:19,165 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 13:39:19,353 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 13:39:19,354 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 13:39:19,357 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 13:39:19,359 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 13:39:19,363 - core.chat.function_manager - ERROR - Failed to load function module 'web': No module named 'bs4'
+2026-04-03 13:39:19,364 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 13:39:19,365 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 13:39:19,365 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 13:39:19,366 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 13:39:19,366 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 13:39:19,367 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 13:39:19,367 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 13:39:19,367 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 13:39:19,368 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 33 FUNCTIONS
+2026-04-03 13:39:19,368 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 13:39:19,369 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 13:39:19,369 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 13:39:19,370 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 13:39:19,370 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 13:39:19,370 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 13:39:19,395 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 13:39:20,108 - core.plugin_loader - WARNING - [PLUGINS] BLOCKED vanta-execution: unsigned plugin (sideloading disabled)
+2026-04-03 13:39:20,108 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 13:39:20,110 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 13:39:20,111 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 13:39:20,111 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 13:39:20,114 - core.plugin_loader - INFO - [PLUGINS] Blocked plugins auto-disabled: ['vanta-execution']
+2026-04-03 13:39:20,114 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 1 loaded
+2026-04-03 13:39:20,115 - __main__ - INFO - System init took: 1581.2ms
+2026-04-03 13:39:20,116 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 13:39:20,116 - __main__ - INFO - Voice components are running.
+2026-04-03 13:39:20,116 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 13:39:20,122 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 13:39:20,123 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 13:39:20,126 - __main__ - INFO - Continuity scheduler started
+2026-04-03 13:39:20,126 - core.settings_manager - INFO - File watcher started
+2026-04-03 13:39:20,126 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 13:39:20,127 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 13:39:20,127 - __main__ - INFO - Prompt file watcher started
+2026-04-03 13:39:20,128 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 13:39:20,128 - __main__ - INFO - Toolset file watcher started
+2026-04-03 13:39:20,130 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 13:39:20,271 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 13:39:35,585 - core.api_fastapi - INFO - REQ: GET /
+2026-04-03 13:39:37,487 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 13:39:37,527 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 13:39:37,558 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 13:39:37,601 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 13:39:37,641 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 13:39:37,643 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 13:39:38,023 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 13:39:38,024 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-03 13:39:38,060 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-03 13:39:38,102 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 13:39:38,113 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 13:39:38,200 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 13:39:38,242 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 13:39:38,300 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 13:39:38,377 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 13:39:38,504 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 13:39:38,575 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 13:39:38,579 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 13:39:38,592 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 13:39:38,630 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 13:39:38,635 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 13:39:38,642 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 13:39:38,647 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 13:39:38,740 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 13:39:38,746 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 13:39:38,751 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 13:39:38,775 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 13:39:38,814 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 13:39:38,842 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 13:39:38,870 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 13:39:38,906 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 13:39:38,909 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 13:39:39,168 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 13:39:39,717 - core.api_fastapi - INFO - REQ: GET /api/settings
+2026-04-03 13:39:39,736 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 13:39:39,755 - core.api_fastapi - INFO - REQ: GET /api/setup/check-packages
+2026-04-03 14:02:55,054 - __main__ - INFO - Shutdown signal received...
+2026-04-03 14:02:55,054 - __main__ - INFO - Stopping voice chat system...
+2026-04-03 14:02:55,265 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-03 14:02:56,915 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 14:02:56,916 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 14:02:57,148 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-03 14:02:59,014 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-03 14:17:40,150 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 14:17:40,151 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 14:17:40,177 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 14:17:40,178 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 14:17:42,582 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 14:17:42,583 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 14:17:42,584 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 14:17:42,950 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 14:17:42,951 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 14:17:43,293 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 14:17:43,326 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 14:17:43,326 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 14:17:43,327 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 14:17:43,327 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 14:17:43,328 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 14:17:43,328 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 14:17:43,329 - __main__ - INFO - TTS disabled
+2026-04-03 14:17:43,329 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 14:17:43,329 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 14:17:43,353 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 14:17:43,354 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 14:17:43,358 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 14:17:43,360 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 14:17:43,362 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 14:17:43,365 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 14:17:43,370 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 14:17:43,563 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 14:17:43,564 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 14:17:43,594 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 14:17:43,641 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 14:17:43,678 - core.chat.function_manager - ERROR - Failed to load function module 'web': No module named 'bs4'
+2026-04-03 14:17:43,707 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 14:17:43,724 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 14:17:43,755 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 14:17:43,792 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 14:17:43,809 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 14:17:43,840 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 14:17:43,842 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 14:17:43,843 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 14:17:43,843 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 33 FUNCTIONS
+2026-04-03 14:17:43,844 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 14:17:43,844 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 14:17:43,845 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 14:17:43,845 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 14:17:43,845 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 14:17:43,846 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 14:17:43,915 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 14:17:44,013 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 14:17:44,014 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 14:17:44,017 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 14:17:44,017 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 14:17:44,017 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 1 loaded
+2026-04-03 14:17:44,018 - __main__ - INFO - System init took: 1021.8ms
+2026-04-03 14:17:44,018 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 14:17:44,019 - __main__ - INFO - Voice components are running.
+2026-04-03 14:17:44,019 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 14:17:44,024 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 14:17:44,024 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 14:17:44,025 - __main__ - INFO - Continuity scheduler started
+2026-04-03 14:17:44,026 - core.settings_manager - INFO - File watcher started
+2026-04-03 14:17:44,026 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 14:17:44,027 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 14:17:44,028 - __main__ - INFO - Prompt file watcher started
+2026-04-03 14:17:44,028 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 14:17:44,028 - __main__ - INFO - Toolset file watcher started
+2026-04-03 14:17:44,029 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 14:17:44,068 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 14:17:52,220 - core.api_fastapi - INFO - REQ: GET /
+2026-04-03 14:17:53,318 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 14:17:53,329 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 14:17:53,331 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 14:17:53,339 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 14:17:53,371 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 14:17:53,377 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 14:17:53,709 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 14:17:53,714 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-03 14:17:53,728 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-03 14:17:53,781 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 14:17:53,807 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 14:17:53,807 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 14:17:53,815 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 14:17:53,850 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 14:17:53,859 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 14:17:53,876 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 14:17:53,918 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 14:17:53,933 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 14:17:53,940 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 14:17:53,951 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 14:17:53,962 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 14:17:53,970 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 14:17:53,982 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 14:17:53,987 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 14:17:53,995 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 14:17:54,006 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 14:17:54,016 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 14:17:54,021 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 14:17:54,030 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 14:17:54,033 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 14:17:54,089 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 14:17:54,102 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 14:17:54,325 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 14:17:54,843 - core.api_fastapi - INFO - REQ: GET /api/settings
+2026-04-03 14:17:54,861 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 14:17:54,882 - core.api_fastapi - INFO - REQ: GET /api/setup/check-packages
+2026-04-03 14:26:37,032 - __main__ - INFO - Shutdown signal received...
+2026-04-03 14:26:37,032 - __main__ - INFO - Stopping voice chat system...
+2026-04-03 14:26:37,459 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-03 14:26:38,249 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 14:26:38,250 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 14:26:38,362 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-03 14:26:40,293 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-03 14:44:52,198 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 14:44:52,199 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 14:44:52,224 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 14:44:52,225 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 14:44:54,545 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 14:44:54,545 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 14:44:54,546 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 14:44:54,911 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 14:44:54,912 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 14:44:55,309 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 14:44:55,347 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 14:44:55,348 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 14:44:55,348 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 14:44:55,349 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 14:44:55,349 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 14:44:55,350 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 14:44:55,350 - __main__ - INFO - TTS disabled
+2026-04-03 14:44:55,350 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 14:44:55,351 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 14:44:55,367 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 14:44:55,367 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 14:44:55,370 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 14:44:55,372 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 14:44:55,374 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 14:44:55,376 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 14:44:55,379 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 14:44:55,533 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 14:44:55,533 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 14:44:55,535 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 14:44:55,536 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 14:44:55,538 - core.chat.function_manager - ERROR - Failed to load function module 'web': No module named 'bs4'
+2026-04-03 14:44:55,538 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 14:44:55,539 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 14:44:55,540 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 14:44:55,542 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 14:44:55,542 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 14:44:55,542 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 14:44:55,543 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 14:44:55,543 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 14:44:55,544 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 33 FUNCTIONS
+2026-04-03 14:44:55,545 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 14:44:55,545 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 14:44:55,545 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 14:44:55,546 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 14:44:55,546 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 14:44:55,546 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 14:44:55,574 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 14:44:55,970 - core.plugin_verify - INFO - [PLUGIN-VERIFY] Fetched 2 authorized keys from remote
+2026-04-03 14:44:55,984 - core.plugin_loader - ERROR - [PLUGINS] BLOCKED vanta-execution: signature verification FAILED — possible tampering
+2026-04-03 14:44:55,985 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 14:44:55,987 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 14:44:55,988 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 14:44:55,989 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 14:44:55,990 - core.plugin_loader - INFO - [PLUGINS] Blocked plugins auto-disabled: ['vanta-execution']
+2026-04-03 14:44:55,991 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 1 loaded
+2026-04-03 14:44:55,992 - __main__ - INFO - System init took: 1022.3ms
+2026-04-03 14:44:55,994 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 14:44:55,995 - __main__ - INFO - Voice components are running.
+2026-04-03 14:44:55,995 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 14:44:56,000 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 14:44:56,000 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 14:44:56,001 - __main__ - INFO - Continuity scheduler started
+2026-04-03 14:44:56,003 - core.settings_manager - INFO - File watcher started
+2026-04-03 14:44:56,003 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 14:44:56,004 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 14:44:56,004 - __main__ - INFO - Prompt file watcher started
+2026-04-03 14:44:56,005 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 14:44:56,006 - __main__ - INFO - Toolset file watcher started
+2026-04-03 14:44:56,007 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 14:44:56,051 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 14:44:59,274 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 14:44:59,278 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 14:44:59,526 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 14:44:59,537 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 14:44:59,539 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 14:44:59,546 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 14:44:59,561 - core.api_fastapi - INFO - REQ: GET /api/chats
+2026-04-03 14:44:59,576 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 14:44:59,581 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 14:44:59,590 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 14:44:59,614 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 14:44:59,623 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 14:44:59,632 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 14:44:59,643 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 14:44:59,650 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 14:44:59,655 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 14:44:59,663 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 14:44:59,670 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 14:44:59,675 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 14:44:59,684 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 14:44:59,690 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 14:44:59,694 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 14:44:59,700 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 14:44:59,706 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 14:44:59,932 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 14:44:59,937 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 14:44:59,946 - core.api_fastapi - INFO - REQ: GET /api/personas/sapphire/avatar
+2026-04-03 14:45:00,028 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 14:45:00,043 - core.api_fastapi - INFO - REQ: GET /api/personas/cobalt/avatar
+2026-04-03 14:45:00,060 - core.api_fastapi - INFO - REQ: GET /api/personas/anita/avatar
+2026-04-03 14:45:00,079 - core.api_fastapi - INFO - REQ: GET /api/personas/claude/avatar
+2026-04-03 14:45:00,098 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 14:45:00,104 - core.api_fastapi - INFO - REQ: GET /api/personas/lovelace/avatar
+2026-04-03 14:45:00,123 - core.api_fastapi - INFO - REQ: GET /api/personas/einstein/avatar
+2026-04-03 14:45:00,142 - core.api_fastapi - INFO - REQ: GET /api/personas/nexus/avatar
+2026-04-03 14:45:00,161 - core.api_fastapi - INFO - REQ: GET /api/personas/cantos/avatar
+2026-04-03 14:45:00,181 - core.api_fastapi - INFO - REQ: GET /api/personas/yuki/avatar
+2026-04-03 14:45:00,199 - core.api_fastapi - INFO - REQ: GET /api/personas/eddie/avatar
+2026-04-03 14:45:00,217 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 14:45:09,707 - core.event_bus - INFO - Async subscriber disconnected: async_sub_1
+2026-04-03 14:45:09,715 - core.api_fastapi - INFO - REQ: POST /api/tts/stop
+2026-04-03 14:45:09,730 - core.api_fastapi - INFO - REQ: GET /
+2026-04-03 14:45:10,749 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 14:45:10,772 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 14:45:10,776 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 14:45:10,815 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 14:45:10,817 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-03 14:45:10,836 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-03 14:45:10,881 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 14:45:10,887 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 14:45:10,897 - core.event_bus - INFO - New async subscriber: async_sub_2 (replay=False) — total: 1
+2026-04-03 14:45:10,900 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 14:45:10,932 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 14:45:10,937 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 14:45:10,969 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 14:45:10,987 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 14:45:11,033 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 14:45:11,046 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 14:45:11,054 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 14:45:11,064 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 14:45:11,080 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 14:45:11,085 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 14:45:11,101 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 14:45:11,109 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 14:45:11,118 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 14:45:11,135 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 14:45:11,149 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 14:45:11,154 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 14:45:11,166 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 14:45:11,419 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 14:45:11,943 - core.api_fastapi - INFO - REQ: GET /api/settings
+2026-04-03 14:45:11,961 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 14:45:11,974 - core.api_fastapi - INFO - REQ: GET /api/setup/check-packages
+2026-04-03 14:52:57,186 - __main__ - INFO - Shutdown signal received...
+2026-04-03 14:52:57,187 - __main__ - INFO - Stopping voice chat system...
+2026-04-03 14:52:57,765 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-03 14:52:58,237 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 14:52:58,238 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 14:52:58,270 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-03 14:53:00,258 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-03 14:55:30,140 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 14:55:30,141 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 14:55:30,166 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 14:55:30,168 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 14:55:32,309 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 14:55:32,310 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 14:55:32,311 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 14:55:32,658 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 14:55:32,659 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 14:55:33,017 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 14:55:33,079 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 14:55:33,080 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 14:55:33,080 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 14:55:33,081 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 14:55:33,081 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 14:55:33,081 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 14:55:33,082 - __main__ - INFO - TTS disabled
+2026-04-03 14:55:33,082 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 14:55:33,082 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 14:55:33,100 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 14:55:33,100 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 14:55:33,102 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 14:55:33,104 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 14:55:33,107 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 14:55:33,109 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 14:55:33,112 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 14:55:33,261 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 14:55:33,262 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 14:55:33,264 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 14:55:33,265 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 14:55:33,267 - core.chat.function_manager - ERROR - Failed to load function module 'web': No module named 'bs4'
+2026-04-03 14:55:33,267 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 14:55:33,268 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 14:55:33,268 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 14:55:33,269 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 14:55:33,269 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 14:55:33,270 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 14:55:33,270 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 14:55:33,271 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 14:55:33,271 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 33 FUNCTIONS
+2026-04-03 14:55:33,273 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 14:55:33,273 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 14:55:33,274 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 14:55:33,274 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 14:55:33,274 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 14:55:33,275 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 14:55:33,299 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 14:55:33,680 - core.plugin_verify - INFO - [PLUGIN-VERIFY] Fetched 2 authorized keys from remote
+2026-04-03 14:55:33,692 - core.plugin_loader - ERROR - [PLUGINS] BLOCKED vanta-execution: signature verification FAILED — possible tampering
+2026-04-03 14:55:33,693 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 14:55:33,695 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 14:55:33,697 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 14:55:33,698 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 14:55:33,700 - core.plugin_loader - INFO - [PLUGINS] Blocked plugins auto-disabled: ['vanta-execution']
+2026-04-03 14:55:33,703 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 1 loaded
+2026-04-03 14:55:33,704 - __main__ - INFO - System init took: 994.9ms
+2026-04-03 14:55:33,706 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 14:55:33,706 - __main__ - INFO - Voice components are running.
+2026-04-03 14:55:33,706 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 14:55:33,715 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 14:55:33,715 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 14:55:33,716 - __main__ - INFO - Continuity scheduler started
+2026-04-03 14:55:33,717 - core.settings_manager - INFO - File watcher started
+2026-04-03 14:55:33,717 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 14:55:33,718 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 14:55:33,719 - __main__ - INFO - Prompt file watcher started
+2026-04-03 14:55:33,720 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 14:55:33,722 - __main__ - INFO - Toolset file watcher started
+2026-04-03 14:55:33,723 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 14:55:33,770 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 14:56:50,279 - core.api_fastapi - INFO - REQ: GET /
+2026-04-03 14:56:51,423 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 14:56:51,437 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 14:56:51,440 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 14:56:51,450 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 14:56:51,470 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 14:56:51,473 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 14:56:51,845 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 14:56:51,853 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-03 14:56:51,864 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-03 14:56:51,914 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 14:56:51,920 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 14:56:51,921 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 14:56:51,921 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 14:56:52,000 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 14:56:52,001 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 14:56:52,002 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 14:56:52,033 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 14:56:52,063 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 14:56:52,067 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 14:56:52,073 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 14:56:52,088 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 14:56:52,089 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 14:56:52,116 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 14:56:52,123 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 14:56:52,124 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 14:56:52,138 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 14:56:52,139 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 14:56:52,153 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 14:56:52,168 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 14:56:52,168 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 14:56:52,188 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 14:56:52,190 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 14:56:52,445 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 14:56:52,965 - core.api_fastapi - INFO - REQ: GET /api/settings
+2026-04-03 14:56:52,977 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 14:56:52,991 - core.api_fastapi - INFO - REQ: GET /api/setup/check-packages
+2026-04-03 15:03:43,180 - __main__ - INFO - Shutdown signal received...
+2026-04-03 15:03:43,180 - __main__ - INFO - Stopping voice chat system...
+2026-04-03 15:03:44,105 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-03 15:03:45,949 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 15:03:45,950 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 15:03:46,078 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-03 15:03:48,044 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-03 15:12:49,086 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 15:12:49,087 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 15:12:49,115 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 15:12:49,116 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 15:12:51,558 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 15:12:51,560 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 15:12:51,562 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 15:12:51,981 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 15:12:51,983 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 15:12:52,320 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 15:12:52,387 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 15:12:52,387 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 15:12:52,388 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 15:12:52,388 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 15:12:52,388 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 15:12:52,389 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 15:12:52,389 - __main__ - INFO - TTS disabled
+2026-04-03 15:12:52,389 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 15:12:52,390 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 15:12:52,409 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 15:12:52,410 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 15:12:52,412 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 15:12:52,415 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 15:12:52,417 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 15:12:52,418 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 15:12:52,421 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 15:12:52,592 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 15:12:52,592 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 15:12:52,594 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 15:12:52,595 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 15:12:52,710 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-03 15:12:52,711 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 15:12:52,711 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 15:12:52,712 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 15:12:52,712 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 15:12:52,712 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 15:12:52,713 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 15:12:52,713 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 15:12:52,714 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 15:12:52,714 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-03 15:12:52,714 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 15:12:52,714 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 15:12:52,715 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 15:12:52,715 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 15:12:52,715 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 15:12:52,716 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 15:12:52,742 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 15:12:53,107 - core.plugin_verify - INFO - [PLUGIN-VERIFY] Fetched 2 authorized keys from remote
+2026-04-03 15:12:53,117 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 15:12:53,119 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 15:12:53,122 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 15:12:53,122 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 15:12:53,122 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 1 loaded
+2026-04-03 15:12:53,123 - __main__ - INFO - System init took: 1089.3ms
+2026-04-03 15:12:53,125 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 15:12:53,126 - __main__ - INFO - Voice components are running.
+2026-04-03 15:12:53,127 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 15:12:53,144 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 15:12:53,145 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 15:12:53,146 - __main__ - INFO - Continuity scheduler started
+2026-04-03 15:12:53,147 - core.settings_manager - INFO - File watcher started
+2026-04-03 15:12:53,147 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 15:12:53,152 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 15:12:53,153 - __main__ - INFO - Prompt file watcher started
+2026-04-03 15:12:53,154 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 15:12:53,154 - __main__ - INFO - Toolset file watcher started
+2026-04-03 15:12:53,155 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 15:12:53,201 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 15:12:58,466 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 15:12:58,710 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 15:12:58,742 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 15:12:58,751 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 15:12:58,815 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 15:13:02,048 - core.api_fastapi - INFO - REQ: POST /api/tts/stop
+2026-04-03 15:13:02,054 - core.api_fastapi - INFO - REQ: GET /
+2026-04-03 15:13:03,108 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 15:13:03,121 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 15:13:03,135 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 15:13:03,170 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 15:13:03,173 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 15:13:03,216 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 15:13:03,218 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-03 15:13:03,239 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-03 15:13:03,257 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 15:13:03,265 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 15:13:03,282 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 15:13:03,310 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 15:13:03,312 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 15:13:03,342 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 15:13:03,347 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 15:13:03,377 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 15:13:03,394 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 15:13:03,408 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 15:13:03,418 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 15:13:03,430 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 15:13:03,444 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 15:13:03,452 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 15:13:03,462 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 15:13:03,473 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 15:13:03,488 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 15:13:03,497 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 15:13:03,508 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 15:13:03,515 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 15:13:03,521 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 15:13:03,545 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 15:13:03,547 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 15:13:03,830 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 15:13:04,358 - core.api_fastapi - INFO - REQ: GET /api/settings
+2026-04-03 15:13:04,369 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 15:13:04,380 - core.api_fastapi - INFO - REQ: GET /api/setup/check-packages
+2026-04-03 15:15:58,077 - __main__ - INFO - Shutdown signal received...
+2026-04-03 15:15:58,078 - __main__ - INFO - Stopping voice chat system...
+2026-04-03 15:15:58,743 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-03 15:15:59,699 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 15:15:59,700 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 15:15:59,707 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-03 15:16:01,703 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-03 16:03:46,217 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 16:03:46,218 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 16:03:46,242 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 16:03:46,244 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 16:03:48,664 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 16:03:48,665 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 16:03:48,666 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 16:03:49,023 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 16:03:49,024 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 16:03:49,360 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 16:03:49,422 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 16:03:49,422 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 16:03:49,423 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 16:03:49,423 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 16:03:49,423 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 16:03:49,424 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 16:03:49,424 - __main__ - INFO - TTS disabled
+2026-04-03 16:03:49,425 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 16:03:49,425 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 16:03:49,441 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 16:03:49,442 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 16:03:49,445 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 16:03:49,447 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 16:03:49,449 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 16:03:49,452 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 16:03:49,458 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 16:03:49,664 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 16:03:49,665 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 16:03:49,667 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 16:03:49,668 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 16:03:49,769 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-03 16:03:49,770 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 16:03:49,771 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 16:03:49,771 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 16:03:49,772 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 16:03:49,772 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 16:03:49,772 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 16:03:49,773 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 16:03:49,773 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 16:03:49,773 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-03 16:03:49,774 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 16:03:49,774 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 16:03:49,775 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 16:03:49,775 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 16:03:49,775 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 16:03:49,776 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 16:03:49,799 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 16:03:49,883 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-03 16:03:49,898 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 6 tools registered
+2026-04-03 16:03:49,899 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-03 16:03:49,899 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 16:03:49,901 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 16:03:49,904 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 16:03:49,905 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 16:03:49,906 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-03 16:03:49,906 - __main__ - INFO - System init took: 834.0ms
+2026-04-03 16:03:49,907 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 16:03:49,907 - __main__ - INFO - Voice components are running.
+2026-04-03 16:03:49,907 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 16:03:49,913 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 16:03:49,913 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 16:03:49,915 - __main__ - INFO - Continuity scheduler started
+2026-04-03 16:03:49,916 - core.settings_manager - INFO - File watcher started
+2026-04-03 16:03:49,916 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 16:03:49,917 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 16:03:49,918 - __main__ - INFO - Prompt file watcher started
+2026-04-03 16:03:49,918 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 16:03:49,919 - __main__ - INFO - Toolset file watcher started
+2026-04-03 16:03:49,920 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 16:03:49,960 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 16:03:58,484 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 16:03:58,487 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 16:03:58,740 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 16:03:58,749 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 16:03:58,750 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 16:03:58,755 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 16:03:58,769 - core.api_fastapi - INFO - REQ: GET /api/chats
+2026-04-03 16:03:58,796 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 16:03:58,807 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 16:03:58,831 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 16:03:58,849 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 16:03:58,859 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 16:03:58,869 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 16:03:58,880 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 16:03:58,889 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 16:03:58,895 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 16:03:58,900 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 16:03:58,907 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 16:03:58,916 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 16:03:58,921 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 16:03:58,927 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 16:03:58,933 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 16:03:58,940 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 16:03:59,187 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 16:03:59,200 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 16:03:59,223 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 16:03:59,229 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 16:03:59,240 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 16:03:59,311 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 17:03:21,826 - core.continuity.scheduler - INFO - [Continuity] Heartbeat: 0 enabled tasks, 120 checks since start
+2026-04-03 18:03:23,573 - core.continuity.scheduler - INFO - [Continuity] Heartbeat: 0 enabled tasks, 240 checks since start
+2026-04-03 19:03:25,581 - core.continuity.scheduler - INFO - [Continuity] Heartbeat: 0 enabled tasks, 360 checks since start
+2026-04-03 20:05:49,802 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 20:05:49,803 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 20:05:49,828 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 20:05:49,829 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 20:05:52,368 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 20:05:52,369 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 20:05:52,370 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 20:05:52,758 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 20:05:52,760 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 20:05:53,137 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 20:05:53,202 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 20:05:53,202 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 20:05:53,203 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 20:05:53,203 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 20:05:53,203 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 20:05:53,204 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 20:05:53,204 - __main__ - INFO - TTS disabled
+2026-04-03 20:05:53,205 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 20:05:53,205 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 20:05:53,230 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 20:05:53,231 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 20:05:53,233 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 20:05:53,236 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 20:05:53,240 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 20:05:53,242 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 20:05:53,245 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 20:05:53,417 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 20:05:53,418 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 20:05:53,420 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 20:05:53,421 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 20:05:53,516 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-03 20:05:53,516 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 20:05:53,517 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 20:05:53,517 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 20:05:53,518 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 20:05:53,518 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 20:05:53,519 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 20:05:53,519 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 20:05:53,520 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 20:05:53,520 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-03 20:05:53,520 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 20:05:53,521 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 20:05:53,522 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 20:05:53,522 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 20:05:53,523 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 20:05:53,523 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 20:05:53,543 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 20:05:53,619 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-03 20:05:53,634 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 6 tools registered
+2026-04-03 20:05:53,634 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-03 20:05:53,635 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 20:05:53,637 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 20:05:53,639 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 20:05:53,639 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 20:05:53,642 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-03 20:05:53,642 - __main__ - INFO - System init took: 830.9ms
+2026-04-03 20:05:53,643 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 20:05:53,646 - __main__ - INFO - Voice components are running.
+2026-04-03 20:05:53,646 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 20:05:53,653 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 20:05:53,653 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 20:05:53,654 - __main__ - INFO - Continuity scheduler started
+2026-04-03 20:05:53,655 - core.settings_manager - INFO - File watcher started
+2026-04-03 20:05:53,655 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 20:05:53,657 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 20:05:53,657 - __main__ - INFO - Prompt file watcher started
+2026-04-03 20:05:53,658 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 20:05:53,658 - __main__ - INFO - Toolset file watcher started
+2026-04-03 20:05:53,659 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 20:05:53,701 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 20:05:59,055 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 20:05:59,057 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 20:05:59,318 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 20:05:59,328 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 20:05:59,330 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 20:05:59,335 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 20:05:59,351 - core.api_fastapi - INFO - REQ: GET /api/chats
+2026-04-03 20:05:59,381 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 20:05:59,387 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 20:05:59,396 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 20:05:59,423 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 20:05:59,432 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 20:05:59,445 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 20:05:59,454 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 20:05:59,512 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 20:05:59,533 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 20:05:59,542 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 20:05:59,548 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 20:05:59,555 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 20:05:59,567 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 20:05:59,573 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 20:05:59,579 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 20:05:59,585 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 20:05:59,590 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 20:05:59,851 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 20:05:59,856 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 20:05:59,871 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 20:05:59,887 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 20:05:59,954 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 20:06:11,240 - core.event_bus - INFO - Async subscriber disconnected: async_sub_1
+2026-04-03 20:06:11,249 - core.api_fastapi - INFO - REQ: POST /api/tts/stop
+2026-04-03 20:06:11,256 - core.api_fastapi - INFO - REQ: GET /
+2026-04-03 20:06:12,222 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 20:06:12,246 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 20:06:12,247 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 20:06:12,315 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 20:06:12,320 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-03 20:06:12,325 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-03 20:06:12,349 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 20:06:12,367 - core.event_bus - INFO - New async subscriber: async_sub_2 (replay=False) — total: 1
+2026-04-03 20:06:12,380 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 20:06:12,400 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 20:06:12,433 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 20:06:12,439 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 20:06:12,445 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 20:06:12,467 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 20:06:12,480 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 20:06:12,482 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 20:06:12,514 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 20:06:12,517 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 20:06:12,518 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 20:06:12,547 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 20:06:12,552 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 20:06:12,552 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 20:06:12,578 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 20:06:12,582 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 20:06:12,583 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 20:06:12,625 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 20:06:12,628 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 20:06:12,901 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 20:06:13,418 - core.api_fastapi - INFO - REQ: GET /api/settings
+2026-04-03 20:06:13,429 - core.api_fastapi - INFO - REQ: GET /api/setup/wizard-step
+2026-04-03 20:06:13,440 - core.api_fastapi - INFO - REQ: GET /api/setup/check-packages
+2026-04-03 20:13:42,505 - __main__ - INFO - Shutdown signal received...
+2026-04-03 20:13:42,506 - __main__ - INFO - Stopping voice chat system...
+2026-04-03 20:13:42,993 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-03 20:13:44,061 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 20:13:44,062 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 20:13:44,135 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-03 20:13:46,095 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-03 20:42:28,055 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 20:42:28,056 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 20:42:28,081 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 20:42:28,082 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 20:42:30,013 - __main__ - CRITICAL - FATAL: Import error during startup: cannot import name 'app' from 'core.api_fastapi' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py)
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+ImportError: cannot import name 'app' from 'core.api_fastapi' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py)
+2026-04-03 20:42:32,439 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 20:42:32,441 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 20:42:32,462 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 20:42:32,463 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 20:42:34,436 - __main__ - CRITICAL - FATAL: Import error during startup: cannot import name 'app' from 'core.api_fastapi' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py)
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+ImportError: cannot import name 'app' from 'core.api_fastapi' (C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py)
+2026-04-03 20:59:04,553 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-03 20:59:04,554 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 20:59:04,579 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-03 20:59:04,581 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-03 20:59:07,064 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-03 20:59:07,065 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-03 20:59:07,066 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-03 20:59:07,457 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 20:59:07,458 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-03 20:59:07,798 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-03 20:59:07,862 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-03 20:59:07,862 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-03 20:59:07,862 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-03 20:59:07,863 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-03 20:59:07,863 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-03 20:59:07,863 - core.tts.tts_client - INFO - Audio playback: device=1, rate=44100Hz
+2026-04-03 20:59:07,864 - __main__ - INFO - TTS disabled
+2026-04-03 20:59:07,864 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-03 20:59:07,865 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-03 20:59:07,879 - core.chat.history - INFO - Loaded chat 'default' with 9 messages
+2026-04-03 20:59:07,880 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-03 20:59:07,882 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-03 20:59:07,885 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-03 20:59:07,887 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-03 20:59:07,891 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-03 20:59:07,894 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-03 20:59:08,067 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-03 20:59:08,068 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-03 20:59:08,070 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-03 20:59:08,071 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-03 20:59:08,205 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-03 20:59:08,206 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-03 20:59:08,207 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-03 20:59:08,207 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-03 20:59:08,208 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-03 20:59:08,208 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-03 20:59:08,208 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-03 20:59:08,209 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-03 20:59:08,209 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-03 20:59:08,210 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-03 20:59:08,211 - __main__ - INFO - Applied toolset on startup: all
+2026-04-03 20:59:08,211 - __main__ - INFO - Applied chat settings on startup
+2026-04-03 20:59:08,213 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-03 20:59:08,214 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-03 20:59:08,215 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-03 20:59:08,217 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-03 20:59:08,241 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-03 20:59:08,322 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-03 20:59:08,324 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 6 tools registered
+2026-04-03 20:59:08,324 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-03 20:59:08,325 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-03 20:59:08,327 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 20:59:08,332 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-03 20:59:08,334 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-03 20:59:08,336 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-03 20:59:08,337 - __main__ - INFO - System init took: 831.3ms
+2026-04-03 20:59:08,337 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-03 20:59:08,343 - __main__ - INFO - Voice components are running.
+2026-04-03 20:59:08,343 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-03 20:59:08,353 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-03 20:59:08,353 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-03 20:59:08,354 - __main__ - INFO - Continuity scheduler started
+2026-04-03 20:59:08,356 - core.settings_manager - INFO - File watcher started
+2026-04-03 20:59:08,356 - core.settings_manager - INFO - File watcher thread started
+2026-04-03 20:59:08,357 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-03 20:59:08,357 - __main__ - INFO - Prompt file watcher started
+2026-04-03 20:59:08,358 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-03 20:59:08,358 - __main__ - INFO - Toolset file watcher started
+2026-04-03 20:59:08,359 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-03 20:59:08,475 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-03 20:59:09,048 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 20:59:09,317 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 20:59:09,332 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 20:59:09,340 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-03 20:59:09,410 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 20:59:36,255 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 20:59:36,258 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-03 20:59:36,517 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 20:59:36,524 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-03 20:59:36,525 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-03 20:59:36,540 - core.api_fastapi - INFO - REQ: GET /api/chats
+2026-04-03 20:59:36,553 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 20:59:36,560 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 20:59:36,571 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 20:59:36,594 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-03 20:59:36,602 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 20:59:36,612 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 20:59:36,620 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 20:59:36,626 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 20:59:36,631 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 20:59:36,636 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 20:59:36,645 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 20:59:36,649 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 20:59:36,654 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 20:59:36,660 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 20:59:36,666 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-03 20:59:36,673 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 20:59:36,680 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 20:59:36,689 - core.api_fastapi - INFO - REQ: GET /api/personas/sapphire/avatar
+2026-04-03 20:59:36,696 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 20:59:36,700 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 20:59:36,707 - core.api_fastapi - INFO - REQ: GET /api/personas/cobalt/avatar
+2026-04-03 20:59:36,713 - core.api_fastapi - INFO - REQ: GET /api/personas/anita/avatar
+2026-04-03 20:59:36,719 - core.api_fastapi - INFO - REQ: GET /api/personas/claude/avatar
+2026-04-03 20:59:36,727 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 20:59:36,733 - core.api_fastapi - INFO - REQ: GET /api/personas/lovelace/avatar
+2026-04-03 20:59:36,739 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 20:59:36,749 - core.api_fastapi - INFO - REQ: GET /api/personas/einstein/avatar
+2026-04-03 20:59:36,755 - core.api_fastapi - INFO - REQ: GET /api/personas/nexus/avatar
+2026-04-03 20:59:36,761 - core.api_fastapi - INFO - REQ: GET /api/personas/cantos/avatar
+2026-04-03 20:59:36,767 - core.api_fastapi - INFO - REQ: GET /api/personas/yuki/avatar
+2026-04-03 20:59:36,773 - core.api_fastapi - INFO - REQ: GET /api/personas/eddie/avatar
+2026-04-03 20:59:36,780 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 21:11:39,973 - core.api_fastapi - INFO - REQ: PUT /api/setup/wizard-step
+2026-04-03 21:11:39,979 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:11:39,988 - core.api_fastapi - INFO - REQ: GET /api/audio/devices
+2026-04-03 21:11:46,975 - core.api_fastapi - INFO - REQ: POST /api/audio/test-input
+2026-04-03 21:11:56,890 - core.api_fastapi - INFO - REQ: POST /api/audio/test-input
+2026-04-03 21:12:08,399 - core.api_fastapi - INFO - REQ: PUT /api/setup/wizard-step
+2026-04-03 21:12:08,421 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:12:08,432 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 21:12:08,450 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 21:12:28,493 - core.api_fastapi - INFO - REQ: GET /api/audio/devices
+2026-04-03 21:12:29,189 - core.api_fastapi - INFO - REQ: GET /api/setup/check-packages
+2026-04-03 21:18:55,108 - core.api_fastapi - INFO - REQ: GET /api/audio/devices
+2026-04-03 21:18:59,556 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 21:18:59,576 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 21:19:10,874 - core.api_fastapi - INFO - REQ: PUT /api/llm/providers/claude
+2026-04-03 21:19:10,904 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:19:29,837 - core.api_fastapi - INFO - REQ: PUT /api/setup/wizard-step
+2026-04-03 21:19:29,864 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:20:00,129 - core.api_fastapi - INFO - REQ: PUT /api/settings/DEFAULT_USERNAME
+2026-04-03 21:20:00,153 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:20:00,158 - core.api_fastapi - INFO - REQ: PUT /api/settings/DEFAULT_USERNAME
+2026-04-03 21:20:00,178 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:20:00,182 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 21:20:00,195 - core.api_fastapi - INFO - REQ: PUT /api/settings/USER_TIMEZONE
+2026-04-03 21:20:00,202 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:20:00,213 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 21:20:00,227 - core.api_fastapi - INFO - REQ: PUT /api/setup/wizard-step
+2026-04-03 21:20:00,250 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:20:00,256 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 21:20:00,271 - core.api_fastapi - INFO - REQ: PUT /api/setup/wizard-step
+2026-04-03 21:20:00,296 - core.settings_manager - INFO - Saved user settings to C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-03 21:20:00,305 - core.api_fastapi - INFO - REQ: GET /api/setup/provider-status
+2026-04-03 21:20:00,320 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 21:20:03,336 - core.event_bus - INFO - Async subscriber disconnected: async_sub_1
+2026-04-03 21:20:03,348 - core.api_fastapi - INFO - REQ: POST /api/tts/stop
+2026-04-03 21:20:03,352 - core.api_fastapi - INFO - REQ: GET /
+2026-04-03 21:20:04,315 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 21:20:04,338 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 21:20:04,346 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 21:20:04,386 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-03 21:20:04,389 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-03 21:20:04,447 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-03 21:20:04,467 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-03 21:20:04,553 - core.event_bus - INFO - New async subscriber: async_sub_2 (replay=False) — total: 1
+2026-04-03 21:20:04,585 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 21:20:04,597 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-03 21:20:04,602 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-03 21:20:04,612 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-03 21:20:04,629 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-03 21:20:04,646 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-03 21:20:04,655 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-03 21:20:04,670 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-03 21:20:04,682 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-03 21:20:04,686 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-03 21:20:04,696 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-03 21:20:04,704 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-03 21:20:04,716 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-03 21:20:04,720 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-03 21:20:04,728 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-03 21:20:04,755 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 21:20:04,765 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-03 21:20:04,767 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-03 21:20:04,777 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 21:24:06,871 - core.api_fastapi - INFO - REQ: POST /api/chat/stream
+2026-04-03 21:24:06,877 - core.routes.chat - INFO - [CHAT-STREAM] Request received at 1775276646.878
+2026-04-03 21:24:06,879 - core.chat.chat_streaming - INFO - [START] [STREAMING START] cancel_flag=False, prefill=False, skip_user=False, images=0, files=0
+2026-04-03 21:24:06,886 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 21:24:06,893 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 21:24:06,893 - core.chat.chat - INFO - [SPICE] Spice disabled — cleared and reassembled prompt
+2026-04-03 21:24:06,895 - core.chat.chat - INFO - [STORY] _get_system_prompt: enabled=False, engine_exists=False
+2026-04-03 21:24:07,018 - core.chat.llm_providers.openai_compat - INFO - OpenAI-compat provider initialized: http://127.0.0.1:1234/v1
+2026-04-03 21:24:07,019 - core.chat.llm_providers - INFO - Created provider 'lmstudio' [openai]
+2026-04-03 21:24:08,036 - openai._base_client - INFO - Retrying request to /models in 0.399712 seconds
+2026-04-03 21:24:08,752 - openai._base_client - INFO - Retrying request to /models in 0.913721 seconds
+2026-04-03 21:24:10,004 - core.chat.llm_providers.claude - INFO - Claude provider initialized: https://api.anthropic.com
+2026-04-03 21:24:10,004 - core.chat.llm_providers - INFO - Created provider 'claude' [claude]
+2026-04-03 21:24:11,237 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-03 21:24:11,280 - core.chat.llm_providers - INFO - Selected provider 'claude' (healthy)
+2026-04-03 21:24:11,280 - core.chat.chat - INFO - Auto mode: using 'claude' (claude-sonnet-4-5)
+2026-04-03 21:24:11,281 - core.chat.chat_streaming - INFO - --- Streaming Iteration 1/7 ---
+2026-04-03 21:24:11,282 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-03 21:24:11,283 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-03 21:24:12,675 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-03 21:24:12,713 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.43s
+2026-04-03 21:24:13,364 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 21:24:14,636 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 3.35s
+2026-04-03 21:24:14,636 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (10 chunks)
+2026-04-03 21:24:14,636 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-03 21:24:14,637 - core.chat.chat_streaming - INFO - [TOOL] Processing 1 tool call(s)
+2026-04-03 21:24:14,644 - core.chat.function_manager - INFO - Executing function: search_help_docs
+2026-04-03 21:24:14,673 - core.chat.chat_streaming - INFO - [OK] [STREAMING] Tool search_help_docs executed successfully
+2026-04-03 21:24:14,703 - core.chat.chat_streaming - INFO - --- Streaming Iteration 2/7 ---
+2026-04-03 21:24:14,704 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-03 21:24:14,705 - core.chat.llm_providers.claude - INFO - [THINK] Claude extended thinking enabled (budget: 10000)
+2026-04-03 21:24:14,755 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 21:24:16,435 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-03 21:24:16,439 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.73s
+2026-04-03 21:24:16,588 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 1.88s
+2026-04-03 21:24:16,589 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (7 chunks)
+2026-04-03 21:24:16,589 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-03 21:24:16,590 - core.chat.chat_streaming - INFO - [TOOL] Processing 1 tool call(s)
+2026-04-03 21:24:16,602 - core.chat.function_manager - INFO - Executing function: search_help_docs
+2026-04-03 21:24:16,605 - core.chat.chat_streaming - INFO - [OK] [STREAMING] Tool search_help_docs executed successfully
+2026-04-03 21:24:16,620 - core.chat.chat_streaming - INFO - --- Streaming Iteration 3/7 ---
+2026-04-03 21:24:16,621 - core.chat.chat_streaming - INFO - [STREAM] Creating provider stream [claude] (effective_model=claude-sonnet-4-5)
+2026-04-03 21:24:16,622 - core.chat.llm_providers.claude - WARNING - [THINK] Active tool cycle has no thinking_raw - thinking must be disabled for this request
+2026-04-03 21:24:16,622 - core.chat.llm_providers.claude - INFO - [THINK] Auto-disabling thinking for this request: active tool cycle started without thinking
+2026-04-03 21:24:16,623 - core.chat.llm_providers.claude - INFO - [THINK] Stripped 1 thinking block(s) from assistant message (thinking disabled)
+2026-04-03 21:24:16,623 - core.chat.llm_providers.claude - INFO - [THINK] Extended thinking disabled for this request
+2026-04-03 21:24:17,727 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-03 21:24:17,734 - core.chat.llm_providers.claude - INFO - [STREAM] First event received after 1.11s
+2026-04-03 21:24:23,085 - core.chat.llm_providers.claude - INFO - [STREAM] Stream complete, total time: 6.46s
+2026-04-03 21:24:23,086 - core.chat.chat_streaming - INFO - [STREAM] Stream iteration complete (14 chunks)
+2026-04-03 21:24:23,086 - core.chat.chat_streaming - INFO - [CLEANUP] Stream closed
+2026-04-03 21:24:23,087 - core.chat.chat_streaming - INFO - [OK] Final response received after 3 iteration(s)
+2026-04-03 21:24:23,098 - core.chat.chat_streaming - INFO - [CLEANUP] [STREAMING FINALLY] Cleaning up, cancel_flag=False
+2026-04-03 21:24:23,099 - core.routes.chat - INFO - STREAMING COMPLETE: 29 chunks, ephemeral=False
+2026-04-03 21:24:23,208 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-03 21:24:23,249 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-03 21:24:23,259 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-03 21:24:23,609 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-03 21:26:22,033 - core.api_fastapi - INFO - REQ: GET /docs
+2026-04-03 21:26:22,034 - core.api_fastapi - WARNING - RSP: 404 GET /docs
+2026-04-03 21:26:22,350 - core.api_fastapi - INFO - REQ: GET /favicon.ico
+2026-04-03 21:36:51,707 - __main__ - INFO - Shutdown signal received...
+2026-04-03 21:36:51,708 - __main__ - INFO - Stopping voice chat system...
+2026-04-03 21:36:52,179 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-03 21:36:53,582 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 21:36:53,583 - core.settings_manager - INFO - File watcher stopped
+2026-04-03 21:36:53,885 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-03 21:36:55,697 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped

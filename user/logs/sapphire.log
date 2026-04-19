@@ -1,0 +1,665 @@
+2026-04-18 06:37:33,909 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:37:33,912 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:37:34,041 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:37:36,435 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:37:36,436 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:37:36,445 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:37:40,859 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:37:40,860 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:37:40,872 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:37:49,309 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:37:49,310 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:37:49,321 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:38:05,821 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:38:05,821 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:38:05,832 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:41:07,610 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:41:07,611 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:41:07,826 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:41:07,846 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:41:07,980 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:41:10,373 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:41:10,374 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:41:10,399 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:41:10,400 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:41:10,414 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:41:14,843 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:41:14,844 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:41:14,868 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:41:14,869 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:41:14,883 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:41:23,292 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:41:23,293 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:41:23,319 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:41:23,320 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:41:23,333 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:42:07,247 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:42:07,248 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:42:07,273 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:42:07,274 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:42:07,286 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:50:01,772 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:50:01,773 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:50:01,797 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:50:01,798 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:50:01,810 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:50:04,209 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:50:04,210 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:50:04,235 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:50:04,236 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:50:04,251 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:50:08,635 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:50:08,636 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:50:08,660 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:50:08,661 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:50:08,674 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:50:17,086 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:50:17,088 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:50:17,113 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:50:17,114 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:50:17,127 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'openai'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 13, in <module>
+    from .chat_streaming import StreamingChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_streaming.py", line 7, in <module>
+    from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat_tool_calling.py", line 8, in <module>
+    from .llm_providers import LLMResponse
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\__init__.py", line 24, in <module>
+    from .openai_compat import OpenAICompatProvider
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\llm_providers\openai_compat.py", line 19, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+2026-04-18 06:53:36,367 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:53:36,368 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:53:36,391 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:53:36,392 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:53:37,626 - core.chat.llm_providers.claude - WARNING - anthropic SDK not installed. Run: pip install anthropic
+2026-04-18 06:53:37,680 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'fastapi'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 10, in <module>
+    from fastapi import FastAPI, Request, Depends, HTTPException
+ModuleNotFoundError: No module named 'fastapi'
+2026-04-18 06:53:40,159 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:53:40,160 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:53:40,185 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:53:40,186 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:53:41,267 - core.chat.llm_providers.claude - WARNING - anthropic SDK not installed. Run: pip install anthropic
+2026-04-18 06:53:41,273 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'fastapi'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 10, in <module>
+    from fastapi import FastAPI, Request, Depends, HTTPException
+ModuleNotFoundError: No module named 'fastapi'
+2026-04-18 06:53:45,759 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:53:45,760 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:53:45,784 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:53:45,785 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:53:46,846 - core.chat.llm_providers.claude - WARNING - anthropic SDK not installed. Run: pip install anthropic
+2026-04-18 06:53:46,852 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'fastapi'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 10, in <module>
+    from fastapi import FastAPI, Request, Depends, HTTPException
+ModuleNotFoundError: No module named 'fastapi'
+2026-04-18 06:55:14,838 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:55:14,839 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:55:14,861 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:55:14,862 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:55:15,868 - core.chat.llm_providers.claude - WARNING - anthropic SDK not installed. Run: pip install anthropic
+2026-04-18 06:55:15,875 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'fastapi'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 10, in <module>
+    from fastapi import FastAPI, Request, Depends, HTTPException
+ModuleNotFoundError: No module named 'fastapi'
+2026-04-18 06:55:18,356 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:55:18,357 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:55:18,379 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 06:55:18,380 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 06:59:44,528 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:59:44,530 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:59:44,544 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:59:46,965 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:59:46,966 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:59:46,976 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:59:51,383 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:59:51,384 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:59:51,393 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 06:59:59,896 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 06:59:59,896 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 06:59:59,908 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 07:03:48,190 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 07:03:48,191 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 07:03:48,199 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 07:03:50,565 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 07:03:50,566 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 07:03:50,574 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'tiktoken'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 52, in <module>
+    from core.chat import LLMChat, ConversationHistory
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\__init__.py", line 1, in <module>
+    from .chat import LLMChat
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\chat.py", line 10, in <module>
+    from .history import ConversationHistory, ChatSessionManager, count_tokens
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\chat\history.py", line 11, in <module>
+    import tiktoken
+ModuleNotFoundError: No module named 'tiktoken'
+2026-04-18 07:19:38,139 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 07:19:38,140 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 07:19:38,164 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 07:19:38,166 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 07:19:39,270 - core.chat.llm_providers.claude - WARNING - anthropic SDK not installed. Run: pip install anthropic
+2026-04-18 07:19:39,276 - __main__ - CRITICAL - FATAL: Import error during startup: No module named 'fastapi'
+Traceback (most recent call last):
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\sapphire.py", line 53, in <module>
+    from core.api_fastapi import app, set_system
+  File "C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\api_fastapi.py", line 10, in <module>
+    from fastapi import FastAPI, Request, Depends, HTTPException
+ModuleNotFoundError: No module named 'fastapi'
+2026-04-18 07:19:41,762 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 07:19:41,763 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 07:19:41,790 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 07:19:41,791 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 09:18:05,440 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 09:18:05,441 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 09:18:05,626 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 09:18:05,628 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 09:18:08,457 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-18 09:18:08,466 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-18 09:18:08,478 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-18 09:18:09,343 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-18 09:18:09,354 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-18 09:18:10,657 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-18 09:18:10,788 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-18 09:18:10,788 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-18 09:18:10,788 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-18 09:18:10,790 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-18 09:18:10,790 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-18 09:18:10,791 - core.tts.tts_client - INFO - Audio playback: device=4, rate=44100Hz
+2026-04-18 09:18:10,791 - __main__ - INFO - TTS disabled
+2026-04-18 09:18:10,792 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-18 09:18:10,793 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-18 09:18:10,800 - core.chat.history - INFO - Loaded chat 'default' with 24 messages
+2026-04-18 09:18:10,801 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-18 09:18:10,804 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-18 09:18:10,808 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-18 09:18:10,810 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-18 09:18:10,813 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-18 09:18:10,817 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-18 09:18:12,134 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-18 09:18:12,134 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-18 09:18:12,139 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-18 09:18:12,141 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-18 09:18:12,228 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-18 09:18:12,228 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-18 09:18:12,229 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-18 09:18:12,230 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-18 09:18:12,230 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-18 09:18:12,231 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-18 09:18:12,231 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-18 09:18:12,232 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-18 09:18:12,232 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-18 09:18:12,233 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-18 09:18:12,234 - __main__ - INFO - Applied toolset on startup: all
+2026-04-18 09:18:12,234 - __main__ - INFO - Applied chat settings on startup
+2026-04-18 09:18:12,235 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-18 09:18:12,235 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-18 09:18:12,235 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-18 09:18:12,236 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-18 09:18:12,735 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-18 09:18:13,451 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-18 09:18:13,468 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 6 tools registered
+2026-04-18 09:18:13,469 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-18 09:18:13,471 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-18 09:18:13,473 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-18 09:18:13,474 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-18 09:18:13,474 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-18 09:18:13,474 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-18 09:18:13,475 - __main__ - INFO - System init took: 3954.4ms
+2026-04-18 09:18:13,476 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-18 09:18:13,478 - __main__ - INFO - Voice components are running.
+2026-04-18 09:18:13,478 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-18 09:18:13,484 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-18 09:18:13,484 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-18 09:18:13,486 - __main__ - INFO - Continuity scheduler started
+2026-04-18 09:18:13,488 - core.settings_manager - INFO - File watcher started
+2026-04-18 09:18:13,488 - core.settings_manager - INFO - File watcher thread started
+2026-04-18 09:18:13,489 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-18 09:18:13,489 - __main__ - INFO - Prompt file watcher started
+2026-04-18 09:18:13,491 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-18 09:18:13,491 - __main__ - INFO - Toolset file watcher started
+2026-04-18 09:18:13,493 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-18 09:18:13,533 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-18 09:24:35,446 - __main__ - INFO - Shutdown signal received...
+2026-04-18 09:24:35,447 - __main__ - INFO - Stopping voice chat system...
+2026-04-18 09:24:35,692 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-18 09:24:37,654 - core.settings_manager - INFO - File watcher stopped
+2026-04-18 09:24:37,655 - core.settings_manager - INFO - File watcher stopped
+2026-04-18 09:24:37,692 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-18 09:24:39,665 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-18 09:25:05,745 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 09:25:05,746 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 09:25:05,765 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 09:25:05,766 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 09:25:07,804 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-18 09:25:07,805 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-18 09:25:07,807 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-18 09:25:08,113 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-18 09:25:08,115 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-18 09:25:08,453 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-18 09:25:08,591 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-18 09:25:08,591 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-18 09:25:08,592 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-18 09:25:08,593 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-18 09:25:08,593 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-18 09:25:08,594 - core.tts.tts_client - INFO - Audio playback: device=4, rate=44100Hz
+2026-04-18 09:25:08,594 - __main__ - INFO - TTS disabled
+2026-04-18 09:25:08,595 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-18 09:25:08,595 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-18 09:25:08,600 - core.chat.history - INFO - Loaded chat 'default' with 24 messages
+2026-04-18 09:25:08,600 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-18 09:25:08,602 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-18 09:25:08,604 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-18 09:25:08,606 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-18 09:25:08,609 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-18 09:25:08,612 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-18 09:25:08,760 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-18 09:25:08,760 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-18 09:25:08,763 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-18 09:25:08,764 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-18 09:25:08,845 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-18 09:25:08,846 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-18 09:25:08,847 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-18 09:25:08,847 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-18 09:25:08,848 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-18 09:25:08,848 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-18 09:25:08,848 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-18 09:25:08,849 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-18 09:25:08,849 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-18 09:25:08,850 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-18 09:25:08,850 - __main__ - INFO - Applied toolset on startup: all
+2026-04-18 09:25:08,851 - __main__ - INFO - Applied chat settings on startup
+2026-04-18 09:25:08,851 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-18 09:25:08,852 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-18 09:25:08,852 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-18 09:25:08,853 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-18 09:25:08,869 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-18 09:25:08,928 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-18 09:25:08,931 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 6 tools registered
+2026-04-18 09:25:08,931 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-18 09:25:08,931 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-18 09:25:08,933 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-18 09:25:08,935 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-18 09:25:08,935 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-18 09:25:08,936 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-18 09:25:08,937 - __main__ - INFO - System init took: 779.4ms
+2026-04-18 09:25:08,938 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-18 09:25:08,939 - __main__ - INFO - Voice components are running.
+2026-04-18 09:25:08,939 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-18 09:25:08,944 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-18 09:25:08,944 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-18 09:25:08,945 - __main__ - INFO - Continuity scheduler started
+2026-04-18 09:25:08,946 - core.settings_manager - INFO - File watcher started
+2026-04-18 09:25:08,946 - core.settings_manager - INFO - File watcher thread started
+2026-04-18 09:25:08,948 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-18 09:25:08,948 - __main__ - INFO - Prompt file watcher started
+2026-04-18 09:25:08,950 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-18 09:25:08,950 - __main__ - INFO - Toolset file watcher started
+2026-04-18 09:25:08,952 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-18 09:25:08,985 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-18 09:28:39,786 - __main__ - INFO - Shutdown signal received...
+2026-04-18 09:28:39,788 - __main__ - INFO - Stopping voice chat system...
+2026-04-18 09:28:40,091 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-18 09:28:41,071 - core.settings_manager - INFO - File watcher stopped
+2026-04-18 09:28:41,072 - core.settings_manager - INFO - File watcher stopped
+2026-04-18 09:28:41,078 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-18 09:28:43,077 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped
+2026-04-18 09:30:37,973 - core.settings_manager - INFO - Loaded default settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\core\settings_defaults.json
+2026-04-18 09:30:37,974 - core.settings_manager - INFO - Loaded user settings from C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\settings.json
+2026-04-18 09:30:37,995 - core.toolsets.toolset_manager - INFO - Toolset user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\toolsets
+2026-04-18 09:30:37,996 - core.toolsets.toolset_manager - INFO - Loaded 3 toolsets
+2026-04-18 09:30:40,530 - core.prompt_manager - INFO - Loaded prompt pieces: 8 component types
+2026-04-18 09:30:40,530 - core.prompt_manager - INFO - Loaded 1 monolith prompts
+2026-04-18 09:30:40,532 - core.prompt_manager - INFO - Loaded spice pool: 16 categories, 10 disabled
+2026-04-18 09:30:40,865 - core.credentials_manager - INFO - Loading credentials, checking C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-18 09:30:40,866 - core.credentials_manager - INFO - Loaded credentials from C:\Users\shawn\AppData\Roaming\Sapphire\credentials.json
+2026-04-18 09:30:41,219 - core.tts.tts_client - INFO - Testing output device 'Realtek HD Audio 2nd output (Re' (default_rate=44100)
+2026-04-18 09:30:41,280 - core.tts.tts_client - INFO -   -> 44100Hz: OK
+2026-04-18 09:30:41,281 - core.tts.tts_client - INFO - Output device 'Realtek HD Audio 2nd output (Re' OK at 44100Hz
+2026-04-18 09:30:41,292 - core.tts.tts_client - INFO - TTS client initialized: NullTTSProvider
+2026-04-18 09:30:41,293 - core.tts.tts_client - INFO - Voice: af_heart, Speed: 1.3, Pitch: 0.98
+2026-04-18 09:30:41,293 - core.tts.tts_client - INFO - Temp directory: C:\Users\shawn\AppData\Local\Temp
+2026-04-18 09:30:41,293 - core.tts.tts_client - INFO - Audio playback: device=4, rate=44100Hz
+2026-04-18 09:30:41,294 - __main__ - INFO - TTS disabled
+2026-04-18 09:30:41,294 - core.chat.chat - INFO - LLMChat.__init__ starting...
+2026-04-18 09:30:41,294 - core.chat.chat - INFO - Using new LLM_PROVIDERS config with 9 providers
+2026-04-18 09:30:41,300 - core.chat.history - INFO - Loaded chat 'default' with 24 messages
+2026-04-18 09:30:41,301 - core.chat.history - INFO - ChatSessionManager initialized with SQLite storage
+2026-04-18 09:30:41,303 - core.chat.function_manager - INFO - Loaded function module 'ai' with 1 tools
+2026-04-18 09:30:41,306 - core.chat.function_manager - INFO - Loaded function module 'docs' with 1 tools
+2026-04-18 09:30:41,308 - core.chat.function_manager - INFO - Loaded function module 'goals' with 4 tools
+2026-04-18 09:30:41,310 - core.chat.function_manager - INFO - Loaded function module 'knowledge' with 4 tools
+2026-04-18 09:30:41,313 - core.chat.function_manager - INFO - Loaded function module 'memory' with 4 tools
+2026-04-18 09:30:41,507 - core.chat.function_manager - INFO - Module 'meta' has mode filtering: ['monolith', 'assembled']
+2026-04-18 09:30:41,507 - core.chat.function_manager - INFO - Loaded function module 'meta' with 12 tools
+2026-04-18 09:30:41,511 - core.chat.function_manager - INFO - Loaded function module 'network' with 3 tools
+2026-04-18 09:30:41,514 - core.chat.function_manager - INFO - Loaded function module 'notepad' with 4 tools
+2026-04-18 09:30:41,617 - core.chat.function_manager - INFO - Loaded function module 'web' with 6 tools
+2026-04-18 09:30:41,618 - core.chat.function_manager - INFO - Ability 'none' - all functions disabled
+2026-04-18 09:30:41,619 - core.chat.chat - INFO - LLMChat.__init__ completed
+2026-04-18 09:30:41,619 - __main__ - INFO - Startup prompt from chat settings: 'alfred'
+2026-04-18 09:30:41,620 - core.event_bus - INFO - EventBus initialized (replay_size=50)
+2026-04-18 09:30:41,620 - __main__ - INFO - System primed with 'alfred' prompt.
+2026-04-18 09:30:41,621 - core.tts.tts_client - INFO - Voice set to: bm_daniel
+2026-04-18 09:30:41,621 - core.tts.tts_client - INFO - Pitch set to: 0.96
+2026-04-18 09:30:41,621 - core.tts.tts_client - INFO - Speed set to: 1.2
+2026-04-18 09:30:41,623 - core.chat.function_manager - INFO - Ability 'all' - LOADED ALL 39 FUNCTIONS
+2026-04-18 09:30:41,623 - __main__ - INFO - Applied toolset on startup: all
+2026-04-18 09:30:41,624 - __main__ - INFO - Applied chat settings on startup
+2026-04-18 09:30:41,624 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullAudioRecorder
+2026-04-18 09:30:41,625 - core.wakeword.wakeword_null - INFO - Wakeword disabled - using NullWakeWordDetector
+2026-04-18 09:30:41,625 - core.stt.stt_null - INFO - STT disabled - using NullAudioRecorder
+2026-04-18 09:30:41,626 - core.stt.stt_null - INFO - STT disabled - using NullWhisperClient
+2026-04-18 09:30:41,642 - functions.knowledge - INFO - Knowledge database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\knowledge.db
+2026-04-18 09:30:41,710 - core.plugin_loader - WARNING - [PLUGINS] vanta-execution: unsigned plugin (sideloading enabled)
+2026-04-18 09:30:41,712 - core.chat.function_manager - INFO - Plugin 'vanta-execution' tool 'plugin_vanta-execution_vanta_execution': 6 tools registered
+2026-04-18 09:30:41,713 - core.plugin_loader - INFO - [PLUGINS] Loaded: vanta-execution (priority 60, system)
+2026-04-18 09:30:41,714 - core.plugin_loader - INFO - [PLUGINS] voice-commands: signature verified
+2026-04-18 09:30:41,715 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-18 09:30:41,717 - core.hooks - INFO - [HOOKS] Registered voice-commands:pre_chat on 'pre_chat' (priority 1)
+2026-04-18 09:30:41,717 - core.plugin_loader - INFO - [PLUGINS] Loaded: voice-commands (priority 1, system)
+2026-04-18 09:30:41,718 - core.plugin_loader - INFO - [PLUGINS] Scan complete: 12 found, 2 loaded
+2026-04-18 09:30:41,718 - __main__ - INFO - System init took: 803.8ms
+2026-04-18 09:30:41,719 - __main__ - INFO - STT disabled - skipping initialization
+2026-04-18 09:30:41,719 - __main__ - INFO - Voice components are running.
+2026-04-18 09:30:41,720 - core.api_fastapi - INFO - System instance registered with FastAPI
+2026-04-18 09:30:41,723 - core.continuity.scheduler - INFO - [Continuity] Scheduler loop running
+2026-04-18 09:30:41,723 - core.continuity.scheduler - INFO - [Continuity] Scheduler started
+2026-04-18 09:30:41,725 - __main__ - INFO - Continuity scheduler started
+2026-04-18 09:30:41,728 - core.settings_manager - INFO - File watcher started
+2026-04-18 09:30:41,728 - core.settings_manager - INFO - File watcher thread started
+2026-04-18 09:30:41,730 - core.prompt_manager - INFO - Prompt file watcher started
+2026-04-18 09:30:41,730 - __main__ - INFO - Prompt file watcher started
+2026-04-18 09:30:41,731 - core.toolsets.toolset_manager - INFO - Toolset file watcher started
+2026-04-18 09:30:41,731 - __main__ - INFO - Toolset file watcher started
+2026-04-18 09:30:41,733 - __main__ - INFO - Sapphire is running. Starting uvicorn server...
+2026-04-18 09:30:41,766 - core.ssl_utils - INFO - Using existing SSL certificate: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\ssl\cert.pem
+2026-04-18 09:31:56,215 - core.api_fastapi - INFO - REQ: GET /
+2026-04-18 09:31:57,854 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-18 09:31:57,888 - core.spice_sets.spice_set_manager - INFO - Spice set user directory: C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\spice_sets
+2026-04-18 09:31:57,911 - core.spice_sets.spice_set_manager - INFO - Loaded 3 spice sets
+2026-04-18 09:31:57,945 - core.personas.persona_manager - INFO - Loaded 11 personas
+2026-04-18 09:31:57,978 - core.api_fastapi - INFO - REQ: GET /api/status
+2026-04-18 09:31:57,986 - core.api_fastapi - INFO - REQ: GET /api/history
+2026-04-18 09:32:00,132 - core.api_fastapi - INFO - REQ: GET /api/init
+2026-04-18 09:32:00,137 - core.api_fastapi - INFO - REQ: GET /api/webui/plugins
+2026-04-18 09:32:00,176 - core.api_fastapi - INFO - REQ: GET /api/privacy
+2026-04-18 09:32:00,224 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred/avatar
+2026-04-18 09:32:00,259 - core.api_fastapi - INFO - REQ: GET /api/events
+2026-04-18 09:32:00,265 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-18 09:32:00,272 - core.event_bus - INFO - New async subscriber: async_sub_1 (replay=False) — total: 1
+2026-04-18 09:32:00,273 - core.api_fastapi - INFO - REQ: GET /api/chats/default/settings
+2026-04-18 09:32:00,273 - core.api_fastapi - INFO - REQ: GET /api/llm/providers
+2026-04-18 09:32:00,274 - core.api_fastapi - INFO - REQ: GET /api/memory/scopes
+2026-04-18 09:32:00,324 - functions.memory - INFO - Memory database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\memory.db (FTS5 + embeddings)
+2026-04-18 09:32:00,346 - core.api_fastapi - INFO - REQ: GET /api/goals/scopes
+2026-04-18 09:32:00,346 - core.api_fastapi - INFO - REQ: GET /api/knowledge/scopes
+2026-04-18 09:32:00,358 - functions.goals - INFO - Goals database ready at C:\Users\shawn\Downloads\sapphire-main\sapphire-main\user\goals.db
+2026-04-18 09:32:00,370 - core.api_fastapi - INFO - REQ: GET /api/knowledge/people/scopes
+2026-04-18 09:32:00,376 - core.api_fastapi - INFO - REQ: GET /api/email/accounts
+2026-04-18 09:32:00,391 - core.api_fastapi - INFO - REQ: GET /api/bitcoin/wallets
+2026-04-18 09:32:00,392 - core.api_fastapi - INFO - REQ: GET /api/gcal/accounts
+2026-04-18 09:32:00,397 - core.api_fastapi - INFO - REQ: GET /api/story/presets
+2026-04-18 09:32:00,397 - core.api_fastapi - INFO - REQ: GET /api/spice-sets
+2026-04-18 09:32:00,446 - core.api_fastapi - INFO - REQ: GET /api/personas
+2026-04-18 09:32:00,460 - core.api_fastapi - INFO - REQ: GET /api/tts/voices
+2026-04-18 09:32:00,461 - core.api_fastapi - INFO - REQ: GET /api/toolsets/current
+2026-04-18 09:32:00,481 - core.api_fastapi - INFO - REQ: GET /user-assets/avatars/user.webp
+2026-04-18 09:32:00,495 - core.api_fastapi - INFO - REQ: GET /api/personas/alfred
+2026-04-18 09:32:00,497 - core.api_fastapi - INFO - REQ: GET /api/chats/default/documents
+2026-04-18 09:39:28,087 - __main__ - INFO - Shutdown signal received...
+2026-04-18 09:39:28,088 - __main__ - INFO - Stopping voice chat system...
+2026-04-18 09:39:28,130 - core.event_bus - INFO - Async subscriber disconnected: async_sub_1
+2026-04-18 09:39:28,147 - core.continuity.scheduler - INFO - [Continuity] Scheduler stopped
+2026-04-18 09:39:29,997 - core.settings_manager - INFO - File watcher stopped
+2026-04-18 09:39:29,998 - core.settings_manager - INFO - File watcher stopped
+2026-04-18 09:39:30,121 - core.prompt_manager - INFO - Prompt file watcher stopped
+2026-04-18 09:39:32,113 - core.toolsets.toolset_manager - INFO - Toolset file watcher stopped

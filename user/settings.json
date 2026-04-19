@@ -1,0 +1,111 @@
+{
+  "ALLOW_UNSIGNED_PLUGINS": true,
+  "plugins": {
+    "ALLOW_UNSIGNED_PLUGINS": true
+  },
+  "setup": {
+    "SETUP_WIZARD_STEP": 4
+  },
+  "llm": {
+    "LLM_PROVIDERS": {
+      "lmstudio": {
+        "provider": "openai",
+        "display_name": "LM Studio",
+        "base_url": "http://127.0.0.1:1234/v1",
+        "timeout": 0.3,
+        "enabled": true,
+        "use_as_fallback": true
+      },
+      "claude": {
+        "provider": "claude",
+        "display_name": "Claude",
+        "api_key_env": "ANTHROPIC_API_KEY",
+        "model": "claude-sonnet-4-5",
+        "timeout": 10.0,
+        "enabled": true,
+        "use_as_fallback": true,
+        "thinking_enabled": true,
+        "thinking_budget": 10000
+      },
+      "fireworks": {
+        "provider": "fireworks",
+        "display_name": "Fireworks",
+        "base_url": "https://api.fireworks.ai/inference/v1",
+        "api_key_env": "FIREWORKS_API_KEY",
+        "model": "accounts/fireworks/models/glm-4p7",
+        "timeout": 10.0,
+        "enabled": false,
+        "use_as_fallback": true
+      },
+      "openai": {
+        "provider": "openai",
+        "display_name": "OpenAI",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "model": "gpt-4o",
+        "timeout": 10.0,
+        "enabled": false,
+        "use_as_fallback": true,
+        "reasoning_effort": "medium",
+        "reasoning_summary": "detailed"
+      },
+      "grok": {
+        "provider": "openai",
+        "display_name": "Grok (xAI)",
+        "base_url": "https://api.x.ai/v1",
+        "api_key_env": "XAI_API_KEY",
+        "model": "grok-4-1-fast-reasoning",
+        "timeout": 10.0,
+        "enabled": false,
+        "use_as_fallback": true
+      },
+      "gemini": {
+        "provider": "gemini",
+        "display_name": "Gemini",
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "api_key_env": "GOOGLE_API_KEY",
+        "model": "gemini-2.5-flash",
+        "timeout": 10.0,
+        "enabled": false,
+        "use_as_fallback": true,
+        "thinking_enabled": true,
+        "reasoning_effort": "medium"
+      },
+      "featherless": {
+        "provider": "openai",
+        "display_name": "Featherless",
+        "base_url": "https://api.featherless.ai/v1",
+        "api_key_env": "FEATHERLESS_API_KEY",
+        "model": "deepseek-ai/DeepSeek-V3.2",
+        "timeout": 10.0,
+        "enabled": false,
+        "use_as_fallback": true
+      },
+      "other": {
+        "provider": "openai",
+        "display_name": "Other (OpenAI Compatible)",
+        "base_url": "",
+        "model": "",
+        "timeout": 10.0,
+        "enabled": false,
+        "use_as_fallback": true,
+        "generation_params": {}
+      },
+      "responses": {
+        "provider": "responses",
+        "display_name": "Responses API (Generic)",
+        "base_url": "",
+        "model": "",
+        "timeout": 10.0,
+        "enabled": false,
+        "use_as_fallback": true,
+        "reasoning_effort": "medium",
+        "reasoning_summary": "detailed"
+      }
+    }
+  },
+  "identity": {
+    "DEFAULT_USERNAME": "VANTA",
+    "USER_TIMEZONE": "America/Los_Angeles"
+  }
+}
