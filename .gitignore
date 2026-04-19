@@ -1,16 +1,29 @@
+<<<<<<< HEAD
 ﻿# Python
+=======
+﻿# =========================
+# Python / Environments
+# =========================
+>>>>>>> 2a070ed (Clean repo: remove cache files, update ignore rules, add axis integration)
+# =========================
+# Python / Environments
+# =========================
 venv/
 .venv/
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Env files
+# =========================
+# Environment / Secrets
+# =========================
 .env
 .env.*
 !.env.example
 
-# Build / cache
+# =========================
+# Build / Cache / Tooling
+# =========================
 build/
 dist/
 *.egg-info/
@@ -18,7 +31,23 @@ dist/
 .mypy_cache/
 .ruff_cache/
 
-# OS / editor
+# =========================
+# Local Runtime / User Data
+# =========================
+user/
+*.db
+*.log
+*.pem
+*.jsonl
+
+# =========================
+# Temp / Scratch Files
+# =========================
+tmp_*.py
+
+# =========================
+# OS / Editor
+# =========================
 .DS_Store
 Thumbs.db
 .vscode/
