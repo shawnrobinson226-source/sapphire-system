@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-﻿# Python
-=======
-﻿# =========================
-# Python / Environments
-# =========================
->>>>>>> 2a070ed (Clean repo: remove cache files, update ignore rules, add axis integration)
 # =========================
 # Python / Environments
 # =========================
@@ -39,6 +32,11 @@ user/
 *.log
 *.pem
 *.jsonl
+
+# =========================
+# Local Plugin Scratch
+# =========================
+plugins/axis_plugin/
 
 # =========================
 # Temp / Scratch Files
