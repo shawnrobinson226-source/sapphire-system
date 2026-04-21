@@ -1,49 +1,52 @@
-# Sapphire System — VANTA Execution Engine
+# Sapphire System
 
-A task execution system built on [Sapphire](https://github.com/ddxfish/sapphire), powering the VANTA AI platform.
+Sapphire is the runtime host and integration surface around AXIS.
 
-## What This Is
+## What Sapphire Is
 
-Sapphire extended with **System V1** — a deterministic task execution engine that converts intent into structured, trackable, step-based action.
+Sapphire is:
+- Host/runtime
+- Adapter and execution layer
+- Plugin/tool surface
+- Orchestration shell for routes, hooks, and UI-facing flows
 
-## System V1
+## What Sapphire Is Not
 
-- Converts raw input into structured task objects
-- Classifies tasks and assigns execution routes
-- Breaks tasks into ordered steps
-- Tracks state transitions (pending → active → complete)
-- Returns one clear next action at all times
+Sapphire is not:
+- The source-of-truth decision kernel
+- The taxonomy owner
+- The continuity/scoring authority
+- A replacement for AXIS policy or enforcement logic
 
-## REST API
+## AXIS Relationship
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/tasks/create` | Create a task |
-| GET | `/api/v1/tasks/recent` | Get recent tasks |
-| GET | `/api/v1/tasks/{task_id}` | Get task by ID |
-| POST | `/api/v1/tasks/start` | Activate a task |
-| POST | `/api/v1/tasks/step` | Update a step |
-| POST | `/api/v1/tasks/block` | Block a task |
-| POST | `/api/v1/tasks/complete` | Complete a task |
+AXIS is the source-of-truth deterministic engine.
 
-## Plugin Tools
+Sapphire calls AXIS through controlled integration boundaries and presents AXIS outputs to users and tools. Sapphire may format or route AXIS outputs, but does not redefine their meaning.
 
-`create_task_plan` · `update_step_status` · `get_recent_tasks` · `start_task` · `block_task` · `complete_task`
+## High-Level Architecture
 
-## Architecture
-VANTA (decision layer)
-↓ HTTP
-Sapphire + System V1 (execution layer)
-↓
-Task objects → step tracking → state persistence
+AXIS:
+- Source-of-truth decisions and enforcement
 
-## Setup
+Sapphire:
+- Runtime host
+- Adapter boundary layer
+- API/plugin execution surface
+- UI/orchestration shell
+
+## Repository Shape (High Level)
+
+- `core/`: runtime services, routing, integration boundaries, security hooks
+- `plugins/`: plugin capability surface
+- `functions/`: callable function/tool implementations
+- `interfaces/`: UI/web integration assets
+- `tests/` and `core/tests/`: validation and boundary enforcement tests
+
+## Local Run
+
 ```bash
 conda activate sapphire
 python main.py
 # Runs at https://localhost:8073
 ```
-
-## System V1 Status
-
-VERSION: V1.0 · STATUS: LOCKED · DATE: 2026-04-04
