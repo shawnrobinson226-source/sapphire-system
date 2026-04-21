@@ -39,12 +39,32 @@ class AxisAdapter:
         clean_method, clean_endpoint = self._normalize(method, endpoint)
         if (clean_method, clean_endpoint) not in ALLOWED_ENDPOINTS:
             log_boundary_violation(
-                reason="forbidden_endpoint",
+                violation_type="forbidden_endpoint",
                 endpoint=f"{clean_method} {clean_endpoint}",
+                operator_id=None,
                 payload=None,
             )
             raise ValueError(f"Endpoint not allowed: {clean_method} {clean_endpoint}")
         return clean_method, clean_endpoint
+
+    @staticmethod
+    def _boundary_failure(
+        violation_type: str,
+        endpoint: str,
+        message: str,
+        operator_id: str | None = None,
+        payload: dict | None = None,
+    ) -> dict:
+        return {
+            "ok": False,
+            "status_code": 0,
+            "error": "boundary_violation",
+            "violation_type": violation_type,
+            "message": message,
+            "endpoint": endpoint,
+            "operator_id": operator_id,
+            "payload_snapshot": payload or None,
+        }
 
     @staticmethod
     def _parse_response(response: requests.Response) -> dict:
@@ -65,8 +85,33 @@ class AxisAdapter:
         operator_id: str,
         payload: dict | None = None,
     ) -> dict:
-        clean_method, clean_endpoint = self._enforce_allowed_endpoint(method, endpoint)
-        clean_operator_id = self._require_non_empty_string(operator_id, "operator_id")
+        try:
+            clean_method, clean_endpoint = self._enforce_allowed_endpoint(method, endpoint)
+        except ValueError as exc:
+            clean_method, clean_endpoint = self._normalize(method, endpoint)
+            return self._boundary_failure(
+                violation_type="forbidden_endpoint",
+                endpoint=f"{clean_method} {clean_endpoint}",
+                message=str(exc),
+                operator_id=None,
+            )
+
+        try:
+            clean_operator_id = self._require_non_empty_string(operator_id, "operator_id")
+        except ValueError as exc:
+            endpoint_label = f"{clean_method} {clean_endpoint}"
+            log_boundary_violation(
+                violation_type="invalid_operator_id",
+                endpoint=endpoint_label,
+                operator_id=None,
+                payload=payload,
+            )
+            return self._boundary_failure(
+                violation_type="invalid_operator_id",
+                endpoint=endpoint_label,
+                message=str(exc),
+                operator_id=None,
+            )
 
         url = f"{self.axis_base_url}{clean_endpoint}"
         headers = {"x-operator-id": clean_operator_id}
@@ -94,11 +139,17 @@ class AxisAdapter:
 
         if clean_distortion_class not in ALLOWED_DISTORTION_CLASSES:
             log_boundary_violation(
-                reason="invalid_distortion_class",
+                violation_type="invalid_distortion_class",
                 endpoint="POST /api/v2/execute",
+                operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
                 payload={"distortion_class": clean_distortion_class},
             )
-            raise ValueError("distortion_class is not allowed by Sapphire lock.")
+            return self._boundary_failure(
+                violation_type="invalid_distortion_class",
+                endpoint="POST /api/v2/execute",
+                message="distortion_class is not allowed by Sapphire lock.",
+                operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
+            )
 
         payload = {
             "trigger": clean_trigger,
@@ -112,4 +163,3 @@ class AxisAdapter:
 
     def fetch_operator_profile(self, operator_id: str) -> dict:
         return self.call_axis("GET", "/api/v2/operator-profile", operator_id)
-

@@ -2,17 +2,23 @@
 
 from __future__ import annotations
 
+import json
+import os
 import re
 from pathlib import Path
 
-DISTORTION_CLASS_VERSION = "axis-v2-locked"
+DISTORTION_CLASS_VERSION = "axis-distortion-contract-v1"
 ALLOWED_DISTORTION_CLASSES = (
-    "behavioral",
-    "cognitive",
+    "narrative",
     "emotional",
+    "behavioral",
+    "perceptual",
+    "continuity",
 )
 
-AXIS_DISTORTION_SOURCE = Path("lib/kernel/distortion-types.ts")
+AXIS_DISTORTION_SOURCE = Path(
+    os.environ.get("AXIS_DISTORTION_CONTRACT_PATH", "core/sapphire/axis_distortion_contract_reference.json")
+)
 
 
 def _extract_axis_version(source_text: str) -> str | None:
@@ -38,6 +44,20 @@ def _extract_axis_classes(source_text: str) -> list[str]:
     return [c.strip() for c in classes if c.strip()]
 
 
+def _extract_from_json(source_text: str, source_path: Path) -> tuple[str | None, list[str] | None]:
+    if source_path.suffix.lower() != ".json":
+        return None, None
+    data = json.loads(source_text)
+    version = data.get("distortion_class_version")
+    classes = data.get("distortion_classes")
+    if classes is None:
+        return version, None
+    if not isinstance(classes, list):
+        raise RuntimeError("distortion_classes must be a list in AXIS contract reference.")
+    clean = [str(c).strip() for c in classes if str(c).strip()]
+    return version, clean
+
+
 def assert_distortion_sync(source_path: Path | None = None) -> bool:
     """Fail loudly if Sapphire lock values drift from AXIS source."""
     axis_source = source_path or AXIS_DISTORTION_SOURCE
@@ -45,15 +65,26 @@ def assert_distortion_sync(source_path: Path | None = None) -> bool:
         raise RuntimeError(f"AXIS distortion source missing: {axis_source}")
 
     source_text = axis_source.read_text(encoding="utf-8")
-    axis_classes = tuple(_extract_axis_classes(source_text))
+    axis_version, json_classes = _extract_from_json(source_text, axis_source)
 
-    if axis_classes != ALLOWED_DISTORTION_CLASSES:
+    if json_classes is not None:
+        axis_classes = tuple(json_classes)
+    else:
+        axis_classes = tuple(_extract_axis_classes(source_text))
+        axis_version = _extract_axis_version(source_text)
+
+    expected = set(ALLOWED_DISTORTION_CLASSES)
+    actual = set(axis_classes)
+
+    if actual != expected:
+        missing = sorted(expected - actual)
+        extra = sorted(actual - expected)
         raise RuntimeError(
             "Distortion class mismatch. "
+            f"missing_in_axis={missing}, unexpected_in_axis={extra}, "
             f"Sapphire={ALLOWED_DISTORTION_CLASSES}, AXIS={axis_classes}"
         )
 
-    axis_version = _extract_axis_version(source_text)
     if axis_version and axis_version != DISTORTION_CLASS_VERSION:
         raise RuntimeError(
             "Distortion class version mismatch. "
@@ -61,4 +92,3 @@ def assert_distortion_sync(source_path: Path | None = None) -> bool:
         )
 
     return True
-

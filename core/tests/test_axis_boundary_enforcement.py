@@ -60,11 +60,13 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
 
     @mock.patch("core.sapphire.axis_adapter.requests.request")
     def test_forbidden_endpoints_fail(self, mock_request):
-        with self.assertRaises(ValueError):
-            self.adapter.call_axis("GET", "/api/v2/forbidden", operator_id="op_123")
+        result = self.adapter.call_axis("GET", "/api/v2/forbidden", operator_id="op_123")
         mock_request.assert_not_called()
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["error"], "boundary_violation")
+        self.assertEqual(result["violation_type"], "forbidden_endpoint")
         logs = self._read_log_lines()
-        self.assertEqual(logs[-1]["reason"], "forbidden_endpoint")
+        self.assertEqual(logs[-1]["violation_type"], "forbidden_endpoint")
 
     def test_distortion_class_sync_passes(self):
         source = self.tmp_root / "distortion-types.ts"
@@ -89,20 +91,48 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
 
     def test_log_separation_is_enforced(self):
         entry = violations.log_boundary_violation(
-            reason="test_boundary",
+            violation_type="test_boundary",
             endpoint="GET /api/v2/forbidden",
+            operator_id="op_test",
             payload={"foo": "bar"},
         )
         self.assertEqual(self.log_path.name, "sapphire_boundary_violations.log")
         self.assertEqual(self.log_path.parent.name, "logs")
         logs = self._read_log_lines()
-        self.assertEqual(logs[-1]["reason"], entry["reason"])
+        self.assertEqual(logs[-1]["component"], "sapphire_boundary")
+        self.assertEqual(logs[-1]["violation_type"], entry["violation_type"])
+        self.assertEqual(logs[-1]["operator_id"], "op_test")
+        self.assertEqual(logs[-1]["payload_snapshot"]["type"], "dict")
+        self.assertIn("foo", logs[-1]["payload_snapshot"]["keys"])
+        self.assertEqual(logs[-1]["payload_snapshot"]["value_shapes"]["foo"]["type"], "str")
 
     @mock.patch("core.sapphire.axis_adapter.requests.request")
     def test_adapter_does_not_call_unknown_routes(self, mock_request):
-        with self.assertRaises(ValueError):
-            self.adapter.call_axis("POST", "/api/v2/anything-else", operator_id="op_123", payload={"x": 1})
+        result = self.adapter.call_axis("POST", "/api/v2/anything-else", operator_id="op_123", payload={"x": 1})
         mock_request.assert_not_called()
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["violation_type"], "forbidden_endpoint")
+
+    @mock.patch("core.sapphire.axis_adapter.requests.request")
+    def test_boundary_rules_do_not_silently_degrade(self, mock_request):
+        result = self.adapter.execute(
+            trigger="user text should not be logged",
+            distortion_class="not-allowed",
+            next_action="do thing",
+            operator_id="op_321",
+        )
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["error"], "boundary_violation")
+        self.assertEqual(result["violation_type"], "invalid_distortion_class")
+        mock_request.assert_not_called()
+        logs = self._read_log_lines()
+        self.assertEqual(logs[-1]["violation_type"], "invalid_distortion_class")
+        self.assertEqual(logs[-1]["operator_id"], "op_321")
+        self.assertEqual(logs[-1]["payload_snapshot"]["type"], "dict")
+        self.assertIn("distortion_class", logs[-1]["payload_snapshot"]["keys"])
+        # Ensure raw sensitive value is never written into the payload snapshot.
+        snapshot_json = json.dumps(logs[-1]["payload_snapshot"])
+        self.assertNotIn("not-allowed", snapshot_json)
 
 
 if __name__ == "__main__":
