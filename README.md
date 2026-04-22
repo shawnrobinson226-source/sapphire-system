@@ -1,37 +1,50 @@
 # Sapphire System
 
-Sapphire is the runtime host and integration surface around AXIS.
+Sapphire is the host/runtime layer for executing and presenting AXIS-aligned workflows.
 
 ## What Sapphire Is
 
 Sapphire is:
-- Host/runtime
-- Adapter and execution layer
-- Plugin/tool surface
-- Orchestration shell for routes, hooks, and UI-facing flows
+- host runtime
+- adapter layer
+- execution surface
+- orchestration shell
+- plugin environment and interaction layer
 
-## What Sapphire Is Not
+## What Sapphire Does
 
-Sapphire is not:
-- The source-of-truth decision kernel
-- The taxonomy owner
-- The continuity/scoring authority
-- A replacement for AXIS policy or enforcement logic
+Sapphire:
+- accepts user/system input into controlled execution flow
+- routes AXIS-bound requests through Sapphire boundary/adapter layers
+- presents AXIS responses in structured, readable interaction surfaces
+- handles orchestration, interaction, and execution flow around AXIS outputs
 
-## AXIS Relationship
+## What Sapphire Does NOT Own
 
-AXIS is the source-of-truth deterministic engine.
+Sapphire does not own:
+- source-of-truth decision logic
+- taxonomy definitions
+- classification authority
+- scoring authority
+- continuity authority
+- outcome authority
 
-Sapphire calls AXIS through controlled integration boundaries and presents AXIS outputs to users and tools. Sapphire may format or route AXIS outputs, but does not redefine their meaning.
+## How Sapphire Relates To AXIS
+
+AXIS remains the deterministic source-of-truth engine.
+
+Sapphire calls AXIS; Sapphire does not redefine AXIS.
+
+AXIS owns classification, scoring, continuity, outcomes, and contracts. Sapphire acts as host/runtime and execution surface around those AXIS outputs.
 
 ## High-Level Architecture
 
 AXIS:
-- Source-of-truth decisions and enforcement
+- source-of-truth decisions and enforcement
 
 Sapphire:
-- Runtime host
-- Adapter boundary layer
+- runtime host
+- adapter boundary layer
 - API/plugin execution surface
 - UI/orchestration shell
 
@@ -43,7 +56,21 @@ Sapphire:
 - `interfaces/`: UI/web integration assets
 - `tests/` and `core/tests/`: validation and boundary enforcement tests
 
-## Local Run
+## Current Scope / Stopping Point
+
+- Sapphire execution surface is implemented as an orchestration and rendering layer.
+- AXIS remains external source-of-truth authority.
+- This repository does not implement AXIS decision authority internally.
+
+## Manual Public Metadata Actions Still Required
+
+- GitHub About description suggestion:
+  `Sapphire — host/runtime and execution surface for AXIS-aligned workflows.`
+- GitHub Website field:
+  Use the correct Sapphire public link only if one exists.
+  If no public Sapphire link exists, leave it unset until one is available.
+
+## Local Run (Optional)
 
 ```bash
 conda activate sapphire
