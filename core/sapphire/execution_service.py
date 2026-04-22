@@ -5,14 +5,16 @@ from __future__ import annotations
 from typing import Any
 
 from core.sapphire.axis_adapter import AxisAdapter
+from core.sapphire.session_service import SessionService
 from core.security.violations import log_boundary_violation
 
 
 class ExecutionService:
     """Thin orchestration layer over AxisAdapter with a stable public response shape."""
 
-    def __init__(self, axis_adapter: AxisAdapter):
+    def __init__(self, axis_adapter: AxisAdapter, session_service: SessionService | None = None):
         self.axis_adapter = axis_adapter
+        self.session_service = session_service
 
     @staticmethod
     def _clean_non_empty(value: Any, field_name: str) -> str:
@@ -54,7 +56,12 @@ class ExecutionService:
             },
         }
 
-    def execute(self, trigger_or_request: str | dict[str, Any], operator_id: str | None = None) -> dict:
+    def execute(
+        self,
+        trigger_or_request: str | dict[str, Any],
+        operator_id: str | None = None,
+        session_id: str | None = None,
+    ) -> dict:
         endpoint_label = "POST /api/v2/execute"
         try:
             if isinstance(trigger_or_request, dict):
@@ -112,16 +119,34 @@ class ExecutionService:
                 if not isinstance(axis_data, dict):
                     axis_data = {}
                 if axis_data.get("gated") is True:
-                    return {
+                    result = {
                         "ok": True,
                         "gated": True,
                         "gate_type": axis_data.get("gate_type"),
                         "message": axis_data.get("message", ""),
                     }
-                return self._normalize_success(
-                    axis_data,
-                    status_code=adapter_response.get("status_code"),
-                )
+                else:
+                    result = self._normalize_success(
+                        axis_data,
+                        status_code=adapter_response.get("status_code"),
+                    )
+                if session_id and self.session_service is not None:
+                    try:
+                        self.session_service.append_to_session(
+                            session_id=session_id,
+                            execution_result=result,
+                            trigger=clean_trigger,
+                            operator_id=clean_operator_id,
+                        )
+                    except Exception as exc:
+                        log_boundary_violation(
+                            violation_type="session_error",
+                            endpoint=endpoint_label,
+                            operator_id=clean_operator_id,
+                            payload={"session_id": session_id},
+                            details={"exception_type": type(exc).__name__},
+                        )
+                return result
 
             if adapter_response.get("error") == "boundary_violation":
                 log_boundary_violation(
@@ -134,7 +159,7 @@ class ExecutionService:
                         "status_code": adapter_response.get("status_code"),
                     },
                 )
-                return self._failure(
+                result = self._failure(
                     error_type="boundary_violation",
                     message="Request rejected by AXIS boundary rules.",
                     safe_details={
@@ -142,6 +167,23 @@ class ExecutionService:
                         "endpoint": adapter_response.get("endpoint"),
                     },
                 )
+                if session_id and self.session_service is not None:
+                    try:
+                        self.session_service.append_to_session(
+                            session_id=session_id,
+                            execution_result=result,
+                            trigger=clean_trigger,
+                            operator_id=clean_operator_id,
+                        )
+                    except Exception as exc:
+                        log_boundary_violation(
+                            violation_type="session_error",
+                            endpoint=endpoint_label,
+                            operator_id=clean_operator_id,
+                            payload={"session_id": session_id},
+                            details={"exception_type": type(exc).__name__},
+                        )
+                return result
 
             log_boundary_violation(
                 violation_type="axis_error",
@@ -150,11 +192,29 @@ class ExecutionService:
                 payload=request_payload,
                 details={"status_code": adapter_response.get("status_code")},
             )
-            return self._failure(
+            result = self._failure(
                 error_type="axis_error",
                 message="AXIS request failed.",
                 safe_details={"status_code": adapter_response.get("status_code")},
             )
+            if session_id and self.session_service is not None:
+                try:
+                    self.session_service.append_to_session(
+                        session_id=session_id,
+                        execution_result=result,
+                        trigger=clean_trigger,
+                        operator_id=clean_operator_id,
+                    )
+                except Exception as exc:
+                    log_boundary_violation(
+                        violation_type="session_error",
+                        endpoint=endpoint_label,
+                        operator_id=clean_operator_id,
+                        payload={"session_id": session_id},
+                        details={"exception_type": type(exc).__name__},
+                    )
+            return result
+
         except Exception as exc:
             log_boundary_violation(
                 violation_type="axis_error",
