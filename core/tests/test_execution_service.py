@@ -48,12 +48,14 @@ class ExecutionServiceTests(unittest.TestCase):
             },
         }
         result = self.service.execute("Ship patch", operator_id="op_123")
-        self.assertEqual(result["status"], "success")
-        self.assertEqual(result["data"]["classification"], {"label": "x"})
-        self.assertEqual(result["data"]["protocol"], {"name": "p"})
-        self.assertEqual(result["data"]["action"], {"id": "s1"})
-        self.assertEqual(result["data"]["outcome"], {"status": "ok"})
-        self.assertEqual(result["data"]["continuity"], {"id": "c1"})
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["axis"]["classification"], {"label": "x"})
+        self.assertEqual(result["axis"]["protocol"], {"name": "p"})
+        self.assertEqual(result["axis"]["action"], {"id": "s1"})
+        self.assertEqual(result["axis"]["outcome"], {"status": "ok"})
+        self.assertEqual(result["axis"]["continuity"], {"id": "c1"})
+        self.assertEqual(result["pipeline"]["source"], "axis_adapter")
+        self.assertEqual(result["pipeline"]["status_code"], 200)
         self.adapter.call_axis.assert_called_once_with(
             "POST",
             "/api/v2/execute",
@@ -63,7 +65,7 @@ class ExecutionServiceTests(unittest.TestCase):
 
     def test_missing_operator_id_returns_validation_failure(self):
         result = self.service.execute("Do work", operator_id="")
-        self.assertEqual(result["status"], "failure")
+        self.assertFalse(result["ok"])
         self.assertEqual(result["error_type"], "validation_error")
         self.assertEqual(result["safe_details"]["field"], "operator_id")
         self.adapter.call_axis.assert_not_called()
@@ -73,7 +75,7 @@ class ExecutionServiceTests(unittest.TestCase):
 
     def test_empty_trigger_returns_validation_failure(self):
         result = self.service.execute("   ", operator_id="op_123")
-        self.assertEqual(result["status"], "failure")
+        self.assertFalse(result["ok"])
         self.assertEqual(result["error_type"], "validation_error")
         self.assertEqual(result["safe_details"]["field"], "trigger")
         self.adapter.call_axis.assert_not_called()
@@ -89,7 +91,7 @@ class ExecutionServiceTests(unittest.TestCase):
             "endpoint": "POST /api/v2/execute",
         }
         result = self.service.execute("Do work", operator_id="op_123")
-        self.assertEqual(result["status"], "failure")
+        self.assertFalse(result["ok"])
         self.assertEqual(result["error_type"], "boundary_violation")
         self.assertIn("rejected", result["message"].lower())
         self.assertEqual(result["safe_details"]["violation_type"], "forbidden_endpoint")
@@ -107,18 +109,34 @@ class ExecutionServiceTests(unittest.TestCase):
         self.adapter.call_axis.return_value = {"ok": True, "status_code": 200, "data": payload}
         request_obj = {"operator_id": "op_999", "trigger": "Hello", "client_tag": "abc123"}
         result = self.service.execute(request_obj)
-        self.assertEqual(result["status"], "success")
-        self.assertEqual(result["data"]["classification"], payload["classification"])
-        self.assertEqual(result["data"]["protocol"], payload["protocol"])
-        self.assertEqual(result["data"]["action"], payload["action"])
-        self.assertEqual(result["data"]["outcome"], payload["outcome"])
-        self.assertEqual(result["data"]["continuity"], payload["continuity"])
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["axis"]["classification"], payload["classification"])
+        self.assertEqual(result["axis"]["protocol"], payload["protocol"])
+        self.assertEqual(result["axis"]["action"], payload["action"])
+        self.assertEqual(result["axis"]["outcome"], payload["outcome"])
+        self.assertEqual(result["axis"]["continuity"], payload["continuity"])
         self.adapter.call_axis.assert_called_once_with(
             "POST",
             "/api/v2/execute",
             "op_999",
             payload={"trigger": "Hello", "client_tag": "abc123"},
         )
+
+    def test_gated_success_passes_through_gate_shape(self):
+        self.adapter.call_axis.return_value = {
+            "ok": True,
+            "status_code": 200,
+            "data": {
+                "gated": True,
+                "gate_type": "breath",
+                "message": "Pause and breathe.",
+            },
+        }
+        result = self.service.execute("Need a pause", operator_id="op_111")
+        self.assertTrue(result["ok"])
+        self.assertTrue(result["gated"])
+        self.assertEqual(result["gate_type"], "breath")
+        self.assertEqual(result["message"], "Pause and breathe.")
 
 
 if __name__ == "__main__":

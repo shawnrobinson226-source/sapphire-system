@@ -23,7 +23,7 @@ class ExecutionService:
     @staticmethod
     def _failure(error_type: str, message: str, safe_details: dict[str, Any] | None = None) -> dict:
         return {
-            "status": "failure",
+            "ok": False,
             "error_type": error_type,
             "message": message,
             "safe_details": safe_details or {},
@@ -38,15 +38,19 @@ class ExecutionService:
             return steps[0]
         return None
 
-    def _normalize_success(self, axis_data: dict[str, Any]) -> dict:
+    def _normalize_success(self, axis_data: dict[str, Any], *, status_code: int | None = None) -> dict:
         return {
-            "status": "success",
-            "data": {
+            "ok": True,
+            "axis": {
                 "classification": axis_data.get("classification"),
                 "protocol": axis_data.get("protocol"),
                 "action": self._first_action(axis_data),
                 "outcome": axis_data.get("outcome"),
                 "continuity": axis_data.get("continuity"),
+            },
+            "pipeline": {
+                "source": "axis_adapter",
+                "status_code": status_code,
             },
         }
 
@@ -107,7 +111,17 @@ class ExecutionService:
                 axis_data = adapter_response.get("data")
                 if not isinstance(axis_data, dict):
                     axis_data = {}
-                return self._normalize_success(axis_data)
+                if axis_data.get("gated") is True:
+                    return {
+                        "ok": True,
+                        "gated": True,
+                        "gate_type": axis_data.get("gate_type"),
+                        "message": axis_data.get("message", ""),
+                    }
+                return self._normalize_success(
+                    axis_data,
+                    status_code=adapter_response.get("status_code"),
+                )
 
             if adapter_response.get("error") == "boundary_violation":
                 log_boundary_violation(
