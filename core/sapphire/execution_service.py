@@ -192,10 +192,23 @@ class ExecutionService:
                 payload=request_payload,
                 details={"status_code": adapter_response.get("status_code")},
             )
+            axis_data = adapter_response.get("data")
+            status_code = adapter_response.get("status_code")
+            message = "AXIS request failed."
+            safe_details: dict[str, Any] = {"status_code": status_code}
+            if isinstance(axis_data, dict):
+                axis_error = axis_data.get("error")
+                axis_ok = axis_data.get("ok")
+                axis_version = axis_data.get("version")
+                if axis_ok is False and isinstance(axis_error, str) and axis_error.strip():
+                    message = axis_error.strip()
+                    safe_details = {}
+                    if isinstance(axis_version, str) and axis_version.strip():
+                        safe_details["version"] = axis_version.strip()
             result = self._failure(
                 error_type="axis_error",
-                message="AXIS request failed.",
-                safe_details={"status_code": adapter_response.get("status_code")},
+                message=message,
+                safe_details=safe_details,
             )
             if session_id and self.session_service is not None:
                 try:

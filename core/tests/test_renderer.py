@@ -61,6 +61,21 @@ class RendererTests(unittest.TestCase):
         )
         self._assert_no_injected_language(output)
 
+    def test_failure_renderer_displays_preserved_axis_error_message(self):
+        output = render_failure(
+            {
+                "ok": False,
+                "error_type": "axis_error",
+                "message": "Guard blocked session",
+                "safe_details": {"version": "v2.3.1"},
+            }
+        )
+        self.assertEqual(
+            output,
+            "=== EXECUTION FAILURE ===\nType: axis_error\nMessage: Guard blocked session",
+        )
+        self._assert_no_injected_language(output)
+
     def test_gated_response_renders_correctly(self):
         output = render_gated(
             {

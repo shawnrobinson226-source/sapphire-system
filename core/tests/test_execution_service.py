@@ -138,6 +138,34 @@ class ExecutionServiceTests(unittest.TestCase):
         self.assertEqual(result["gate_type"], "breath")
         self.assertEqual(result["message"], "Pause and breathe.")
 
+    def test_structured_axis_error_json_is_preserved(self):
+        self.adapter.call_axis.return_value = {
+            "ok": False,
+            "status_code": 403,
+            "data": {
+                "ok": False,
+                "error": "Guard blocked session",
+                "version": "v2.3.1",
+            },
+        }
+        result = self.service.execute("Guarded request", operator_id="op_333")
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["error_type"], "axis_error")
+        self.assertEqual(result["message"], "Guard blocked session")
+        self.assertEqual(result["safe_details"], {"version": "v2.3.1"})
+
+    def test_non_json_or_unusable_axis_error_falls_back_to_generic(self):
+        self.adapter.call_axis.return_value = {
+            "ok": False,
+            "status_code": 500,
+            "data": {"text": "<html>error</html>"},
+        }
+        result = self.service.execute("Server issue", operator_id="op_444")
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["error_type"], "axis_error")
+        self.assertEqual(result["message"], "AXIS request failed.")
+        self.assertEqual(result["safe_details"].get("status_code"), 500)
+
 
 if __name__ == "__main__":
     unittest.main()

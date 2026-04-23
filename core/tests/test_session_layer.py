@@ -117,6 +117,25 @@ class SessionLayerTests(unittest.TestCase):
         self.assertEqual(entry["result_type"], "failure")
         self.assertEqual(entry["failure"]["error_type"], "boundary_violation")
 
+    def test_structured_axis_error_message_is_stored_without_mutation(self):
+        session = self.session_service.create_session("op_1")
+        self.adapter.call_axis.return_value = {
+            "ok": False,
+            "status_code": 403,
+            "data": {
+                "ok": False,
+                "error": "Guard blocked session",
+                "version": "v2.3.1",
+            },
+        }
+        result = self.execution_service.execute("Guarded", operator_id="op_1", session_id=session["session_id"])
+        self.assertEqual(result["message"], "Guard blocked session")
+        loaded = self.session_service.get_session(session["session_id"])
+        entry = loaded["entries"][0]
+        self.assertEqual(entry["result_type"], "failure")
+        self.assertEqual(entry["failure"]["error_type"], "axis_error")
+        self.assertEqual(entry["failure"]["message"], "Guard blocked session")
+
     def test_pipeline_metadata_is_not_stored(self):
         session = self.session_service.create_session("op_1")
         self._mock_success()
