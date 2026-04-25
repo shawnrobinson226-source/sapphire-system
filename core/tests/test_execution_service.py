@@ -107,7 +107,15 @@ class ExecutionServiceTests(unittest.TestCase):
             "continuity": {"token": "abc"},
         }
         self.adapter.call_axis.return_value = {"ok": True, "status_code": 200, "data": payload}
-        request_obj = {"operator_id": "op_999", "trigger": "Hello", "client_tag": "abc123"}
+        request_obj = {
+            "operator_id": "op_999",
+            "trigger": "Hello",
+            "classification": "narrative",
+            "next_action": "Write facts.",
+            "reference": True,
+            "stability": 6,
+            "impact": 4,
+        }
         result = self.service.execute(request_obj)
         self.assertTrue(result["ok"])
         self.assertEqual(result["axis"]["classification"], payload["classification"])
@@ -119,8 +127,30 @@ class ExecutionServiceTests(unittest.TestCase):
             "POST",
             "/api/v2/execute",
             "op_999",
-            payload={"trigger": "Hello", "client_tag": "abc123"},
+            payload={
+                "trigger": "Hello",
+                "classification": "narrative",
+                "next_action": "Write facts.",
+                "reference": True,
+                "stability": 6,
+                "impact": 4,
+            },
         )
+
+    def test_old_distortion_class_field_is_rejected_before_axis(self):
+        result = self.service.execute(
+            {
+                "operator_id": "op_999",
+                "trigger": "Hello",
+                "distortion_class": "narrative",
+                "next_action": "Write facts.",
+            }
+        )
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["error_type"], "validation_error")
+        self.assertEqual(result["safe_details"]["field"], "axis_payload")
+        self.assertIn("distortion_class", result["safe_details"]["unknown_fields"])
+        self.adapter.call_axis.assert_not_called()
 
     def test_gated_success_passes_through_gate_shape(self):
         self.adapter.call_axis.return_value = {

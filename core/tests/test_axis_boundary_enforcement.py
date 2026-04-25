@@ -117,7 +117,7 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
     def test_boundary_rules_do_not_silently_degrade(self, mock_request):
         result = self.adapter.execute(
             trigger="user text should not be logged",
-            distortion_class="not-allowed",
+            classification="not-allowed",
             next_action="do thing",
             operator_id="op_321",
         )
@@ -129,10 +129,37 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
         self.assertEqual(logs[-1]["violation_type"], "invalid_distortion_class")
         self.assertEqual(logs[-1]["operator_id"], "op_321")
         self.assertEqual(logs[-1]["payload_snapshot"]["type"], "dict")
-        self.assertIn("distortion_class", logs[-1]["payload_snapshot"]["keys"])
+        self.assertIn("classification", logs[-1]["payload_snapshot"]["keys"])
         # Ensure raw sensitive value is never written into the payload snapshot.
         snapshot_json = json.dumps(logs[-1]["payload_snapshot"])
         self.assertNotIn("not-allowed", snapshot_json)
+
+    @mock.patch("core.sapphire.axis_adapter.requests.request")
+    def test_execute_sends_classification_contract(self, mock_request):
+        mock_request.return_value = _FakeResponse(200, {"ok": True})
+        result = self.adapter.execute(
+            trigger="user text",
+            classification="narrative",
+            next_action="do thing",
+            operator_id="op_321",
+            reference=True,
+            stability=6,
+            impact=4,
+        )
+        self.assertTrue(result["ok"])
+        _, kwargs = mock_request.call_args
+        self.assertEqual(
+            kwargs["json"],
+            {
+                "trigger": "user text",
+                "classification": "narrative",
+                "next_action": "do thing",
+                "stability": 6,
+                "reference": True,
+                "impact": 4,
+            },
+        )
+        self.assertNotIn("distortion_class", kwargs["json"])
 
 
 if __name__ == "__main__":

@@ -127,35 +127,42 @@ class AxisAdapter:
     def execute(
         self,
         trigger: str,
-        distortion_class: str,
+        classification: str,
         next_action: str,
         operator_id: str,
+        stability: float | None = None,
+        reference: bool | None = None,
+        impact: float | None = None,
     ) -> dict:
         clean_trigger = self._require_non_empty_string(trigger, "trigger")
-        clean_distortion_class = self._require_non_empty_string(
-            distortion_class, "distortion_class"
-        )
+        clean_classification = self._require_non_empty_string(classification, "classification")
         clean_next_action = self._require_non_empty_string(next_action, "next_action")
 
-        if clean_distortion_class not in ALLOWED_DISTORTION_CLASSES:
+        if clean_classification not in ALLOWED_DISTORTION_CLASSES:
             log_boundary_violation(
                 violation_type="invalid_distortion_class",
                 endpoint="POST /api/v2/execute",
                 operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
-                payload={"distortion_class": clean_distortion_class},
+                payload={"classification": clean_classification},
             )
             return self._boundary_failure(
                 violation_type="invalid_distortion_class",
                 endpoint="POST /api/v2/execute",
-                message="distortion_class is not allowed by Sapphire lock.",
+                message="classification is not allowed by Sapphire lock.",
                 operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
             )
 
         payload = {
             "trigger": clean_trigger,
-            "distortion_class": clean_distortion_class,
+            "classification": clean_classification,
             "next_action": clean_next_action,
         }
+        if stability is not None:
+            payload["stability"] = stability
+        if reference is not None:
+            payload["reference"] = reference
+        if impact is not None:
+            payload["impact"] = impact
         return self.call_axis("POST", "/api/v2/execute", operator_id, payload=payload)
 
     def fetch_analytics(self, operator_id: str) -> dict:

@@ -8,6 +8,16 @@ from core.sapphire.axis_adapter import AxisAdapter
 from core.sapphire.session_service import SessionService
 from core.security.violations import log_boundary_violation
 
+AXIS_EXECUTE_FIELDS = {
+    "trigger",
+    "classification",
+    "next_action",
+    "outcome",
+    "stability",
+    "reference",
+    "impact",
+}
+
 
 class ExecutionService:
     """Thin orchestration layer over AxisAdapter with a stable public response shape."""
@@ -30,6 +40,10 @@ class ExecutionService:
             "message": message,
             "safe_details": safe_details or {},
         }
+
+    @staticmethod
+    def _unknown_axis_fields(payload: dict[str, Any]) -> list[str]:
+        return sorted(key for key in payload if key not in AXIS_EXECUTE_FIELDS)
 
     @staticmethod
     def _first_action(axis_data: dict[str, Any]) -> Any:
@@ -107,6 +121,21 @@ class ExecutionService:
                 )
 
             request_payload["trigger"] = clean_trigger
+            unknown_fields = self._unknown_axis_fields(request_payload)
+            if unknown_fields:
+                log_boundary_violation(
+                    violation_type="validation_error",
+                    endpoint=endpoint_label,
+                    operator_id=clean_operator_id,
+                    payload={"unknown_fields": unknown_fields},
+                    details={"field": "axis_payload"},
+                )
+                return self._failure(
+                    error_type="validation_error",
+                    message="Request contains fields outside the AXIS contract.",
+                    safe_details={"field": "axis_payload", "unknown_fields": unknown_fields},
+                )
+
             adapter_response = self.axis_adapter.call_axis(
                 "POST",
                 "/api/v2/execute",

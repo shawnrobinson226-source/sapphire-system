@@ -3,6 +3,7 @@ AXIS (VANTA) integration tools for Sapphire.
 """
 
 import logging
+import math
 from typing import Any, Dict, Tuple
 
 import requests
@@ -35,20 +36,32 @@ TOOLS = [
                         "type": "string",
                         "description": "AXIS trigger name or payload string.",
                     },
-                    "distortion_class": {
+                    "classification": {
                         "type": "string",
-                        "description": "AXIS distortion class value.",
+                        "description": "AXIS classification value.",
                     },
                     "next_action": {
                         "type": "string",
                         "description": "AXIS next action value.",
+                    },
+                    "stability": {
+                        "type": "number",
+                        "description": "Optional AXIS guard stability value.",
+                    },
+                    "reference": {
+                        "type": "boolean",
+                        "description": "Optional AXIS guard reference value.",
+                    },
+                    "impact": {
+                        "type": "number",
+                        "description": "Optional AXIS guard impact value.",
                     },
                     "operator_id": {
                         "type": "string",
                         "description": "Operator ID passed in x-operator-id header.",
                     },
                 },
-                "required": ["trigger", "distortion_class", "next_action", "operator_id"],
+                "required": ["trigger", "classification", "next_action", "operator_id"],
             },
         },
     },
@@ -109,6 +122,10 @@ def _validate_operator_id(operator_id: str) -> Tuple[Dict[str, Any] | None, bool
     return None, True
 
 
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
 def _request_axis(
     method: str,
     endpoint: str,
@@ -151,22 +168,37 @@ def _request_axis(
 
 
 def _execute_axis(
-    trigger: str,
+    trigger: Any,
     operator_id: str,
-    distortion_class: str,
-    next_action: str,
+    classification: Any,
+    next_action: Any,
+    stability: Any = None,
+    reference: Any = None,
+    impact: Any = None,
 ) -> Tuple[Dict[str, Any], bool]:
-    if not trigger or not trigger.strip():
+    if not isinstance(trigger, str) or not trigger.strip():
         return {"error": "A non-empty 'trigger' is required."}, False
-    if not distortion_class or not distortion_class.strip():
-        return {"error": "A non-empty 'distortion_class' is required."}, False
-    if not next_action or not next_action.strip():
+    if not isinstance(classification, str) or not classification.strip():
+        return {"error": "A non-empty 'classification' is required."}, False
+    if not isinstance(next_action, str) or not next_action.strip():
         return {"error": "A non-empty 'next_action' is required."}, False
+    if stability is not None and not _is_number(stability):
+        return {"error": "'stability' must be a number when provided."}, False
+    if reference is not None and not isinstance(reference, bool):
+        return {"error": "'reference' must be a boolean when provided."}, False
+    if impact is not None and not _is_number(impact):
+        return {"error": "'impact' must be a number when provided."}, False
     payload = {
         "trigger": trigger.strip(),
-        "distortion_class": distortion_class.strip(),
+        "classification": classification.strip(),
         "next_action": next_action.strip(),
     }
+    if stability is not None:
+        payload["stability"] = stability
+    if reference is not None:
+        payload["reference"] = reference
+    if impact is not None:
+        payload["impact"] = impact
     return _request_axis("POST", "execute", operator_id, payload)
 
 
@@ -185,8 +217,11 @@ def execute(function_name, arguments, config, plugin_settings=None):
         return _execute_axis(
             trigger=arguments.get("trigger", ""),
             operator_id=arguments.get("operator_id", ""),
-            distortion_class=arguments.get("distortion_class", ""),
+            classification=arguments.get("classification", ""),
             next_action=arguments.get("next_action", ""),
+            stability=arguments.get("stability"),
+            reference=arguments.get("reference"),
+            impact=arguments.get("impact"),
         )
 
     if function_name == "fetch_axis_analytics":
