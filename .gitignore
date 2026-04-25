@@ -50,3 +50,4 @@ tmp_*.py
 Thumbs.db
 .vscode/
 .idea/
+user/
