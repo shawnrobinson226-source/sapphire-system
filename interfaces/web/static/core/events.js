@@ -18,7 +18,7 @@ import {
 } from '../features/chat-manager.js';
 
 // Handlers
-import { handleSend, handleStop, handleInput, handleKeyDown, triggerSendWithText } from '../handlers/send-handlers.js';
+import { handleSend, handleStop, handleInput, handleKeyDown } from '../handlers/send-handlers.js';
 import { handleToolbar } from '../handlers/message-handlers.js';
 
 // Nav rail integration
@@ -42,14 +42,14 @@ export function bindAllEvents() {
 
     // Mic button - dual purpose (TTS stop or record)
     el.micBtn.addEventListener('mousedown', handleMicPress);
-    el.micBtn.addEventListener('mouseup', () => handleMicRelease(triggerSendWithText));
+    el.micBtn.addEventListener('mouseup', handleMicRelease);
     el.micBtn.addEventListener('touchstart', e => { e.preventDefault(); handleMicPress(); });
-    el.micBtn.addEventListener('touchend', () => handleMicRelease(triggerSendWithText));
+    el.micBtn.addEventListener('touchend', handleMicRelease);
     el.micBtn.addEventListener('contextmenu', e => {
         e.preventDefault();
-        audio.forceStop(el.micBtn, triggerSendWithText);
+        audio.stop(true);
     });
-    el.micBtn.addEventListener('mouseleave', () => handleMicLeave(triggerSendWithText));
+    el.micBtn.addEventListener('mouseleave', handleMicLeave);
 
     // Chat container toolbar clicks (event delegation)
     el.container.addEventListener('click', e => {
@@ -100,7 +100,7 @@ export function bindAllEvents() {
     });
 
     // Document-level events
-    document.addEventListener('visibilitychange', () => handleVisibilityChange(triggerSendWithText));
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Image ready handler (for inline cloning)
     document.addEventListener('imageReady', handleImageReady);

@@ -11,13 +11,19 @@ def read(path):
 def test_browser_mic_targets_main_chat_input_only():
     template = read("interfaces/web/templates/index.html")
     mic_js = read("interfaces/web/static/features/mic.js")
+    events_js = read("interfaces/web/static/core/events.js")
 
     assert 'id="prompt-input"' in template
     assert 'id="mic-btn"' in template
+    assert 'title="Use microphone"' in template
     assert "window.SpeechRecognition || window.webkitSpeechRecognition" in mic_js
     assert "const { input } = getElements();" in mic_js
     assert "input.value = text || '';" in mic_js
     assert "ui.showToast(message, 'error')" in mic_js
+    assert "audio.handlePress" not in mic_js
+    assert "audio.handleRelease" not in mic_js
+    assert "audio.forceStop" not in events_js
+    assert "triggerSendWithText" not in events_js
     assert "tri-answer-input" not in mic_js
     assert "tri-mic-button" not in mic_js
 

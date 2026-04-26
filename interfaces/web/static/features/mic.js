@@ -1,7 +1,7 @@
 // features/mic.js - Mic button state, TTS detection, recording handlers
 import * as audio from '../audio.js';
 import * as ui from '../ui.js';
-import { getElements, getIsProc, getSttEnabled, getSttReady } from '../core/state.js';
+import { getElements } from '../core/state.js';
 
 let micIconPollInterval = null;
 let browserRecognition = null;
@@ -96,9 +96,8 @@ export function updateMicButtonState() {
         micBtn.title = 'Stop TTS';
     } else {
         micBtn.classList.remove('tts-playing');
-        const canRecord = getSttEnabled() && getSttReady();
-        micBtn.textContent = canRecord ? '🎤' : '🎤';
-        micBtn.title = micBtn.dataset.sttTitle || 'Hold to record';
+        micBtn.textContent = '🎤';
+        micBtn.title = micBtn.dataset.sttTitle || 'Use microphone';
     }
 }
 
@@ -118,8 +117,6 @@ export function stopMicIconPolling() {
 }
 
 export async function handleMicPress() {
-    const { micBtn } = getElements();
-    
     // If any TTS is playing (browser or local), stop it instead of recording
     if (audio.isTtsPlaying() || audio.isLocalTtsPlaying()) {
         audio.stop(true);
@@ -128,41 +125,18 @@ export async function handleMicPress() {
     }
 
     if (startBrowserSpeechRecognition()) return;
-    
-    // Block recording if STT is disabled or not initialized
-    if (!getSttEnabled() || !getSttReady()) return;
-
-    // Normal recording behavior
-    await audio.handlePress(micBtn);
 }
 
-export async function handleMicRelease(triggerSendFn) {
-    const { micBtn } = getElements();
-    if (browserRecognition || browserRecognitionActive) return;
-    
-    // If TTS was playing (we just stopped it), do nothing on release
-    if (micBtn.classList.contains('tts-playing')) {
-        updateMicButtonState();
-        return;
-    }
-    
-    // Normal recording release
-    await audio.handleRelease(micBtn, triggerSendFn);
+export async function handleMicRelease() {
+    updateMicButtonState();
 }
 
-export function handleMicLeave(triggerSendFn) {
-    if (browserRecognition || browserRecognitionActive) return;
-    if (audio.getRecState()) {
-        const { micBtn } = getElements();
-        setTimeout(() => {
-            if (audio.getRecState()) audio.handleRelease(micBtn, triggerSendFn);
-        }, 500);
-    }
+export function handleMicLeave() {
+    updateMicButtonState();
 }
 
-export function handleVisibilityChange(triggerSendFn) {
-    if (document.hidden && audio.getRecState()) {
-        const { micBtn } = getElements();
-        audio.forceStop(micBtn, triggerSendFn);
+export function handleVisibilityChange() {
+    if (document.hidden && browserRecognitionActive && browserRecognition) {
+        browserRecognition.stop();
     }
 }
