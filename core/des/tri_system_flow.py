@@ -5,6 +5,7 @@ from pprint import pprint
 from core.des.service import DESFlow
 from core.des.client import check_health
 from core.des.axis_preview import build_axis_preview
+from core.identity.operator import resolve_operator_id
 from plugins.axis_integration.axis_tools import _execute_axis
 
 
@@ -97,7 +98,7 @@ class TriSystemFlow:
             print("Execution cancelled. AXIS was not called.")
             return
 
-        operator_id = input("operator_id: ").strip()
+        operator_id = resolve_operator_id(prompt=True)
         if not operator_id:
             print("Missing operator_id. Execution stopped.")
             return
