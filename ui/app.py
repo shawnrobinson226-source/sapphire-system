@@ -127,6 +127,9 @@ class SapphireUIApp:
         self.state.tri_state = self.tri_flow.cancel()
         return self.state.tri_state
 
+    def get_tri_trace(self) -> list[dict[str, Any]]:
+        return self.tri_flow.get_trace()
+
     def render(self) -> str:
         return AppShell(self.state)
 
@@ -135,7 +138,7 @@ def main() -> int:
     app = SapphireUIApp()
     print("Sapphire UI Surface")
     while True:
-        command = input("Command (new/use/submit/show/render/tri/exit): ").strip().lower()
+        command = input("Command (new/use/submit/show/render/tri/tri-trace/exit): ").strip().lower()
         if command == "exit":
             return 0
         if command == "new":
@@ -182,6 +185,9 @@ def main() -> int:
                 else:
                     app.cancel_tri_flow()
                 print(app.render())
+            continue
+        if command == "tri-trace":
+            print({"trace": app.get_tri_trace()})
             continue
         print("Unknown command.")
 

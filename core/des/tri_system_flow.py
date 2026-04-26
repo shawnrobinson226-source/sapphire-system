@@ -1,5 +1,7 @@
 """Step-driven Sapphire -> DES -> AXIS orchestration."""
 
+import time
+
 from core.des.axis_preview import build_axis_preview
 from core.des.client import check_health
 from core.des.service import DESFlow
@@ -22,6 +24,16 @@ TRI_START_PAYLOAD = {
 }
 
 CONFIRM_PROMPT = "Send this execution payload to AXIS?"
+TRACE_STEPS = {
+    "DES_REQUESTED",
+    "DES_RETURNED",
+    "AXIS_PREVIEW_SHOWN",
+    "USER_CONFIRMED",
+    "USER_CANCELLED",
+    "AXIS_EXECUTED",
+    "AXIS_REJECTED",
+}
+TRACE_STATUSES = {"ok", "fail"}
 
 
 class TriSystemFlow:
@@ -41,24 +53,35 @@ class TriSystemFlow:
         self.des_result = None
         self.axis_payload = None
         self.axis_executed = False
+        self.trace = []
+        self.preview_traced = False
 
     def start(self):
-        self.cancel()
+        self._reset_state()
+        self.trace = []
+        self._trace("DES_REQUESTED", "ok")
         health = self.health_check()
         if self._has_error(health):
+            self._trace("DES_RETURNED", "fail")
             return self._error("DES unavailable.", recoverable=True)
 
         trigger_res = self.flow.trigger(dict(TRI_TRIGGER_PAYLOAD))
         if self._has_error(trigger_res):
+            self._trace("DES_RETURNED", "fail")
             return self._error("DES trigger check failed.", recoverable=True)
         if not trigger_res.get("show"):
+            self._trace("DES_RETURNED", "fail")
             return self._error("DES not triggered.", recoverable=True)
 
         start_res = self.flow.start(dict(TRI_START_PAYLOAD))
         if self._has_error(start_res):
+            self._trace("DES_RETURNED", "fail")
             return self._error("DES interaction failed to start.", recoverable=True)
 
-        return self._set_question(start_res.get("question"))
+        question_state = self._set_question(start_res.get("question"))
+        if question_state.get("type") == "error":
+            self._trace("DES_RETURNED", "fail")
+        return question_state
 
     def submit_answer(self, answer):
         if not self.question:
@@ -72,6 +95,7 @@ class TriSystemFlow:
         )
 
         if self._has_error(response):
+            self._trace("DES_RETURNED", "fail")
             return self._error("DES interaction failed.", recoverable=True)
 
         if response.get("done"):
@@ -79,13 +103,21 @@ class TriSystemFlow:
             self.des_result = response
             self.axis_payload = build_axis_preview(response)
             self.axis_executed = False
+            self.preview_traced = False
+            self._trace("DES_RETURNED", "ok")
             return self._state("result", response)
 
-        return self._set_question(response.get("question"))
+        question_state = self._set_question(response.get("question"))
+        if question_state.get("type") == "error":
+            self._trace("DES_RETURNED", "fail")
+        return question_state
 
     def axis_preview(self):
         if not self.axis_payload:
             return self._error("AXIS preview is not available.", recoverable=True)
+        if not self.preview_traced:
+            self._trace("AXIS_PREVIEW_SHOWN", "ok")
+            self.preview_traced = True
         return self._state("axis_preview", self.axis_payload)
 
     def confirm_state(self):
@@ -105,6 +137,7 @@ class TriSystemFlow:
         if self.axis_executed:
             return self._error("AXIS execution already completed.", recoverable=False)
 
+        self._trace("USER_CONFIRMED", "ok")
         operator_id = self.identity_resolver(prompt=True)
         if not operator_id:
             return self._error("Missing operator_id. Execution stopped.", recoverable=True)
@@ -120,15 +153,26 @@ class TriSystemFlow:
             impact=self.axis_payload["impact"],
         )
         if not ok:
+            self._trace("AXIS_REJECTED", "fail")
             return self._error("AXIS execution failed.", recoverable=True, data=axis_result)
+        self._trace("AXIS_EXECUTED", "ok")
         return self._state("axis_result", axis_result)
 
     def cancel(self):
+        if self.axis_payload:
+            self._trace("USER_CANCELLED", "ok")
+        self._reset_state()
+        return self._state("idle", {})
+
+    def get_trace(self):
+        return [dict(event) for event in self.trace]
+
+    def _reset_state(self):
         self.question = None
         self.des_result = None
         self.axis_payload = None
         self.axis_executed = False
-        return self._state("idle", {})
+        self.preview_traced = False
 
     def _set_question(self, question):
         if not self._valid_question(question):
@@ -164,6 +208,17 @@ class TriSystemFlow:
             "type": state_type,
             "data": data,
         }
+
+    def _trace(self, step, status):
+        if step not in TRACE_STEPS or status not in TRACE_STATUSES:
+            return
+        self.trace.append(
+            {
+                "timestamp": time.time(),
+                "step": step,
+                "status": status,
+            }
+        )
 
     @classmethod
     def _error(cls, message, *, recoverable, data=None):

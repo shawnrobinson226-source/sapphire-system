@@ -111,6 +111,8 @@ def test_des_offline_fails_closed_without_starting_flow():
     }
     assert fake_des.trigger_payload is None
     assert fake_des.start_payload is None
+    assert [event["step"] for event in flow.get_trace()] == ["DES_REQUESTED", "DES_RETURNED"]
+    assert flow.get_trace()[-1]["status"] == "fail"
 
 
 def test_invalid_des_answer_response_stops_flow():
@@ -147,11 +149,18 @@ def test_operator_selects_no_makes_no_axis_call():
 
     flow = make_flow(axis_executor=lambda **kwargs: (axis_calls.append(kwargs) or {"ok": True}, True))
     advance_to_preview(flow)
+    flow.axis_preview()
 
     state = flow.cancel()
 
     assert state == {"type": "idle", "data": {}}
     assert axis_calls == []
+    assert [event["step"] for event in flow.get_trace()] == [
+        "DES_REQUESTED",
+        "DES_RETURNED",
+        "AXIS_PREVIEW_SHOWN",
+        "USER_CANCELLED",
+    ]
 
 
 def test_des_never_calls_axis_directly_before_confirmation():
@@ -179,6 +188,7 @@ def test_confirm_reads_identity_and_calls_axis_once():
 
     flow = make_flow(identity_resolver=identity, axis_executor=axis)
     advance_to_preview(flow)
+    flow.axis_preview()
 
     state = flow.confirm()
 
@@ -189,6 +199,13 @@ def test_confirm_reads_identity_and_calls_axis_once():
     assert identity_calls == [True]
     assert len(axis_calls) == 1
     assert axis_calls[0]["operator_id"] == "operator-1"
+    assert [event["step"] for event in flow.get_trace()] == [
+        "DES_REQUESTED",
+        "DES_RETURNED",
+        "AXIS_PREVIEW_SHOWN",
+        "USER_CONFIRMED",
+        "AXIS_EXECUTED",
+    ]
 
 
 def test_missing_operator_id_prompt_occurs_only_after_confirmation():
@@ -239,6 +256,7 @@ def test_axis_rejection_does_not_retry_or_mutate_payload():
 
     flow = make_flow(axis_executor=reject_axis)
     advance_to_preview(flow)
+    flow.axis_preview()
     original_payload = dict(flow.axis_payload)
 
     first = flow.confirm()
@@ -255,6 +273,13 @@ def test_axis_rejection_does_not_retry_or_mutate_payload():
     }
     assert len(axis_calls) == 1
     assert flow.axis_payload == original_payload
+    assert [event["step"] for event in flow.get_trace()] == [
+        "DES_REQUESTED",
+        "DES_RETURNED",
+        "AXIS_PREVIEW_SHOWN",
+        "USER_CONFIRMED",
+        "AXIS_REJECTED",
+    ]
 
 
 def test_no_operator_id_in_des_payloads():
@@ -318,6 +343,39 @@ def test_boundary_rendering_contains_no_sensitive_answer_or_rejection_detail():
     assert "AXIS execution failed." in rendered
 
 
+def test_trace_events_have_only_safe_fields():
+    flow = make_flow()
+    advance_to_preview(flow)
+    flow.axis_preview()
+    flow.confirm()
+
+    for event in flow.get_trace():
+        assert set(event) == {"timestamp", "step", "status"}
+        assert isinstance(event["timestamp"], float)
+        assert event["status"] in {"ok", "fail"}
+
+
+def test_trace_contains_no_user_input_or_payload_fields():
+    sensitive_answer = "SECRET-TRACE-ANSWER"
+    flow = make_flow(NonPersistingDESFlow())
+
+    flow.start()
+    flow.submit_answer(sensitive_answer)
+    flow.axis_preview()
+    flow.confirm()
+
+    trace_text = repr(flow.get_trace())
+
+    assert sensitive_answer not in trace_text
+    assert "trigger" not in trace_text
+    assert "classification" not in trace_text
+    assert "next_action" not in trace_text
+    assert "reference" not in trace_text
+    assert "stability" not in trace_text
+    assert "impact" not in trace_text
+    assert "operator_id" not in trace_text
+
+
 def test_tri_flow_mount_renders_result_preview_and_confirm():
     flow = make_flow()
     app = SapphireUIApp(tri_flow_factory=lambda: flow)
@@ -335,3 +393,21 @@ def test_tri_flow_mount_renders_result_preview_and_confirm():
     assert "classification:" in rendered
     assert "next_action:" in rendered
     assert "Options: Confirm / Cancel" in rendered
+
+
+def test_ui_debug_trace_exposes_only_safe_events():
+    flow = make_flow()
+    app = SapphireUIApp(tri_flow_factory=lambda: flow)
+
+    app.start_tri_flow()
+    app.submit_tri_answer("SECRET-UI-ANSWER")
+    app.confirm_tri_flow()
+
+    trace = app.get_tri_trace()
+    trace_text = repr(trace)
+
+    assert trace
+    assert all(set(event) == {"timestamp", "step", "status"} for event in trace)
+    assert "SECRET-UI-ANSWER" not in trace_text
+    assert "operator_id" not in trace_text
+    assert "classification" not in trace_text
