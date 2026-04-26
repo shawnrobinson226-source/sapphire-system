@@ -11,6 +11,9 @@ class UIState:
     operator_id: str = ""
     session_id: str = ""
     latest_response: dict[str, Any] | None = None
+    tri_state: dict[str, Any] | None = None
+    tri_des_result: dict[str, Any] | None = None
+    tri_axis_preview: dict[str, Any] | None = None
     session_history: list[dict[str, Any]] = field(default_factory=list)
     loading: bool = False
     safe_error: str = ""

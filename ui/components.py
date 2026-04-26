@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ui.state import UIState
-from ui.views import render_history_entry, render_result
+from ui.views import render_history_entry, render_result, render_tri_state
 
 
 def SessionControls(state: UIState) -> str:
@@ -30,6 +30,12 @@ def ResultView(state: UIState) -> str:
     return "Latest Result" if not body else f"Latest Result\n{body}"
 
 
+def TriSystemView(state: UIState) -> str:
+    blocks = [render_tri_state(item) for item in [state.tri_des_result, state.tri_axis_preview, state.tri_state]]
+    body = "\n\n".join(block for block in blocks if block)
+    return "Tri-System Flow" if not body else body
+
+
 def HistoryView(state: UIState) -> str:
     if not state.session_history:
         return "Session History"
@@ -43,6 +49,7 @@ def AppShell(state: UIState) -> str:
             SessionControls(state),
             TriggerForm(state),
             ResultView(state),
+            TriSystemView(state),
             HistoryView(state),
         ]
     )

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import os
-from typing import Any
+from typing import Any, Callable
 
+from core.des.tri_system_flow import TriSystemFlow
 from core.sapphire.axis_adapter import AxisAdapter
 from core.sapphire.execution_service import ExecutionService
 from core.sapphire.session_service import SessionService
@@ -23,6 +24,8 @@ class SapphireUIApp:
         session_service: SessionService | None = None,
         state: UIState | None = None,
         axis_base_url: str | None = None,
+        tri_flow: TriSystemFlow | None = None,
+        tri_flow_factory: Callable[[], TriSystemFlow] | None = None,
     ):
         self.state = state or UIState()
         if session_service is None:
@@ -34,6 +37,8 @@ class SapphireUIApp:
             adapter = AxisAdapter(axis_base_url=axis_base_url or os.environ.get("AXIS_BASE_URL", "http://localhost:3000"))
             execution_service = ExecutionService(axis_adapter=adapter, session_service=self.session_service)
         self.execution_service = execution_service
+        self.tri_flow_factory = tri_flow_factory or TriSystemFlow
+        self.tri_flow = tri_flow or self.tri_flow_factory()
 
     @staticmethod
     def _clean_non_empty(value: Any, field_name: str) -> str:
@@ -95,6 +100,33 @@ class SapphireUIApp:
         self.state.safe_error = ""
         return self.state.session_history
 
+    def start_tri_flow(self) -> dict[str, Any]:
+        self.tri_flow = self.tri_flow_factory()
+        self.state.tri_des_result = None
+        self.state.tri_axis_preview = None
+        self.state.tri_state = self.tri_flow.start()
+        return self.state.tri_state
+
+    def submit_tri_answer(self, answer: str) -> dict[str, Any]:
+        state = self.tri_flow.submit_answer(answer)
+        if state.get("type") == "result":
+            self.state.tri_des_result = state
+            self.state.tri_axis_preview = self.tri_flow.axis_preview()
+            self.state.tri_state = self.tri_flow.confirm_state()
+        else:
+            self.state.tri_state = state
+        return self.state.tri_state
+
+    def confirm_tri_flow(self) -> dict[str, Any]:
+        self.state.tri_state = self.tri_flow.confirm()
+        return self.state.tri_state
+
+    def cancel_tri_flow(self) -> dict[str, Any]:
+        self.state.tri_des_result = None
+        self.state.tri_axis_preview = None
+        self.state.tri_state = self.tri_flow.cancel()
+        return self.state.tri_state
+
     def render(self) -> str:
         return AppShell(self.state)
 
@@ -103,7 +135,7 @@ def main() -> int:
     app = SapphireUIApp()
     print("Sapphire UI Surface")
     while True:
-        command = input("Command (new/use/submit/show/render/exit): ").strip().lower()
+        command = input("Command (new/use/submit/show/render/tri/exit): ").strip().lower()
         if command == "exit":
             return 0
         if command == "new":
@@ -135,6 +167,21 @@ def main() -> int:
             continue
         if command == "render":
             print(app.render())
+            continue
+        if command == "tri":
+            state = app.start_tri_flow()
+            while state.get("type") == "question":
+                print(app.render())
+                answer = input("Answer: ")
+                state = app.submit_tri_answer(answer)
+            print(app.render())
+            if state.get("type") == "confirm":
+                choice = input("Confirm or Cancel: ").strip().lower()
+                if choice == "confirm":
+                    app.confirm_tri_flow()
+                else:
+                    app.cancel_tri_flow()
+                print(app.render())
             continue
         print("Unknown command.")
 
