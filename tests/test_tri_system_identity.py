@@ -395,7 +395,7 @@ def test_tri_flow_mount_renders_result_preview_and_confirm():
     assert "Options: Confirm / Cancel" in rendered
 
 
-def test_tri_question_render_includes_mic_button_without_auto_submit_or_execute():
+def test_tri_question_render_does_not_include_hidden_mic_input():
     axis_calls = []
     flow = make_flow(axis_executor=lambda **kwargs: (axis_calls.append(kwargs) or {"ok": True}, True))
     app = SapphireUIApp(tri_flow_factory=lambda: flow)
@@ -403,15 +403,9 @@ def test_tri_question_render_includes_mic_button_without_auto_submit_or_execute(
     app.start_tri_flow()
     rendered = app.render()
 
-    assert 'id="tri-answer-input"' in rendered
-    assert 'id="tri-mic-button"' in rendered
+    assert 'id="tri-answer-input"' not in rendered
+    assert 'id="tri-mic-button"' not in rendered
     assert 'id="tri-mic-message" role="status"></span>' not in rendered
-    assert 'document.createElement("span")' in rendered
-    assert "window.SpeechRecognition || window.webkitSpeechRecognition" in rendered
-    assert 'setState("listening"' in rendered
-    assert 'setState("error", "Speech recognition is unavailable in this browser.")' in rendered
-    assert "input.value = transcript" in rendered
-    assert ".submit(" not in rendered
     assert "confirm_tri_flow" not in rendered
     assert "_execute_axis" not in rendered
     assert axis_calls == []

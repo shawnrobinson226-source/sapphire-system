@@ -32,73 +32,8 @@ def ResultView(state: UIState) -> str:
 
 def TriSystemView(state: UIState) -> str:
     blocks = [render_tri_state(item) for item in [state.tri_des_result, state.tri_axis_preview, state.tri_state]]
-    if state.tri_state and state.tri_state.get("type") == "question":
-        blocks.append(TriAnswerInput())
     body = "\n\n".join(block for block in blocks if block)
     return "Tri-System Flow" if not body else body
-
-
-def TriAnswerInput() -> str:
-    return """<div class="tri-answer-input">
-  <label for="tri-answer-input">Answer</label>
-  <input id="tri-answer-input" name="tri_answer" type="text" autocomplete="off" />
-  <button id="tri-mic-button" type="button" aria-label="Use microphone">Mic</button>
-  <span id="tri-mic-status" data-state="idle">idle</span>
-</div>
-<script>
-(function () {
-  var input = document.getElementById("tri-answer-input");
-  var button = document.getElementById("tri-mic-button");
-  var status = document.getElementById("tri-mic-status");
-  if (!input || !button || !status) {
-    return;
-  }
-  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  function setState(nextState, text) {
-    status.dataset.state = nextState;
-    status.textContent = nextState;
-    var message = document.getElementById("tri-mic-message");
-    if (!text) {
-      if (message) {
-        message.remove();
-      }
-      return;
-    }
-    if (!message) {
-      message = document.createElement("span");
-      message.id = "tri-mic-message";
-      message.setAttribute("role", "status");
-      status.insertAdjacentElement("afterend", message);
-    }
-    message.textContent = text || "";
-  }
-  if (!SpeechRecognition) {
-    setState("error", "Speech recognition is unavailable in this browser.");
-    button.disabled = true;
-    return;
-  }
-  var recognition = new SpeechRecognition();
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  button.addEventListener("click", function () {
-    setState("listening", "");
-    recognition.start();
-  });
-  recognition.addEventListener("result", function (event) {
-    var transcript = event.results[0][0].transcript || "";
-    input.value = transcript;
-    setState("idle", "");
-  });
-  recognition.addEventListener("error", function () {
-    setState("error", "Microphone input failed.");
-  });
-  recognition.addEventListener("end", function () {
-    if (status.dataset.state === "listening") {
-      setState("idle", "");
-    }
-  });
-})();
-</script>"""
 
 
 def HistoryView(state: UIState) -> str:

@@ -363,7 +363,7 @@ export async function triggerSendWithText(text) {
     const { input } = getElements();
     input.value = text;
     input.dispatchEvent(new Event('input'));
-    await handleSend();
+    input.focus();
 }
 
 export function handleInput() {
