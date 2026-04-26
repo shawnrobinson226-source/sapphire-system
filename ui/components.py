@@ -44,21 +44,32 @@ def TriAnswerInput() -> str:
   <input id="tri-answer-input" name="tri_answer" type="text" autocomplete="off" />
   <button id="tri-mic-button" type="button" aria-label="Use microphone">Mic</button>
   <span id="tri-mic-status" data-state="idle">idle</span>
-  <span id="tri-mic-message" role="status"></span>
 </div>
 <script>
 (function () {
   var input = document.getElementById("tri-answer-input");
   var button = document.getElementById("tri-mic-button");
   var status = document.getElementById("tri-mic-status");
-  var message = document.getElementById("tri-mic-message");
-  if (!input || !button || !status || !message) {
+  if (!input || !button || !status) {
     return;
   }
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   function setState(nextState, text) {
     status.dataset.state = nextState;
     status.textContent = nextState;
+    var message = document.getElementById("tri-mic-message");
+    if (!text) {
+      if (message) {
+        message.remove();
+      }
+      return;
+    }
+    if (!message) {
+      message = document.createElement("span");
+      message.id = "tri-mic-message";
+      message.setAttribute("role", "status");
+      status.insertAdjacentElement("afterend", message);
+    }
     message.textContent = text || "";
   }
   if (!SpeechRecognition) {

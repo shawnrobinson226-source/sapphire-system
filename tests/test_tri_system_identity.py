@@ -405,6 +405,8 @@ def test_tri_question_render_includes_mic_button_without_auto_submit_or_execute(
 
     assert 'id="tri-answer-input"' in rendered
     assert 'id="tri-mic-button"' in rendered
+    assert 'id="tri-mic-message" role="status"></span>' not in rendered
+    assert 'document.createElement("span")' in rendered
     assert "window.SpeechRecognition || window.webkitSpeechRecognition" in rendered
     assert 'setState("listening"' in rendered
     assert 'setState("error", "Speech recognition is unavailable in this browser.")' in rendered
