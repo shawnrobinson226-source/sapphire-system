@@ -154,6 +154,7 @@ def test_operator_selects_no_makes_no_axis_call():
     state = flow.cancel()
 
     assert state == {"type": "idle", "data": {}}
+    assert flow.pending_execution is None
     assert axis_calls == []
     assert [event["step"] for event in flow.get_trace()] == [
         "DES_REQUESTED",
@@ -172,6 +173,7 @@ def test_des_never_calls_axis_directly_before_confirmation():
     assert axis_calls == []
     assert flow.confirm_state()["type"] == "confirm"
     assert axis_calls == []
+    assert flow.pending_execution["status"] == "pending"
 
 
 def test_confirm_reads_identity_and_calls_axis_once():
@@ -199,6 +201,7 @@ def test_confirm_reads_identity_and_calls_axis_once():
     assert identity_calls == [True]
     assert len(axis_calls) == 1
     assert axis_calls[0]["operator_id"] == "operator-1"
+    assert flow.pending_execution is None
     assert [event["step"] for event in flow.get_trace()] == [
         "DES_REQUESTED",
         "DES_RETURNED",
@@ -232,6 +235,7 @@ def test_missing_operator_id_prompt_occurs_only_after_confirmation():
             "recoverable": True,
         },
     }
+    assert flow.pending_execution is None
 
 
 def test_axis_failure_renders_error_state():
@@ -245,6 +249,7 @@ def test_axis_failure_renders_error_state():
     assert state["data"]["message"] == "AXIS execution failed."
     assert "Tri-System Error" in rendered
     assert "AXIS execution failed." in rendered
+    assert flow.pending_execution is None
 
 
 def test_axis_rejection_does_not_retry_or_mutate_payload():
@@ -257,7 +262,6 @@ def test_axis_rejection_does_not_retry_or_mutate_payload():
     flow = make_flow(axis_executor=reject_axis)
     advance_to_preview(flow)
     flow.axis_preview()
-    original_payload = dict(flow.axis_payload)
 
     first = flow.confirm()
     second = flow.confirm()
@@ -267,12 +271,13 @@ def test_axis_rejection_does_not_retry_or_mutate_payload():
     assert second == {
         "type": "error",
         "data": {
-            "message": "AXIS execution already completed.",
-            "recoverable": False,
+            "message": "AXIS payload is not ready for execution.",
+            "recoverable": True,
         },
     }
     assert len(axis_calls) == 1
-    assert flow.axis_payload == original_payload
+    assert flow.axis_payload is None
+    assert flow.pending_execution is None
     assert [event["step"] for event in flow.get_trace()] == [
         "DES_REQUESTED",
         "DES_RETURNED",
@@ -280,6 +285,41 @@ def test_axis_rejection_does_not_retry_or_mutate_payload():
         "USER_CONFIRMED",
         "AXIS_REJECTED",
     ]
+
+
+def test_pending_execution_created_without_axis_call():
+    axis_calls = []
+    flow = make_flow(axis_executor=lambda **kwargs: (axis_calls.append(kwargs) or {"ok": True}, True))
+
+    advance_to_preview(flow)
+
+    pending = flow.pending_execution
+    assert pending["status"] == "pending"
+    assert pending["operator_id"] == ""
+    assert pending["payload"] == flow.axis_payload
+    assert pending["expires_at"] > pending["created_at"]
+    assert axis_calls == []
+
+
+def test_expired_pending_execution_blocks_axis_and_clears_state():
+    axis_calls = []
+    flow = make_flow(axis_executor=lambda **kwargs: (axis_calls.append(kwargs) or {"ok": True}, True))
+    advance_to_preview(flow)
+    flow.pending_execution["expires_at"] = 0
+
+    state = flow.confirm()
+
+    assert state == {
+        "type": "error",
+        "data": {
+            "message": "AXIS payload is not ready for execution.",
+            "recoverable": True,
+        },
+    }
+    assert axis_calls == []
+    assert flow.pending_execution is None
+    assert flow.axis_payload is None
+    assert flow.get_gate_events()[-1]["action"] == "expired"
 
 
 def test_no_operator_id_in_des_payloads():
@@ -323,6 +363,7 @@ def test_sensitive_user_answers_are_not_persisted_in_sapphire_state():
     assert sensitive_answer not in repr(flow.question)
     assert sensitive_answer not in repr(flow.des_result)
     assert sensitive_answer not in repr(flow.axis_payload)
+    assert sensitive_answer not in repr(flow.pending_execution)
 
 
 def test_boundary_rendering_contains_no_sensitive_answer_or_rejection_detail():
@@ -390,9 +431,11 @@ def test_tri_flow_mount_renders_result_preview_and_confirm():
     assert state["type"] == "confirm"
     assert "Tri-System DES Result" in rendered
     assert "Tri-System AXIS Preview" in rendered
-    assert "classification:" in rendered
-    assert "next_action:" in rendered
-    assert "Options: Confirm / Cancel" in rendered
+    assert "Proposed Action" in rendered
+    assert "Classification:" in rendered
+    assert "Next Action:" in rendered
+    assert "[Confirm Execution]" in rendered
+    assert "[Reject]" in rendered
 
 
 def test_tri_question_render_does_not_include_hidden_mic_input():

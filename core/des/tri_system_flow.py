@@ -24,6 +24,7 @@ TRI_START_PAYLOAD = {
 }
 
 CONFIRM_PROMPT = "Send this execution payload to AXIS?"
+PENDING_EXECUTION_TTL_SECONDS = 30 * 60
 TRACE_STEPS = {
     "DES_REQUESTED",
     "DES_RETURNED",
@@ -52,9 +53,11 @@ class TriSystemFlow:
         self.question = None
         self.des_result = None
         self.axis_payload = None
+        self.pending_execution = None
         self.axis_executed = False
         self.trace = []
         self.preview_traced = False
+        self.gate_events = []
 
     def start(self):
         self._reset_state()
@@ -102,6 +105,7 @@ class TriSystemFlow:
             self.question = None
             self.des_result = response
             self.axis_payload = build_axis_preview(response)
+            self._create_pending_execution(self.axis_payload)
             self.axis_executed = False
             self.preview_traced = False
             self._trace("DES_RETURNED", "ok")
@@ -113,26 +117,29 @@ class TriSystemFlow:
         return question_state
 
     def axis_preview(self):
-        if not self.axis_payload:
+        pending = self._valid_pending_execution()
+        if not pending:
             return self._error("AXIS preview is not available.", recoverable=True)
         if not self.preview_traced:
             self._trace("AXIS_PREVIEW_SHOWN", "ok")
             self.preview_traced = True
-        return self._state("axis_preview", self.axis_payload)
+        return self._state("axis_preview", pending["payload"])
 
     def confirm_state(self):
-        if not self.axis_payload:
+        pending = self._valid_pending_execution()
+        if not pending:
             return self._error("AXIS payload is not ready for confirmation.", recoverable=True)
         return self._state(
             "confirm",
             {
-                "prompt": CONFIRM_PROMPT,
-                "payload": self.axis_payload,
+                "prompt": "Proposed Action",
+                "payload": pending["payload"],
             },
         )
 
     def confirm(self):
-        if not self.axis_payload:
+        pending = self._valid_pending_execution()
+        if not pending:
             return self._error("AXIS payload is not ready for execution.", recoverable=True)
         if self.axis_executed:
             return self._error("AXIS execution already completed.", recoverable=False)
@@ -140,27 +147,36 @@ class TriSystemFlow:
         self._trace("USER_CONFIRMED", "ok")
         operator_id = self.identity_resolver(prompt=True)
         if not operator_id:
+            self._clear_pending_execution()
             return self._error("Missing operator_id. Execution stopped.", recoverable=True)
 
+        pending["operator_id"] = operator_id
         self.axis_executed = True
-        axis_result, ok = self.axis_executor(
-            trigger=self.axis_payload["trigger"],
-            operator_id=operator_id,
-            classification=self.axis_payload["classification"],
-            next_action=self.axis_payload["next_action"],
-            reference=self.axis_payload["reference"],
-            stability=self.axis_payload["stability"],
-            impact=self.axis_payload["impact"],
-        )
-        if not ok:
-            self._trace("AXIS_REJECTED", "fail")
-            return self._error("AXIS execution failed.", recoverable=True, data=axis_result)
-        self._trace("AXIS_EXECUTED", "ok")
-        return self._state("axis_result", axis_result)
+        payload = pending["payload"]
+        self._log_gate_event("confirmed", payload)
+        try:
+            axis_result, ok = self.axis_executor(
+                trigger=payload["trigger"],
+                operator_id=operator_id,
+                classification=payload["classification"],
+                next_action=payload["next_action"],
+                reference=payload["reference"],
+                stability=payload["stability"],
+                impact=payload["impact"],
+            )
+            if not ok:
+                self._trace("AXIS_REJECTED", "fail")
+                return self._error("AXIS execution failed.", recoverable=True, data=axis_result)
+            self._trace("AXIS_EXECUTED", "ok")
+            return self._state("axis_result", axis_result)
+        finally:
+            self._clear_pending_execution()
 
     def cancel(self):
-        if self.axis_payload:
+        pending = self.pending_execution
+        if pending:
             self._trace("USER_CANCELLED", "ok")
+            self._log_gate_event("rejected", pending.get("payload") or {})
         self._reset_state()
         return self._state("idle", {})
 
@@ -171,8 +187,49 @@ class TriSystemFlow:
         self.question = None
         self.des_result = None
         self.axis_payload = None
+        self.pending_execution = None
         self.axis_executed = False
         self.preview_traced = False
+
+    def _create_pending_execution(self, payload):
+        now = time.time()
+        # Pending execution state must never trigger AXIS by itself.
+        self.pending_execution = {
+            "payload": dict(payload),
+            "operator_id": "",
+            "created_at": now,
+            "expires_at": now + PENDING_EXECUTION_TTL_SECONDS,
+            "status": "pending",
+        }
+
+    def _valid_pending_execution(self):
+        pending = self.pending_execution
+        if not pending:
+            return None
+        if pending.get("expires_at", 0) <= time.time():
+            self._log_gate_event("expired", pending.get("payload") or {})
+            self._clear_pending_execution()
+            return None
+        if pending.get("status") != "pending":
+            self._clear_pending_execution()
+            return None
+        return pending
+
+    def _clear_pending_execution(self):
+        self.pending_execution = None
+        self.axis_payload = None
+
+    def _log_gate_event(self, action, payload):
+        self.gate_events.append(
+            {
+                "action": action,
+                "classification": payload.get("classification", ""),
+                "timestamp": time.time(),
+            }
+        )
+
+    def get_gate_events(self):
+        return [dict(event) for event in self.gate_events]
 
     def _set_question(self, question):
         if not self._valid_question(question):

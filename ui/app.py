@@ -179,8 +179,8 @@ def main() -> int:
                 state = app.submit_tri_answer(answer)
             print(app.render())
             if state.get("type") == "confirm":
-                choice = input("Confirm or Cancel: ").strip().lower()
-                if choice == "confirm":
+                choice = input("Confirm Execution or Reject: ").strip().lower()
+                if choice in {"confirm", "confirm execution"}:
                     app.confirm_tri_flow()
                 else:
                     app.cancel_tri_flow()

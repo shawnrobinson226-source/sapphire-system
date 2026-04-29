@@ -97,16 +97,12 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
         payload = data.get("payload") or {}
         return "\n".join(
             [
-                "Tri-System Confirmation",
-                data.get("prompt", ""),
-                "Payload:",
-                f"trigger: {payload.get('trigger', '')}",
-                f"classification: {payload.get('classification', '')}",
-                f"next_action: {payload.get('next_action', '')}",
-                f"reference: {payload.get('reference')}",
-                f"stability: {payload.get('stability')}",
-                f"impact: {payload.get('impact')}",
-                "Options: Confirm / Cancel",
+                "Proposed Action",
+                f"Classification: {payload.get('classification', '')}",
+                f"Next Action: {payload.get('next_action', '')}",
+                f"Trigger: {payload.get('trigger', '')}",
+                "[Confirm Execution]",
+                "[Reject]",
             ]
         )
 
