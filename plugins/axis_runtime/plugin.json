@@ -1,0 +1,17 @@
+{
+  "name": "axis-runtime",
+  "version": "0.9.0",
+  "description": "AXIS governed behavioral runtime bridge for Sapphire",
+  "author": "Grim",
+  "priority": 10,
+  "managed_hide": false,
+  "default_enabled": true,
+  "capabilities": {
+    "hooks": {
+      "pre_chat": "hooks/pre_chat.py"
+    },
+    "tools": [
+      "tools/axis_runtime.py"
+    ]
+  }
+}
