@@ -27,7 +27,12 @@ dist/
 # =========================
 # Local Runtime / User Data
 # =========================
-user/
+user/*.db
+user/logs/
+user/history/
+user/sessions/
+user/settings.json
+logs/
 *.db
 *.log
 *.pem
@@ -50,5 +55,3 @@ tmp_*.py
 Thumbs.db
 .vscode/
 .idea/
-user/
-user/

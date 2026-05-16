@@ -14,6 +14,7 @@ from core.auth import require_login, check_endpoint_rate
 from core.api_fastapi import get_system, _apply_chat_settings, PROJECT_ROOT
 from core.event_bus import publish, Events
 from core import prompts
+from core.des.web_tri_system import get_web_tri_system_bridge
 from core.story_engine import STORY_TOOL_NAMES
 from core.stt.stt_null import NullWhisperClient as _NullWhisperClient
 from core.stt.utils import can_transcribe
@@ -189,6 +190,10 @@ async def handle_chat(request: Request, _=Depends(require_login), system=Depends
     if not data or 'text' not in data:
         raise HTTPException(status_code=400, detail="No text provided")
 
+    hybrid_response = get_web_tri_system_bridge().handle(data['text'])
+    if hybrid_response is not None:
+        return {"response": hybrid_response}
+
     system.web_active_inc()
     try:
         response = await asyncio.to_thread(system.process_llm_query, data['text'], True)
@@ -212,6 +217,22 @@ async def handle_chat_stream(request: Request, _=Depends(require_login), system=
     skip_user_message = data.get('skip_user_message', False)
     images = data.get('images', [])
     files = data.get('files', [])
+
+    hybrid_response = get_web_tri_system_bridge().handle(data['text'])
+    if hybrid_response is not None:
+        def generate_hybrid():
+            yield f"data: {json.dumps({'type': 'content', 'text': hybrid_response})}\n\n"
+            yield f"data: {json.dumps({'done': True, 'ephemeral': False})}\n\n"
+
+        return StreamingResponse(
+            generate_hybrid(),
+            media_type='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'X-Accel-Buffering': 'no'
+            }
+        )
 
     system.llm_chat.streaming_chat.cancel_flag = False
     system.web_active_inc()
