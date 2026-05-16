@@ -1,15 +1,9 @@
 // features/mic.js - Mic button state, TTS detection, recording handlers
 import * as audio from '../audio.js';
-import * as ui from '../ui.js';
 import { getElements } from '../core/state.js';
+import { handleSend } from '../handlers/send-handlers.js';
 
 let micIconPollInterval = null;
-let browserRecognition = null;
-let browserRecognitionActive = false;
-
-function getSpeechRecognition() {
-    return window.SpeechRecognition || window.webkitSpeechRecognition || null;
-}
 
 function fillPromptInput(text) {
     const { input } = getElements();
@@ -19,7 +13,7 @@ function fillPromptInput(text) {
     input.focus();
 }
 
-function setBrowserMicState(state, message = '') {
+function setMicState(state, message = '') {
     const { micBtn } = getElements();
     if (!micBtn) return;
     micBtn.dataset.micState = state;
@@ -33,53 +27,9 @@ function setBrowserMicState(state, message = '') {
     }
 }
 
-function startBrowserSpeechRecognition() {
-    const SpeechRecognition = getSpeechRecognition();
-    if (!SpeechRecognition) {
-        const message = 'Speech recognition is unavailable in this browser.';
-        setBrowserMicState('error', message);
-        ui.showToast(message, 'error');
-        return true;
-    }
-
-    if (browserRecognitionActive) return true;
-
-    browserRecognition = new SpeechRecognition();
-    browserRecognition.interimResults = false;
-    browserRecognition.maxAlternatives = 1;
-
-    browserRecognition.addEventListener('result', event => {
-        const transcript = event.results?.[0]?.[0]?.transcript || '';
-        fillPromptInput(transcript);
-    });
-
-    browserRecognition.addEventListener('error', () => {
-        const message = 'Microphone input failed.';
-        browserRecognitionActive = false;
-        setBrowserMicState('error', message);
-        ui.showToast(message, 'error');
-    });
-
-    browserRecognition.addEventListener('end', () => {
-        browserRecognitionActive = false;
-        setBrowserMicState('idle');
-    });
-
-    browserRecognitionActive = true;
-    setBrowserMicState('listening');
-    browserRecognition.start();
-    return true;
-}
-
 export function updateMicButtonState() {
     const { micBtn } = getElements();
     if (!micBtn) return;
-
-    if (browserRecognitionActive) {
-        micBtn.textContent = '🎤';
-        micBtn.title = 'Listening...';
-        return;
-    }
 
     if (micBtn.dataset.micState === 'error' && micBtn.dataset.micMessage) {
         micBtn.textContent = '🎤';
@@ -124,10 +74,29 @@ export async function handleMicPress() {
         return;
     }
 
-    if (startBrowserSpeechRecognition()) return;
+    const { micBtn } = getElements();
+    if (audio.getRecState()) {
+        await finishRecording(micBtn);
+        return;
+    }
+
+    await audio.handlePress(micBtn);
+    if (audio.getRecState()) {
+        setMicState('listening');
+    }
+}
+
+async function finishRecording(micBtn) {
+    await audio.handleRelease(micBtn, async text => {
+        fillPromptInput(text);
+        await handleSend();
+    });
+    setMicState('idle');
+    updateMicButtonState();
 }
 
 export async function handleMicRelease() {
+    // Click-to-toggle: release does not stop recording.
     updateMicButtonState();
 }
 
@@ -136,7 +105,5 @@ export function handleMicLeave() {
 }
 
 export function handleVisibilityChange() {
-    if (document.hidden && browserRecognitionActive && browserRecognition) {
-        browserRecognition.stop();
-    }
+    // Local STT recording is stopped by mic release.
 }
