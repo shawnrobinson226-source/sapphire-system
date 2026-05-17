@@ -222,7 +222,7 @@ async def handle_chat_stream(request: Request, _=Depends(require_login), system=
     if hybrid_response is not None:
         def generate_hybrid():
             yield f"data: {json.dumps({'type': 'content', 'text': hybrid_response})}\n\n"
-            yield f"data: {json.dumps({'done': True, 'ephemeral': False})}\n\n"
+            yield f"data: {json.dumps({'done': True, 'hybrid': True})}\n\n"
 
         return StreamingResponse(
             generate_hybrid(),

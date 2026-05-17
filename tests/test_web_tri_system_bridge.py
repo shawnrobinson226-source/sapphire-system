@@ -1,11 +1,13 @@
 import asyncio
 import sys
+from pathlib import Path
 
 from core import api_fastapi
 from core.des.tri_system_flow import TriSystemFlow
-from core.des.web_tri_system import WebTriSystemBridge
+from core.des.web_tri_system import WebTriSystemBridge, resolve_web_operator_id
 
 chat_routes = sys.modules["core.routes.chat"]
+ROOT = Path(__file__).resolve().parents[1]
 
 
 DES_RESULT = {
@@ -146,6 +148,41 @@ def test_expired_pending_confirmation_blocks_axis_and_clears_flow():
     assert bridge.active is False
 
 
+def test_confirm_missing_operator_id_fails_closed_without_axis_call(monkeypatch):
+    axis_calls = []
+    identity_calls = []
+
+    def fake_resolve_operator_id(prompt=False):
+        identity_calls.append(prompt)
+        return None
+
+    monkeypatch.setattr(
+        "core.des.web_tri_system.resolve_operator_id",
+        fake_resolve_operator_id,
+    )
+
+    def flow_factory():
+        return TriSystemFlow(
+            des_flow=FakeDESFlow(),
+            health_check=lambda: {"ok": True},
+            identity_resolver=resolve_web_operator_id,
+            axis_executor=lambda **kwargs: (axis_calls.append(kwargs) or {"ok": True}, True),
+        )
+
+    bridge = WebTriSystemBridge(flow_factory=flow_factory)
+    bridge.handle("tri")
+    bridge.handle("a")
+
+    response = bridge.handle("confirm")
+
+    assert identity_calls == [False]
+    assert axis_calls == []
+    assert "Tri-System Error" in response
+    assert "Missing operator_id. Execution stopped." in response
+    assert bridge.active is False
+    assert bridge.flow.pending_execution is None
+
+
 def test_chat_route_returns_hybrid_response_before_normal_chat(monkeypatch):
     class FakeRequest:
         session = {"csrf_token": "test-session"}
@@ -179,3 +216,16 @@ def test_chat_route_returns_hybrid_response_before_normal_chat(monkeypatch):
 
     assert response == {"response": "hybrid response"}
     assert system.normal_chat_calls == []
+
+
+def test_hybrid_stream_completion_preserves_visible_response():
+    chat_route = (ROOT / "core/routes/chat.py").read_text(encoding="utf-8")
+    api_js = (ROOT / "interfaces/web/static/api.js").read_text(encoding="utf-8")
+    ui_js = (ROOT / "interfaces/web/static/ui.js").read_text(encoding="utf-8")
+    send_handlers = (ROOT / "interfaces/web/static/handlers/send-handlers.js").read_text(encoding="utf-8")
+
+    assert "{'done': True, 'hybrid': True}" in chat_route
+    assert "onDone(data.ephemeral || false, data.hybrid === true)" in api_js
+    assert "finishStreaming = async (ephemeral = false, skipHistorySwap = false)" in ui_js
+    assert "if (skipHistorySwap)" in ui_js
+    assert "await ui.finishStreaming(false, hybrid === true);" in send_handlers

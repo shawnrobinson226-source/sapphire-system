@@ -111,7 +111,7 @@ export const handleSend = async (input, btn, setProc, audioFn, refreshFn, abortC
                     ui.hideStatus();
                 }
             },
-            async (ephemeral) => {
+            async (ephemeral, hybrid) => {
                 if (isCancellingGetter && isCancellingGetter()) {
                     console.log('Stream completed but cancellation in progress - skipping finishStreaming');
                     return;
@@ -126,7 +126,7 @@ export const handleSend = async (input, btn, setProc, audioFn, refreshFn, abortC
                 }
                 
                 if (streamOk) {
-                    await ui.finishStreaming();
+                    await ui.finishStreaming(false, hybrid === true);
                     // Note: finishStreaming already syncs with history - no refresh needed
                     
                     setTimeout(() => {
@@ -261,7 +261,7 @@ export const handleRegen = async (idx, setProc, audioFn, refreshFn, abortControl
                     ui.hideStatus();
                 }
             },
-            async (ephemeral) => {
+            async (ephemeral, hybrid) => {
                 if (isCancellingGetter && isCancellingGetter()) {
                     console.log('Regen completed but cancellation in progress - skipping finishStreaming');
                     return;
@@ -277,7 +277,7 @@ export const handleRegen = async (idx, setProc, audioFn, refreshFn, abortControl
                 
                 console.log('[REGEN DEBUG] Stream complete');
                 if (streamOk) {
-                    await ui.finishStreaming();
+                    await ui.finishStreaming(false, hybrid === true);
                     // Note: finishStreaming already syncs with history - no refresh needed
                     
                     setTimeout(() => {
@@ -490,7 +490,7 @@ export const handleContinue = async (idx, setProc, audioFn, refreshFn, abortCont
                     ui.hideStatus();
                 }
             },
-            async (ephemeral) => {
+            async (ephemeral, hybrid) => {
                 if (isCancellingGetter && isCancellingGetter()) {
                     console.log('Continue completed but cancellation in progress - skipping finishStreaming');
                     return;
@@ -506,7 +506,7 @@ export const handleContinue = async (idx, setProc, audioFn, refreshFn, abortCont
                 
                 console.log('[CONTINUE DEBUG] Stream complete');
                 if (streamOk) {
-                    await ui.finishStreaming();
+                    await ui.finishStreaming(false, hybrid === true);
                     // Note: finishStreaming already syncs with history - no refresh needed
                     
                     setTimeout(() => {

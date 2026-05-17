@@ -159,7 +159,7 @@ const processSSEData = (data, handlers) => {
     
     if (data.done) {
         console.log('[SSE] Done received');
-        if (onDone) onDone(data.ephemeral || false);
+        if (onDone) onDone(data.ephemeral || false, data.hybrid === true);
         return { shouldReturn: true, isDone: true };
     }
     
@@ -196,7 +196,7 @@ export const streamChatContinue = async (text, prefill, onChunk, onComplete, onE
             onStreamStarted,
             onIterationStart,
             onReload: () => setTimeout(() => window.location.reload(), 500),
-            onDone: (ephemeral) => onComplete(ephemeral),
+            onDone: (ephemeral, hybrid) => onComplete(ephemeral, hybrid),
             onLegacyChunk: onChunk
         };
         
@@ -268,7 +268,7 @@ export const streamChat = async (text, onChunk, onComplete, onError, signal = nu
             onStreamStarted,
             onIterationStart,
             onReload: () => setTimeout(() => window.location.reload(), 500),
-            onDone: (ephemeral) => onComplete(ephemeral),
+            onDone: (ephemeral, hybrid) => onComplete(ephemeral, hybrid),
             onLegacyChunk: onChunk
         };
         

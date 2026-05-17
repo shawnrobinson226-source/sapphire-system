@@ -72,7 +72,7 @@ export async function handleSend() {
                     ui.hideStatus();
                 }
             },
-            async (ephemeral) => {
+            async (ephemeral, hybrid) => {
                 if (getIsCancelling()) {
                     console.log('Stream completed but cancellation in progress - skipping finishStreaming');
                     return;
@@ -86,7 +86,7 @@ export async function handleSend() {
                 }
                 
                 if (streamOk) {
-                    await ui.finishStreaming();
+                    await ui.finishStreaming(false, hybrid === true);
                     // Note: finishStreaming already syncs with history - no refresh needed
                     
                     setTimeout(() => {

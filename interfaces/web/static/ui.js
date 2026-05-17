@@ -395,7 +395,7 @@ export const endTool = (toolId, toolName, result, isError) => {
     }
 };
 
-export const finishStreaming = async (ephemeral = false) => {
+export const finishStreaming = async (ephemeral = false, skipHistorySwap = false) => {
     const streamingMsg = document.getElementById('streaming-message');
 
     Streaming.finishStreaming(updateToolbars);
@@ -406,6 +406,12 @@ export const finishStreaming = async (ephemeral = false) => {
             streamingMsg.remove();
         }
         scrollToBottomIfSticky(true);
+        return;
+    }
+
+    if (skipHistorySwap) {
+        scrollToBottomIfSticky(true);
+        import('./features/scene.js').then(scene => scene.updateScene());
         return;
     }
     

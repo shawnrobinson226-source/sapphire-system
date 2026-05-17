@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Callable
 
 from core.des.tri_system_flow import TriSystemFlow
+from core.identity.operator import resolve_operator_id
 from ui.views import render_tri_state
 
 
@@ -13,10 +14,18 @@ TRI_CONFIRM_COMMAND = "confirm"
 TRI_REJECT_COMMANDS = {"reject", "cancel"}
 
 
+def resolve_web_operator_id(prompt: bool = False) -> str | None:
+    return resolve_operator_id(prompt=False)
+
+
+def make_web_tri_system_flow() -> TriSystemFlow:
+    return TriSystemFlow(identity_resolver=resolve_web_operator_id)
+
+
 class WebTriSystemBridge:
     """Drive TriSystemFlow from chat text without involving the LLM/tool path."""
 
-    def __init__(self, flow_factory: Callable[[], TriSystemFlow] = TriSystemFlow):
+    def __init__(self, flow_factory: Callable[[], TriSystemFlow] = make_web_tri_system_flow):
         self.flow_factory = flow_factory
         self.flow: TriSystemFlow | None = None
         self.active = False
