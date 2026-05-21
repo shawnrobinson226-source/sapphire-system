@@ -5,6 +5,7 @@ import * as audio from '../audio.js';
 import * as chat from '../chat.js';
 import * as Images from '../ui-images.js';
 import { isPrivacyMode } from '../features/privacy.js';
+import { flushSidebarSettings } from '../views/chat.js';
 import {
     getElements,
     getIsProc,
@@ -26,9 +27,11 @@ export async function handleSend() {
 
     // Block send if current prompt requires privacy but privacy mode is off
     if (getPromptPrivacyRequired() && !isPrivacyMode()) {
-        ui.showToast('This prompt requires Privacy Mode to be enabled', 'error');
+        ui.showToast('This assistant style requires Privacy Mode to be enabled', 'error');
         return;
     }
+
+    await flushSidebarSettings();
 
     const abortController = new AbortController();
     setAbortController(abortController);

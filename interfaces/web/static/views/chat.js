@@ -18,6 +18,7 @@ let personasList = [];
 let defaultPersonaName = '';
 let _docClickHandler = null;
 let _personaHandler = null;
+let saveInFlight = null;
 
 const SAVE_DEBOUNCE = 500;
 
@@ -222,7 +223,7 @@ export default {
                 }
                 if (el.id === 'sb-spice-turns') {
                     const toggle = container.querySelector('#sb-spice-toggle');
-                    if (toggle) toggle.textContent = `Spice \u00b7 ${el.value}`;
+                    if (toggle) toggle.textContent = `Tone \u00b7 ${el.value}`;
                 }
                 if (el.id === 'sb-story-enabled' || el.id === 'sb-story-preset') {
                     updateStoryPromptLabel(container);
@@ -243,7 +244,7 @@ export default {
             });
         }
 
-        // "Go to Mind" buttons — navigate to Mind view with target tab + scope
+        // "Go to Memory" buttons — navigate to Memory view with target tab + scope
         container.querySelectorAll('.sb-goto-mind').forEach(btn => {
             btn.addEventListener('click', () => {
                 const scope = btn.closest('.sb-field-row')?.querySelector('select')?.value;
@@ -601,7 +602,7 @@ async function loadSidebar() {
                     `<option value="${v.voice_id}">${v.name}${v.category ? ' (' + v.category + ')' : ''}</option>`
                 ).join('');
             } else {
-                voiceSel.innerHTML = '<option value="">No TTS active</option>';
+                voiceSel.innerHTML = '<option value="">No voice output active</option>';
             }
             // Build dynamic name map for easy mode
             _voiceNames = {};
@@ -623,7 +624,7 @@ async function loadSidebar() {
 
         // Toggle buttons
         setToggle(container, '#sb-spice-toggle', settings.spice_enabled !== false,
-            `Spice \u00b7 ${settings.spice_turns || 3}`);
+            `Tone \u00b7 ${settings.spice_turns || 3}`);
         setToggle(container, '#sb-datetime-toggle', settings.inject_datetime === true);
         const storyEnabled = settings.story_engine_enabled === true;
         const storyPreset = settings.story_preset;
@@ -684,7 +685,26 @@ async function loadSidebar() {
 
 function debouncedSave(container) {
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => saveSettings(container), SAVE_DEBOUNCE);
+    saveTimer = setTimeout(() => {
+        saveTimer = null;
+        saveSettings(container);
+    }, SAVE_DEBOUNCE);
+}
+
+export async function flushSidebarSettings() {
+    const container = document.getElementById('view-chat');
+    if (!container) return;
+
+    if (saveTimer) {
+        clearTimeout(saveTimer);
+        saveTimer = null;
+        await saveSettings(container);
+        return;
+    }
+
+    if (saveInFlight) {
+        await saveInFlight.catch(() => {});
+    }
 }
 
 async function saveSettings(container) {
@@ -695,7 +715,9 @@ async function saveSettings(container) {
     const settings = collectSettings(container);
 
     try {
-        const result = await api.updateChatSettings(chatName, settings);
+        const request = api.updateChatSettings(chatName, settings);
+        saveInFlight = request;
+        const result = await request;
         updateSendButtonLLM(settings.llm_primary, settings.llm_model);
 
         // Sync toolset dropdown directly from save response.
@@ -716,6 +738,8 @@ async function saveSettings(container) {
         }
     } catch (e) {
         console.warn('Auto-save failed:', e);
+    } finally {
+        if (saveInFlight === request) saveInFlight = null;
     }
 }
 
@@ -1059,23 +1083,23 @@ function updateEasyMode(container, settings, init) {
             </div>
             <button class="sb-pdetail-edit" title="Edit persona" data-view="personas">\u270E</button>
         </div>
-        ${easyAccordion('Prompt', `
+        ${easyAccordion('Assistant Style', `
             ${promptRows}
             ${extras.length ? `<div class="sb-pdetail-wrap-row"><span>extras</span><span>${extras.join(', ')}</span></div>` : ''}
             ${emotions.length ? `<div class="sb-pdetail-wrap-row"><span>emotions</span><span>${emotions.join(', ')}</span></div>` : ''}
         `, { desc: 'Character & scenario', view: 'prompts' })}
-        ${easyAccordion('Toolset', toolsHtml, { desc: 'AI capabilities', view: 'toolsets' })}
-        ${easyAccordion('Spice', `
+        ${easyAccordion('Capabilities', toolsHtml, { desc: 'AI capabilities', view: 'toolsets' })}
+        ${easyAccordion('Tone', `
             <div class="sb-pdetail-row"><span>set</span><span>${pretty(settings.spice_set)}</span></div>
             <div class="sb-pdetail-row"><span>enabled</span><span>${settings.spice_enabled !== false ? 'Yes' : 'No'}</span></div>
             <div class="sb-pdetail-row"><span>turns</span><span>${settings.spice_turns || 3}</span></div>
         `, { desc: 'Style & flavor', view: 'spices' })}
-        ${easyAccordion('TTS', `
+        ${easyAccordion('Voice Output', `
             <div class="sb-pdetail-row"><span>voice</span><span>${_voiceNames[settings.voice] || settings.voice || 'Heart'}</span></div>
             <div class="sb-pdetail-row"><span>pitch</span><span>${settings.pitch || 0.98}</span></div>
             <div class="sb-pdetail-row"><span>speed</span><span>${settings.speed || 1.3}</span></div>
         `, { desc: 'Voice synthesis' })}
-        ${easyAccordion('Mind', `
+        ${easyAccordion('Memory', `
             <div class="sb-pdetail-row"><span>memory</span><span>${pretty(settings.memory_scope)}</span></div>
             <div class="sb-pdetail-row"><span>goals</span><span>${pretty(settings.goal_scope)}</span></div>
             <div class="sb-pdetail-row"><span>knowledge</span><span>${pretty(settings.knowledge_scope)}</span></div>

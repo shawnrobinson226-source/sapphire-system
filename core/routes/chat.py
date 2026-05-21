@@ -25,6 +25,33 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+def _sync_active_chat_settings(system):
+    """Apply active chat settings before any web chat dispatch."""
+    if not getattr(system, "llm_chat", None):
+        return {}
+    session_manager = system.llm_chat.session_manager
+    settings = session_manager.get_chat_settings()
+    _apply_chat_settings(system, settings)
+    try:
+        from core.hooks import hook_runner
+
+        fm = system.llm_chat.function_manager
+        pre_chat_handlers = hook_runner.get_handlers("pre_chat")
+        axis_runtime_active = any(handler[2] == "axis-runtime" for handler in pre_chat_handlers)
+        logger.warning(
+            "[ZERO_TOOLS_DEBUG] route_start settings_toolset=%s current_toolset=%s enabled_tools=%s zero_tools_mode=%s axis_runtime_hook_active=%s pre_chat_handlers=%s",
+            settings.get("toolset") or settings.get("ability"),
+            getattr(fm, "current_toolset_name", None),
+            fm.get_enabled_function_names(),
+            fm.is_zero_tools_mode() if hasattr(fm, "is_zero_tools_mode") else False,
+            axis_runtime_active,
+            [handler[2] for handler in pre_chat_handlers],
+        )
+    except Exception:
+        logger.exception("[ZERO_TOOLS_DEBUG] Failed to log capability state at route start")
+    return settings
+
+
 def format_messages_for_display(messages):
     """Transform message structure into display format for UI."""
     display_messages = []
@@ -190,6 +217,8 @@ async def handle_chat(request: Request, _=Depends(require_login), system=Depends
     if not data or 'text' not in data:
         raise HTTPException(status_code=400, detail="No text provided")
 
+    _sync_active_chat_settings(system)
+
     hybrid_response = get_web_tri_system_bridge().handle(data['text'])
     if hybrid_response is not None:
         return {"response": hybrid_response}
@@ -217,6 +246,8 @@ async def handle_chat_stream(request: Request, _=Depends(require_login), system=
     skip_user_message = data.get('skip_user_message', False)
     images = data.get('images', [])
     files = data.get('files', [])
+
+    _sync_active_chat_settings(system)
 
     hybrid_response = get_web_tri_system_bridge().handle(data['text'])
     if hybrid_response is not None:

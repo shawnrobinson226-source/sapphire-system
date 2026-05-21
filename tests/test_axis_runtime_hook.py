@@ -7,12 +7,13 @@ HOOK_PATH = ROOT / "plugins" / "axis_runtime" / "hooks" / "pre_chat.py"
 
 
 class Event:
-    def __init__(self, text):
+    def __init__(self, text, system=None):
         self.input = text
         self.skip_llm = False
         self.ephemeral = None
         self.stop_propagation = False
         self.response = None
+        self.metadata = {"system": system} if system is not None else {}
 
 
 class Response:
@@ -49,6 +50,21 @@ def save_preview(module):
             },
         }
     )
+
+
+class ZeroToolsFunctionManager:
+    current_toolset_name = "none"
+    enabled_tools = []
+
+    def is_zero_tools_mode(self):
+        return True
+
+
+class ZeroToolsSystem:
+    class Chat:
+        function_manager = ZeroToolsFunctionManager()
+
+    llm_chat = Chat()
 
 
 def test_confirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch):
@@ -216,4 +232,61 @@ def test_success_missing_nested_fields_renders_raw_payload_and_clears_state(tmp_
     assert "raw_json:" in event.response
     assert "session-1" in event.response
     assert "outcome: None" not in event.response
+    assert not module.STATE_PATH.exists()
+
+
+def test_zero_tools_mode_prevents_axis_runtime_hook_execution(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    save_preview(module)
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    event = Event("confirm", system=ZeroToolsSystem())
+    module.pre_chat(event)
+
+    assert calls == []
+    assert event.skip_llm is False
+    assert event.stop_propagation is False
+    assert event.response is None
+    assert module.STATE_PATH.exists()
+
+
+def test_zero_tools_mode_blocks_axis_runtime_final_execution_boundary(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    result = module._execute_axis_preview(
+        {
+            "trigger": "des_decision_friction",
+            "classification": "perceptual",
+            "next_action": "Review the clarified decision information and choose one next step.",
+            "reference": True,
+            "stability": 6,
+            "impact": 4,
+        },
+        system=ZeroToolsSystem(),
+    )
+
+    assert calls == []
+    assert "AXIS Execution Rejected" in result
+    assert "Zero tools mode is active" in result
+    assert "AXIS Execution Complete" not in result
+
+
+def test_zero_tools_global_system_blocks_axis_runtime_without_event_metadata(tmp_path, monkeypatch):
+    from core import api_fastapi
+
+    module = load_hook(tmp_path)
+    save_preview(module)
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+    monkeypatch.setattr(api_fastapi, "_system", ZeroToolsSystem())
+
+    event = Event("confirm")
+    module.pre_chat(event)
+
+    assert calls == []
+    assert "Zero tools mode is active" in event.response
+    assert "AXIS Execution Complete" not in event.response
     assert not module.STATE_PATH.exists()

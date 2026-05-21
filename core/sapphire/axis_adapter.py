@@ -6,6 +6,7 @@ from typing import Any
 
 import requests
 
+from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 from core.sapphire.distortion_lock import ALLOWED_DISTORTION_CLASSES
 from core.security.violations import log_boundary_violation
 
@@ -85,6 +86,16 @@ class AxisAdapter:
         operator_id: str,
         payload: dict | None = None,
     ) -> dict:
+        allowed, blocked = assert_axis_execution_allowed(f"axis_adapter.{method.upper()} {endpoint}")
+        if not allowed:
+            return self._boundary_failure(
+                violation_type="zero_tools_mode",
+                endpoint=f"{method.upper()} {endpoint}",
+                message=blocked["error"],
+                operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
+                payload=payload,
+            )
+
         try:
             clean_method, clean_endpoint = self._enforce_allowed_endpoint(method, endpoint)
         except ValueError as exc:

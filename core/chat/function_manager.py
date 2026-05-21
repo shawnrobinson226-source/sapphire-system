@@ -502,6 +502,10 @@ class FunctionManager:
         """Get list of currently enabled function names (mode-filtered)."""
         return [tool['function']['name'] for tool in self.enabled_tools]
 
+    def is_zero_tools_mode(self) -> bool:
+        """Return True when the active capability mode is an explicit no-tools boundary."""
+        return self.current_toolset_name == "none" and len(self.enabled_tools) == 0
+
     def has_network_tools_enabled(self) -> bool:
         """Check if any currently enabled tools require network access."""
         enabled_names = set(self.get_enabled_function_names())

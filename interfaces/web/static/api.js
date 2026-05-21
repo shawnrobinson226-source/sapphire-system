@@ -100,10 +100,16 @@ export const importChat = (messages) => fetchWithTimeout('/api/history/import', 
 
 // Shared SSE event processor
 const processSSEData = (data, handlers) => {
-    const { onChunk, onToolStart, onToolEnd, onReload, onDone, onLegacyChunk, onStreamStarted, onIterationStart } = handlers;
+    const { onChunk, onToolStart, onToolEnd, onReload, onDone, onLegacyChunk, onStreamStarted, onIterationStart, onCapabilityState } = handlers;
     
     if (data.type === 'stream_started') {
         if (onStreamStarted) onStreamStarted();
+        return { gotContent: true };
+    }
+
+    if (data.type === 'capability_state') {
+        console.info('[CAPABILITY_STATE]', data);
+        if (onCapabilityState) onCapabilityState(data);
         return { gotContent: true };
     }
     
@@ -195,6 +201,11 @@ export const streamChatContinue = async (text, prefill, onChunk, onComplete, onE
             onToolEnd,
             onStreamStarted,
             onIterationStart,
+            onCapabilityState: data => {
+                if (data.zero_tools_mode) {
+                    console.info('Zero tools confirmed for this request.');
+                }
+            },
             onReload: () => setTimeout(() => window.location.reload(), 500),
             onDone: (ephemeral, hybrid) => onComplete(ephemeral, hybrid),
             onLegacyChunk: onChunk
@@ -267,6 +278,11 @@ export const streamChat = async (text, onChunk, onComplete, onError, signal = nu
             onToolEnd,
             onStreamStarted,
             onIterationStart,
+            onCapabilityState: data => {
+                if (data.zero_tools_mode) {
+                    console.info('Zero tools confirmed for this request.');
+                }
+            },
             onReload: () => setTimeout(() => window.location.reload(), 500),
             onDone: (ephemeral, hybrid) => onComplete(ephemeral, hybrid),
             onLegacyChunk: onChunk
@@ -315,7 +331,7 @@ export const fetchAudio = async (text, signal = null) => {
         }, 120000);
     } catch (e) {
         if (e.message.includes('timeout') && text.length > 500) {
-            throw new Error(`TTS timeout (${text.length} chars)`);
+            throw new Error(`Voice output timeout (${text.length} chars)`);
         }
         throw e;
     }

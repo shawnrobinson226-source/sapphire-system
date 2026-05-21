@@ -7,6 +7,7 @@ import math
 from typing import Any, Dict, Tuple
 
 import requests
+from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -132,6 +133,11 @@ def _request_axis(
     operator_id: str,
     payload: Dict[str, Any] | None = None,
 ) -> Tuple[Dict[str, Any], bool]:
+    guard_path = f"axis_integration.{method.lower()}_{endpoint}"
+    allowed, blocked = assert_axis_execution_allowed(guard_path)
+    if not allowed:
+        return blocked, False
+
     operator_validation, ok = _validate_operator_id(operator_id)
     if not ok:
         return operator_validation, False

@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 import requests
+from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,25 @@ AXIS_SUCCESS_FIELDS = (
     "protocol_output",
 )
 CONFIRM_COMMANDS = {"confirm", "comfirm"}
+
+
+def _is_zero_tools_mode(system):
+    if not system:
+        return False
+    llm_chat = getattr(system, "llm_chat", None)
+    function_manager = getattr(llm_chat, "function_manager", None)
+    if not function_manager:
+        return False
+    try:
+        if hasattr(function_manager, "is_zero_tools_mode"):
+            return function_manager.is_zero_tools_mode()
+        return (
+            getattr(function_manager, "current_toolset_name", None) == "none"
+            and len(function_manager.enabled_tools) == 0
+        )
+    except Exception:
+        logger.exception("Failed to read capability mode for AXIS runtime guard")
+        return True
 
 
 def _load_state():
@@ -119,7 +139,11 @@ def _format_axis_failure(data):
     )
 
 
-def _execute_axis_preview(preview):
+def _execute_axis_preview(preview, system=None):
+    allowed, blocked = assert_axis_execution_allowed("axis_runtime._execute_axis_preview", system=system)
+    if not allowed:
+        return _format_axis_failure(blocked)
+
     payload = _build_axis_payload(preview)
     try:
         response = requests.post(
@@ -289,6 +313,18 @@ def _answer_des(answer):
 
 
 def pre_chat(event):
+    system = (getattr(event, "metadata", None) or {}).get("system")
+    try:
+        logger.warning(
+            "[ZERO_TOOLS_DEBUG] axis_runtime.pre_chat input=%r zero_tools=%s",
+            (event.input or "")[:80],
+            _is_zero_tools_mode(system),
+        )
+    except Exception:
+        logger.exception("[ZERO_TOOLS_DEBUG] axis_runtime.pre_chat debug failed")
+    if _is_zero_tools_mode(system):
+        return
+
     text = (event.input or "").strip()
 
     state = _load_state()
@@ -312,7 +348,7 @@ def pre_chat(event):
             if lowered in CONFIRM_COMMANDS:
                 preview = state.get("preview") or {}
                 try:
-                    event.response = _execute_axis_preview(preview)
+                    event.response = _execute_axis_preview(preview, system=system)
                 finally:
                     _clear_state()
             elif lowered == "reject":

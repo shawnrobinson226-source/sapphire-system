@@ -13,9 +13,14 @@ from core.hooks import hook_runner, HookEvent
 from .chat_streaming import StreamingChat
 from .chat_tool_calling import ToolCallingEngine, filter_to_thinking_only
 from .llm_providers import get_provider, get_provider_for_url, get_provider_by_key, get_first_available_provider, get_generation_params
+from .zero_tools import (
+    ZERO_TOOLS_INSTRUCTION,
+    is_explicit_zero_tools_request,
+    strip_tool_affordances_from_prompt,
+    zero_tools_unavailable_response,
+)
 
 logger = logging.getLogger(__name__)
-
 
 def _inject_tool_images(messages, tool_images):
     """Inject tool-returned images as a user message for the next LLM turn.
@@ -224,6 +229,9 @@ class LLMChat:
         # Build context parts from chat settings
         context_parts = []
         chat_settings = self.session_manager.get_chat_settings()
+        zero_tools_mode = self.function_manager.is_zero_tools_mode()
+        if zero_tools_mode:
+            prompt = strip_tool_affordances_from_prompt(prompt)
 
         # Debug logging for story engine
         story_enabled = chat_settings.get('story_engine_enabled', False)
@@ -278,13 +286,16 @@ class LLMChat:
                     context_parts.append(f"<state turn=\"{turn}\">\n{state_block}\n</state>")
         
         # Plugin prompt_inject hook — append to context_parts
-        if hook_runner.has_handlers("prompt_inject"):
+        if not zero_tools_mode and hook_runner.has_handlers("prompt_inject"):
             inject_event = HookEvent(context_parts=context_parts, config=config)
             hook_runner.fire("prompt_inject", inject_event)
 
         # Combine all context
         if context_parts:
             prompt = f"{prompt}\n\n{chr(10).join(context_parts)}"
+
+        if zero_tools_mode:
+            prompt = f"{prompt}\n\n{ZERO_TOOLS_INSTRUCTION}"
 
         return prompt, username
 
@@ -342,7 +353,7 @@ class LLMChat:
         )
         logger.info(f"[STORY] Story engine enabled for chat '{chat_name}'")
 
-    def _build_base_messages(self, user_input: str, images: list = None, files: list = None):
+    def _build_base_messages(self, user_input: str, images: list = None, files: list = None, include_tool_history: bool = True):
         system_prompt, user_name = self._get_system_prompt()
 
         # Flatten files into user_input as fenced code blocks
@@ -355,7 +366,10 @@ class LLMChat:
 
         # Reserve space for system prompt + current user message in context budget
         reserved_tokens = count_tokens(system_prompt) + count_tokens(user_input)
-        history_messages = self.session_manager.get_messages_for_llm(reserved_tokens)
+        history_messages = self.session_manager.get_messages_for_llm(
+            reserved_tokens,
+            include_tool_history=include_tool_history,
+        )
 
         # Build user message content - list if images, string otherwise
         if images:
@@ -435,8 +449,16 @@ class LLMChat:
             # Update story engine FIRST (before building messages) based on current settings
             self._update_story_engine()
 
+            zero_tools_mode = self.function_manager.is_zero_tools_mode()
+
+            if zero_tools_mode and is_explicit_zero_tools_request(user_input):
+                response = zero_tools_unavailable_response()
+                self.session_manager.add_user_message(user_input)
+                self.session_manager.add_assistant_final(response)
+                return response
+
             # Plugin pre_chat hook — can modify input, bypass LLM, or stop propagation
-            if hook_runner.has_handlers("pre_chat"):
+            if not zero_tools_mode and hook_runner.has_handlers("pre_chat"):
                 hook_event = HookEvent(input=user_input, config=config,
                                        metadata={"system": self.system})
                 hook_runner.fire("pre_chat", hook_event)
@@ -448,7 +470,10 @@ class LLMChat:
                     return response
                 user_input = hook_event.input  # may have been mutated
 
-            messages = self._build_base_messages(user_input)
+            messages = self._build_base_messages(
+                user_input,
+                include_tool_history=not zero_tools_mode,
+            )
             self.session_manager.add_user_message(user_input)
             
             # Set scopes for this chat context
@@ -460,6 +485,8 @@ class LLMChat:
 
             # Send only enabled tools - model should only know about active tools
             enabled_tools = self.function_manager.enabled_tools
+            tool_handling_enabled = not self.function_manager.is_zero_tools_mode()
+            tools_for_llm = enabled_tools if tool_handling_enabled and enabled_tools else None
 
             # DIAGNOSTIC: Log what tools are being sent
             enabled_names = [t['function']['name'] for t in enabled_tools] if enabled_tools else []
@@ -509,7 +536,7 @@ class LLMChat:
 
                 try:
                     response_msg = self.tool_engine.call_llm_with_metrics(
-                        provider, messages, gen_params, tools=enabled_tools
+                        provider, messages, gen_params, tools=tools_for_llm
                     )
                 except Exception as llm_error:
                     iteration_time = time.time() - iteration_start_time
@@ -554,7 +581,7 @@ class LLMChat:
 
                 logger.info(f"Iteration {i+1} completed in {iteration_time:.1f}s")
 
-                if response_msg.has_tool_calls:
+                if tool_handling_enabled and response_msg.has_tool_calls:
                     called_tools = [tc.name for tc in response_msg.tool_calls]
                     logger.info(f"[TOOLS] LLM called tools via tool_calls: {called_tools}")
                     
@@ -602,12 +629,18 @@ class LLMChat:
 
                     # Refresh tools list — tool_load may have added new tools
                     enabled_tools = self.function_manager.enabled_tools
+                    tool_handling_enabled = not self.function_manager.is_zero_tools_mode()
+                    tools_for_llm = enabled_tools if tool_handling_enabled and enabled_tools else None
 
                     logger.info(f"Tool execution iteration {i+1} completed")
                     continue
 
                 elif response_msg.content:
-                    function_call_data = self.tool_engine.extract_function_call_from_text(response_msg.content)
+                    function_call_data = (
+                        self.tool_engine.extract_function_call_from_text(response_msg.content)
+                        if tool_handling_enabled
+                        else None
+                    )
                     if function_call_data:
                         text_tool_name = function_call_data["function_call"]["name"]
                         logger.info(f"[TOOLS] Text-based tool call detected: {text_tool_name}")
@@ -970,6 +1003,8 @@ class LLMChat:
             else:
                 _scopes = None
 
+            isolated_tool_handling_enabled = bool(tools)
+
             # Select provider
             provider_key = task_settings.get("provider", "auto")
             model_override = task_settings.get("model", "")
@@ -1016,7 +1051,7 @@ class LLMChat:
                     provider, messages, gen_params, tools=tools
                 )
 
-                if response_msg.has_tool_calls:
+                if isolated_tool_handling_enabled and response_msg.has_tool_calls:
                     filtered = filter_to_thinking_only(response_msg.content or "")
                     tool_calls = response_msg.get_tool_calls_as_dicts()[:max_parallel]
                     messages.append({
@@ -1033,7 +1068,11 @@ class LLMChat:
                     continue
 
                 elif response_msg.content:
-                    fn_data = self.tool_engine.extract_function_call_from_text(response_msg.content)
+                    fn_data = (
+                        self.tool_engine.extract_function_call_from_text(response_msg.content)
+                        if isolated_tool_handling_enabled
+                        else None
+                    )
                     if fn_data:
                         filtered = filter_to_thinking_only(response_msg.content)
                         _, tool_images = self.tool_engine.execute_text_based_tool_call(

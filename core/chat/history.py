@@ -14,6 +14,19 @@ from core.event_bus import publish, Events
 
 logger = logging.getLogger(__name__)
 
+ZERO_TOOLS_HISTORY_PATTERNS = (
+    "execute_axis",
+    "list_tools",
+    "tool result",
+    "tool_call",
+    "tool calls",
+    "enabled tools",
+    "available tools",
+    "required parameters",
+    "parameter collection",
+    "i need the trigger details",
+)
+
 # System defaults for chat settings - hardcoded fallbacks
 # Primary source is user/settings/chat_defaults.json or factory chat_defaults.json
 SYSTEM_DEFAULTS = {
@@ -334,7 +347,8 @@ class ConversationHistory:
         self, 
         reserved_tokens: int = 0,
         provider: str = None,
-        in_tool_cycle: bool = False
+        in_tool_cycle: bool = False,
+        include_tool_history: bool = True
     ) -> List[Dict[str, Any]]:
         """
         Get messages formatted for LLM with TRIMMING applied.
@@ -354,8 +368,14 @@ class ConversationHistory:
         
         for msg in self.messages:
             role = msg["role"]
+
+            if not include_tool_history and role == "tool":
+                continue
             
             if role == "assistant":
+                if not include_tool_history and msg.get("tool_calls"):
+                    continue
+
                 # Get clean content (no thinking)
                 content = msg.get("content", "")
                 
@@ -372,6 +392,11 @@ class ConversationHistory:
                 # Backward compat: extract thinking from old messages with embedded tags
                 if not msg.get("thinking") and content and '<think' in content.lower():
                     content, _ = _extract_thinking_from_content(content)
+
+                if not include_tool_history:
+                    lower_content = str(content).lower()
+                    if any(pattern in lower_content for pattern in ZERO_TOOLS_HISTORY_PATTERNS):
+                        continue
                 
                 llm_msg = {"role": "assistant", "content": content}
                 
@@ -1096,12 +1121,18 @@ class ChatSessionManager:
         """Get messages formatted for UI with <think> tags reconstructed."""
         return self.current_chat.get_messages_for_display()
 
-    def get_messages_for_llm(self, reserved_tokens: int = 0, provider: str = None) -> List[Dict[str, str]]:
+    def get_messages_for_llm(
+        self,
+        reserved_tokens: int = 0,
+        provider: str = None,
+        include_tool_history: bool = True,
+    ) -> List[Dict[str, str]]:
         """Get messages for LLM with trimming applied."""
         return self.current_chat.get_messages_for_llm(
             reserved_tokens, 
             provider=provider,
-            in_tool_cycle=self._in_tool_cycle
+            in_tool_cycle=self._in_tool_cycle,
+            include_tool_history=include_tool_history,
         )
 
     def get_turn_count(self) -> int:

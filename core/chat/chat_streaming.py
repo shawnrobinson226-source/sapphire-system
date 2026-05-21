@@ -7,6 +7,7 @@ import config
 from .chat_tool_calling import strip_ui_markers, wrap_tool_result, _extract_tool_images
 from .llm_providers import LLMResponse, get_generation_params
 from core.event_bus import publish, Events
+from core.chat.zero_tools import is_explicit_zero_tools_request, zero_tools_unavailable_response
 from core.hooks import hook_runner, HookEvent
 
 logger = logging.getLogger(__name__)
@@ -81,8 +82,28 @@ class StreamingChat:
             # Update story engine FIRST (before building messages) based on current settings
             self.main_chat._update_story_engine()
 
+            zero_tools_mode = self.main_chat.function_manager.is_zero_tools_mode()
+
+            yield {
+                "type": "capability_state",
+                "settings_toolset": self.main_chat.session_manager.get_chat_settings().get("toolset"),
+                "current_toolset": self.main_chat.function_manager.current_toolset_name,
+                "enabled_tools": self.main_chat.function_manager.get_enabled_function_names(),
+                "zero_tools_mode": zero_tools_mode,
+            }
+
+            if zero_tools_mode and is_explicit_zero_tools_request(user_input):
+                response = zero_tools_unavailable_response()
+                if not skip_user_message:
+                    self.main_chat.session_manager.add_user_message(user_input)
+                    self.main_chat.session_manager.add_assistant_final(response)
+                yield {"type": "content", "text": response}
+                publish(Events.AI_TYPING_END)
+                self.is_streaming = False
+                return
+
             # Plugin pre_chat hook — can modify input, bypass LLM, or stop propagation
-            if hook_runner.has_handlers("pre_chat"):
+            if not zero_tools_mode and hook_runner.has_handlers("pre_chat"):
                 hook_event = HookEvent(input=user_input, config=config,
                                        metadata={"system": self.main_chat.system})
                 hook_runner.fire("pre_chat", hook_event)
@@ -100,7 +121,12 @@ class StreamingChat:
                     return
                 user_input = hook_event.input  # may have been mutated
 
-            messages = self.main_chat._build_base_messages(user_input, images=images, files=files)
+            messages = self.main_chat._build_base_messages(
+                user_input,
+                images=images,
+                files=files,
+                include_tool_history=not zero_tools_mode,
+            )
 
             if not skip_user_message:
                 # Build content list if files or images present, otherwise just text
@@ -154,6 +180,8 @@ class StreamingChat:
 
             # Send only enabled tools - model should only know about active tools
             enabled_tools = self.main_chat.function_manager.enabled_tools
+            tool_handling_enabled = not self.main_chat.function_manager.is_zero_tools_mode()
+            tools_for_llm = enabled_tools if tool_handling_enabled and enabled_tools else None
             provider_key, provider, model_override = self.main_chat._select_provider()
             
             # Determine effective model (per-chat override or provider default)
@@ -203,7 +231,7 @@ class StreamingChat:
                     logger.info(f"[STREAM] Creating provider stream [{provider.provider_name}] (effective_model={effective_model})")
                     self.current_stream = provider.chat_completion_stream(
                         messages,
-                        tools=enabled_tools if enabled_tools else None,
+                        tools=tools_for_llm,
                         generation_params=gen_params
                     )
                     
@@ -239,6 +267,9 @@ class StreamingChat:
                             yield {"type": "content", "text": text}
                         
                         elif event_type == "tool_call":
+                            if not tool_handling_enabled:
+                                continue
+
                             # Close thinking tag if open before tool calls
                             if in_thinking:
                                 yield {"type": "content", "text": "</think>\n\n"}
@@ -324,7 +355,7 @@ class StreamingChat:
                         tc["id"] = f"call_{iteration}_{tool_calls.index(tc)}"
                         logger.info(f"[TOOL] Generated fallback ID for tool call: {tc['function']['name']}")
 
-                if tool_calls and any(tc.get("id") and tc.get("function", {}).get("name") for tc in tool_calls):
+                if tool_handling_enabled and tool_calls and any(tc.get("id") and tc.get("function", {}).get("name") for tc in tool_calls):
                     logger.info(f"[TOOL] Processing {len(tool_calls)} tool call(s)")
                     
                     tool_calls_to_execute = tool_calls[:config.MAX_PARALLEL_TOOLS]
@@ -448,6 +479,8 @@ class StreamingChat:
 
                     # Refresh tools list — tool_load may have added new tools
                     enabled_tools = self.main_chat.function_manager.enabled_tools
+                    tool_handling_enabled = not self.main_chat.function_manager.is_zero_tools_mode()
+                    tools_for_llm = enabled_tools if tool_handling_enabled and enabled_tools else None
 
                     if self.cancel_flag:
                         break
@@ -459,10 +492,10 @@ class StreamingChat:
                 else:
                     function_call_data = None
                     # Check content first
-                    if current_content:
+                    if tool_handling_enabled and current_content:
                         function_call_data = self.tool_engine.extract_function_call_from_text(current_content)
                     # Also check thinking content (GLM reasoning_content may contain tool calls)
-                    if not function_call_data and current_thinking:
+                    if tool_handling_enabled and not function_call_data and current_thinking:
                         function_call_data = self.tool_engine.extract_function_call_from_text(current_thinking)
                         if function_call_data:
                             logger.info("[TOOL] Found text-based tool call in thinking/reasoning content")

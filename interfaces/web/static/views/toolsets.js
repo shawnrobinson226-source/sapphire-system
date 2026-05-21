@@ -91,7 +91,7 @@ function render() {
         <div class="two-panel">
             <div class="panel-left panel-list">
                 <div class="panel-list-header">
-                    <span class="panel-list-title">Toolsets</span>
+                    <span class="panel-list-title">Capabilities</span>
                     <button class="btn-sm" id="ts-new" title="Save current as new">+</button>
                 </div>
                 <div class="panel-list-items" id="ts-list">
@@ -270,7 +270,9 @@ function bindEvents() {
         try {
             await activateToolset(selectedName);
             currentToolset = { name: selectedName };
-            ui.showToast(`Activated: ${selectedName}`, 'success');
+            const chatToolset = document.getElementById('sb-toolset');
+            if (chatToolset) chatToolset.value = selectedName;
+            ui.showToast(`Capabilities active: ${selectedName}`, 'success');
             updateScene();
             render();
         } catch (e) { ui.showToast('Failed to activate', 'error'); }
@@ -278,7 +280,7 @@ function bindEvents() {
 
     // New
     container.querySelector('#ts-new')?.addEventListener('click', async () => {
-        const name = prompt('New toolset name:');
+        const name = prompt('New capability set name:');
         if (!name?.trim()) return;
         const enabled = collectEnabled();
         try {
@@ -292,7 +294,7 @@ function bindEvents() {
 
     // Delete
     container.querySelector('#ts-delete')?.addEventListener('click', async () => {
-        if (!confirm(`Delete toolset "${selectedName}"?`)) return;
+        if (!confirm(`Delete capability set "${selectedName}"?`)) return;
         try {
             await deleteToolset(selectedName);
             ui.showToast(`Deleted: ${selectedName}`, 'success');
