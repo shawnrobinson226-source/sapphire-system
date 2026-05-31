@@ -134,7 +134,7 @@
       "custom_context": "",
       "llm_primary": "auto",
       "llm_model": "",
-      "trim_color": "#6b00b3",
+      "trim_color": "#9a1846",
       "memory_scope": "default",
       "goal_scope": "default",
       "knowledge_scope": "default",

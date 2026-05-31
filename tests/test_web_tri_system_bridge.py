@@ -72,7 +72,7 @@ def test_explicit_tri_start_returns_des_question():
 
     response = bridge.handle("/tri")
 
-    assert "Tri-System DES Question" in response
+    assert "A few questions" in response
     assert "Choose one." in response
     assert bridge.active is True
 
@@ -83,8 +83,8 @@ def test_answer_renders_des_result_preview_and_pending_confirm():
     bridge.handle("tri")
     response = bridge.handle("a")
 
-    assert "Tri-System DES Result" in response
-    assert "Tri-System AXIS Preview" in response
+    assert "Decision Summary" in response
+    assert "Proposed Action" in response
     assert "Proposed Action" in response
     assert "[Confirm Execution]" in response
     assert "[Reject]" in response
@@ -99,7 +99,7 @@ def test_reject_clears_pending_without_axis_call():
     bridge.handle("a")
     response = bridge.handle("reject")
 
-    assert "Tri-System Flow" in response
+    assert "Review Action" in response
     assert "Idle" in response
     assert bridge.active is False
     assert axis_calls == []
@@ -114,7 +114,7 @@ def test_confirm_executes_axis_once_and_deactivates_flow():
     response = bridge.handle("confirm")
     second = bridge.handle("confirm")
 
-    assert "Tri-System AXIS Result" in response
+    assert "Action Result" in response
     assert "axis-session" in response
     assert len(axis_calls) == 1
     assert bridge.active is False
@@ -177,7 +177,7 @@ def test_confirm_missing_operator_id_fails_closed_without_axis_call(monkeypatch)
 
     assert identity_calls == [False]
     assert axis_calls == []
-    assert "Tri-System Error" in response
+    assert "Review Action Error" in response
     assert "Missing operator_id. Execution stopped." in response
     assert bridge.active is False
     assert bridge.flow.pending_execution is None

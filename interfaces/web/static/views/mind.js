@@ -1,4 +1,4 @@
-// views/mind.js - Mind view: Memories, People, Knowledge, AI Knowledge, Goals
+// views/mind.js - Memory view: Memories, People, Knowledge, AI Knowledge, Goals
 import * as ui from '../ui.js';
 
 function csrfHeaders(extra = {}) {
@@ -52,7 +52,7 @@ async function render() {
     container.innerHTML = `
         <div class="mind-view">
             <div class="mind-header">
-                <h2>Mind</h2>
+                <h2>Memory</h2>
                 <div class="mind-tabs">
                     <button class="mind-tab${activeTab === 'memories' ? ' active' : ''}" data-tab="memories">Memories</button>
                     <button class="mind-tab${activeTab === 'people' ? ' active' : ''}" data-tab="people">People</button>

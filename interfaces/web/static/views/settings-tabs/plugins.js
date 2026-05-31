@@ -40,7 +40,7 @@ const DANGER_PLUGINS = {
         stage2Title: '\u26A0 Final Confirmation — Real Money',
         stage2Warnings: [
             'You are enabling autonomous control over real financial assets',
-            'Ensure your toolsets are configured carefully',
+            'Ensure your capabilities are configured carefully',
             'Consider keeping BTC tools out of chats with scheduled tasks',
         ],
     },
@@ -70,7 +70,7 @@ const DANGER_PLUGINS = {
             'The AI can write Python code and install it as a live tool',
             'Custom tools run inside the Sapphire process with full access',
             'Validation catches common dangerous patterns but is not a sandbox',
-            'A motivated prompt injection could bypass validation',
+            'A motivated instruction injection could bypass validation',
         ],
         buttonLabel: 'Enable Tool Maker',
         doubleConfirm: true,
@@ -93,7 +93,7 @@ export default {
     id: 'plugins',
     name: 'Plugins',
     icon: '🔌',
-    description: 'Enable or disable feature plugins',
+    description: 'Enable or disable feature add-ons',
 
     render(ctx) {
         const visible = (ctx.pluginList || []).filter(p => !HIDDEN.has(p.name));

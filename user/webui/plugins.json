@@ -2,6 +2,7 @@
   "enabled": [
     "voice-commands",
     "vanta-execution",
-    "axis-integration"
+    "axis-integration",
+    "axis-runtime"
   ]
 }

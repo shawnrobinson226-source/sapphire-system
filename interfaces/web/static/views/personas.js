@@ -195,23 +195,23 @@ function renderDetail(p, isActive) {
 
                 <div class="pa-fence-group">
                     <div class="pa-fence-heading">
-                        <span>Prompt & Tools</span>
+                        <span>Assistant Style & Capabilities</span>
                         <span class="pa-fence-heading-right">
-                            <span class="pa-fence-toggle-label">Date/Time <span class="help-tip" data-tip="Inject current date & time into prompt">?</span></span>
+                            <span class="pa-fence-toggle-label">Date/Time <span class="help-tip" data-tip="Add current date & time to assistant instructions">?</span></span>
                             <label class="pa-fence-toggle"><input type="checkbox" id="pa-s-inject_datetime" data-key="inject_datetime" ${s.inject_datetime ? 'checked' : ''}><span class="toggle-slider"></span></label>
                         </span>
                     </div>
                     <div class="pa-fence">
                         <div class="pa-fence-body">
-                            ${renderSettingField('prompt', 'Prompt', s, renderPromptOptions(s.prompt), { tip: 'Character personality & scenario preset', view: 'prompts' })}
-                            ${renderSettingField('toolset', 'Toolset', s, renderToolsetOptions(s.toolset), { tip: 'Functions the AI can call', view: 'toolsets' })}
+                            ${renderSettingField('prompt', 'Assistant Style', s, renderPromptOptions(s.prompt), { tip: 'Character personality & scenario preset', view: 'prompts' })}
+                            ${renderSettingField('toolset', 'Capabilities', s, renderToolsetOptions(s.toolset), { tip: 'Functions the AI can call', view: 'toolsets' })}
                         </div>
                     </div>
                 </div>
 
                 <div class="pa-fence-group">
                     <div class="pa-fence-heading">
-                        <span>Spice</span>
+                        <span>Tone</span>
                         <span class="pa-fence-heading-right">
                             <label class="pa-fence-toggle">
                                 <input type="checkbox" id="pa-s-spice_enabled" data-key="spice_enabled" ${s.spice_enabled !== false ? 'checked' : ''}>
@@ -221,9 +221,9 @@ function renderDetail(p, isActive) {
                     </div>
                     <div class="pa-fence">
                         <div class="pa-fence-body">
-                            ${renderSettingField('spice_set', 'Set', s, renderSpiceSetOptions(s.spice_set), { tip: 'Flavor pack for AI responses', view: 'spices' })}
+                            ${renderSettingField('spice_set', 'Set', s, renderSpiceSetOptions(s.spice_set), { tip: 'Tone pack for AI responses', view: 'spices' })}
                             <div class="pa-field">
-                                <label>Turns <span class="help-tip" data-tip="Spice activates every N turns">?</span></label>
+                                <label>Turns <span class="help-tip" data-tip="Tone activates every N turns">?</span></label>
                                 <input type="number" id="pa-s-spice_turns" min="1" max="20" value="${s.spice_turns || 3}" data-key="spice_turns">
                             </div>
                         </div>
@@ -232,7 +232,7 @@ function renderDetail(p, isActive) {
 
                 <div class="pa-fence-group">
                     <div class="pa-fence-heading">
-                        <span>TTS</span>
+                        <span>Voice Output</span>
                         <span class="pa-fence-heading-right">
                             <button class="btn-sm" id="pa-tts-test" title="Preview voice">&#x25B6; Test</button>
                         </span>
@@ -270,7 +270,7 @@ function renderDetail(p, isActive) {
                 </div>
 
                 <div class="pa-fence-group pa-fence-group-wide">
-                    <div class="pa-fence-heading"><span>Mind Scopes</span></div>
+                    <div class="pa-fence-heading"><span>Memory Scopes</span></div>
                     <div class="pa-fence">
                         <div class="pa-fence-body pa-fence-body-grid">
                             ${renderScopeField('memory_scope', 'Memory', s, scopeData.memory)}
@@ -289,8 +289,8 @@ function renderDetail(p, isActive) {
                     <div class="pa-fence pa-fence-collapse-content" style="display:none">
                         <div class="pa-fence-body">
                             <div class="pa-field">
-                                <label>Custom Context <span class="help-tip" data-tip="Extra text injected into system prompt">?</span></label>
-                                <textarea id="pa-s-custom_context" rows="3" placeholder="Injected into system prompt..." data-key="custom_context">${esc(s.custom_context || '')}</textarea>
+                                <label>Custom Context <span class="help-tip" data-tip="Extra text added to assistant instructions">?</span></label>
+                                <textarea id="pa-s-custom_context" rows="3" placeholder="Added to assistant instructions..." data-key="custom_context">${esc(s.custom_context || '')}</textarea>
                             </div>
                         </div>
                     </div>
@@ -342,7 +342,7 @@ function renderVoiceOptions(current) {
     const voices = voicesData?.voices || [];
     if (!voices.length) {
         // Fallback: show current saved voice as placeholder
-        return current ? `<option value="${current}" selected>${current}</option>` : '<option value="">No TTS active</option>';
+        return current ? `<option value="${current}" selected>${current}</option>` : '<option value="">No voice output active</option>';
     }
     return voices.map(v =>
         `<option value="${v.voice_id}"${v.voice_id === current ? ' selected' : ''}>${v.name}${v.category ? ' (' + v.category + ')' : ''}</option>`
@@ -607,7 +607,7 @@ function bindEvents() {
             audio.onended = () => URL.revokeObjectURL(audio.src);
             audio.play();
         } catch (err) {
-            ui.showToast(err.message || 'TTS preview failed', 'error');
+            ui.showToast(err.message || 'Voice output preview failed', 'error');
         } finally {
             btn.disabled = false;
             btn.textContent = '\u25B6 Test';

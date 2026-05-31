@@ -9,7 +9,7 @@ const ContinuityPlugin = {
   modal: null,
 
   helpText: `
-    <h4>Continuity - Scheduled AI Tasks</h4>
+    <h4>Progress Over Time - Scheduled AI Tasks</h4>
     <p>Wake Sapphire on a schedule to run autonomous tasks.</p>
 
     <h5>Task Options</h5>
@@ -43,7 +43,7 @@ const ContinuityPlugin = {
     // Check if loaded lazily (menu button already exists)
     const existingBtn = document.querySelector('[data-plugin="continuity"][data-lazy="true"]');
     if (existingBtn) {
-      console.log('✔ Continuity plugin initialized (lazy)');
+      console.log('✔ Progress Over Time plugin initialized (lazy)');
       return;
     }
 
@@ -51,12 +51,12 @@ const ContinuityPlugin = {
     if (window.pluginLoader) {
       const menuBtn = window.pluginLoader.registerIcon(this);
       if (menuBtn) {
-        menuBtn.textContent = '⏰ Continuity';
+        menuBtn.textContent = '⏰ Progress Over Time';
         menuBtn.addEventListener('click', () => this.openModal());
       }
     }
 
-    console.log('✔ Continuity plugin initialized');
+    console.log('✔ Progress Over Time plugin initialized');
   },
 
   // Called by lazy loader when menu item is clicked

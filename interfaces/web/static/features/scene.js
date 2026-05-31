@@ -67,9 +67,9 @@ export async function updateScene() {
                 micBtn.classList.toggle('stt-needs-restart', needsRestart);
                 // Update title for clarity
                 if (!status.stt_enabled) {
-                    micBtn.dataset.sttTitle = 'STT disabled';
+                    micBtn.dataset.sttTitle = 'Speech input disabled';
                 } else if (!status.stt_ready) {
-                    micBtn.dataset.sttTitle = 'STT loading — downloading speech model';
+                    micBtn.dataset.sttTitle = 'Speech input loading — downloading speech model';
                 } else {
                     micBtn.dataset.sttTitle = 'Hold to record';
                 }
@@ -87,5 +87,4 @@ export async function updateScene() {
         return null;
     }
 }
-
 

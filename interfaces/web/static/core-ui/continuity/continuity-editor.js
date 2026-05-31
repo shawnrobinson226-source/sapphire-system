@@ -115,14 +115,14 @@ export default class ContinuityEditor {
 
           <div class="continuity-field-row">
             <div class="continuity-field">
-              <label for="task-prompt">Prompt</label>
+              <label for="task-prompt">Assistant Style</label>
               <select id="task-prompt">
                 <option value="default">default</option>
                 ${this.prompts.map(p => `<option value="${p.name}" ${t.prompt === p.name ? 'selected' : ''}>${p.name}</option>`).join('')}
               </select>
             </div>
             <div class="continuity-field">
-              <label for="task-toolset">Toolset</label>
+              <label for="task-toolset">Capabilities</label>
               <select id="task-toolset">
                 <option value="none" ${t.toolset === 'none' ? 'selected' : ''}>none</option>
                 <option value="default" ${t.toolset === 'default' ? 'selected' : ''}>default</option>
@@ -133,7 +133,7 @@ export default class ContinuityEditor {
 
           <div class="continuity-field-row">
             <div class="continuity-field">
-              <label for="task-provider">LLM Provider</label>
+              <label for="task-provider">AI Provider</label>
               <select id="task-provider">
                 <option value="auto" ${t.provider === 'auto' || !t.provider ? 'selected' : ''}>Auto (default)</option>
                 ${providerOptions}
@@ -152,7 +152,7 @@ export default class ContinuityEditor {
           </div>
 
           <div class="continuity-field">
-            <label for="task-memory-scope">Memory Scope</label>
+            <label for="task-memory-scope">Memory Set</label>
             <div class="continuity-memory-row">
               <select id="task-memory-scope">
                 <option value="none" ${t.memory_scope === 'none' ? 'selected' : ''}>None (disabled)</option>
@@ -165,7 +165,7 @@ export default class ContinuityEditor {
 
           <div class="continuity-checkbox">
             <input type="checkbox" id="task-tts" ${t.tts_enabled !== false ? 'checked' : ''} />
-            <label for="task-tts">Enable TTS (speak responses)</label>
+            <label for="task-tts">Enable Voice Output (speak responses)</label>
           </div>
 
           <div class="continuity-checkbox">
@@ -175,7 +175,7 @@ export default class ContinuityEditor {
 
           <div class="continuity-checkbox">
             <input type="checkbox" id="task-inject-datetime" ${t.inject_datetime ? 'checked' : ''} />
-            <label for="task-inject-datetime">Inject date/time in system prompt</label>
+            <label for="task-inject-datetime">Add date/time to assistant instructions</label>
           </div>
         </div>
         <div class="continuity-editor-footer">

@@ -8,13 +8,13 @@ let packageStatus = {};
 // Provider definitions
 const STT_PROVIDERS = {
   none:              { label: 'Disabled', needsPackage: false },
-  faster_whisper:    { label: 'Local (Faster Whisper)', needsPackage: 'stt', downloadLabel: 'STT' },
+  faster_whisper:    { label: 'Local (Faster Whisper)', needsPackage: 'stt', downloadLabel: 'Speech Input' },
   fireworks_whisper: { label: 'Fireworks Whisper (Cloud)', needsPackage: false, needsKey: true, keyField: 'STT_FIREWORKS_API_KEY', keyPlaceholder: 'Fireworks API key (fireworks.ai)' },
 };
 
 const TTS_PROVIDERS = {
   none:       { label: 'Disabled', needsPackage: false },
-  kokoro:     { label: 'Local (Kokoro)', needsPackage: 'tts', downloadLabel: 'Kokoro TTS' },
+  kokoro:     { label: 'Local (Kokoro)', needsPackage: 'tts', downloadLabel: 'Kokoro Voice Output' },
   elevenlabs: { label: 'ElevenLabs (Cloud)', needsPackage: false, needsKey: true, keyField: 'TTS_ELEVENLABS_API_KEY', keyPlaceholder: 'ElevenLabs API key (elevenlabs.io)' },
 };
 
@@ -102,7 +102,7 @@ export default {
   attachListeners(container, settings, updateSettings) {
     this.loadPackageStatus(container);
 
-    // Provider dropdowns (STT + TTS)
+    // Provider dropdowns (speech input + voice output)
     container.querySelectorAll('.provider-select').forEach(select => {
       select.addEventListener('change', async (e) => {
         const settingKey = e.target.dataset.provider;

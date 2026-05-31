@@ -247,7 +247,7 @@ def test_axis_failure_renders_error_state():
 
     assert state["type"] == "error"
     assert state["data"]["message"] == "AXIS execution failed."
-    assert "Tri-System Error" in rendered
+    assert "Review Action Error" in rendered
     assert "AXIS execution failed." in rendered
     assert flow.pending_execution is None
 
@@ -423,17 +423,17 @@ def test_tri_flow_mount_renders_result_preview_and_confirm():
 
     state = app.start_tri_flow()
     assert state["type"] == "question"
-    assert "Tri-System DES Question" in app.render()
+    assert "A few questions" in app.render()
 
     state = app.submit_tri_answer("a")
     rendered = app.render()
 
     assert state["type"] == "confirm"
-    assert "Tri-System DES Result" in rendered
-    assert "Tri-System AXIS Preview" in rendered
+    assert "Decision Summary" in rendered
     assert "Proposed Action" in rendered
-    assert "Classification:" in rendered
-    assert "Next Action:" in rendered
+    assert "Proposed Action" in rendered
+    assert "Category:" in rendered
+    assert "Next Step:" in rendered
     assert "[Confirm Execution]" in rendered
     assert "[Reject]" in rendered
 

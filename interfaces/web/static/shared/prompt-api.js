@@ -62,11 +62,11 @@ export async function loadPrompt(name) {
   if (!resp.ok) {
     // Handle privacy requirement case with specific error
     if (data.privacy_required) {
-      const err = new Error(data.error || `Prompt '${name}' requires Privacy Mode`);
+      const err = new Error(data.error || `Assistant style '${name}' requires Privacy Mode`);
       err.privacyRequired = true;
       throw err;
     }
-    throw new Error(data.error || `Failed to load prompt '${name}'`);
+    throw new Error(data.error || `Failed to load assistant style '${name}'`);
   }
 
   return data;

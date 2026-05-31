@@ -95,8 +95,8 @@ function render() {
 function renderRoster() {
     return `
         <div class="panel-list-header">
-            <span class="panel-list-title">Prompts</span>
-            <button class="btn-sm" id="pr-new" title="New prompt">+</button>
+        <span class="panel-list-title">Assistant Styles</span>
+            <button class="btn-sm" id="pr-new" title="New assistant style">+</button>
         </div>
         <div class="panel-list-items" id="pr-list">
             ${prompts.map(p => {
@@ -135,7 +135,7 @@ function renderEditor() {
             </div>
             <div class="pr-header-actions">
                 ${!isActive ? '<button class="btn-primary" id="pr-activate">Activate</button>' : '<span class="badge badge-active">Active</span>'}
-                <button class="btn-sm" id="pr-dup" title="Duplicate prompt">\u2398</button>
+                <button class="btn-sm" id="pr-dup" title="Duplicate assistant style">\u2398</button>
                 <button class="btn-sm" id="pr-io" title="Import / Export">\u21C4</button>
                 <button class="btn-sm danger" id="pr-delete" title="Delete prompt">\u2715</button>
             </div>
@@ -150,7 +150,7 @@ function renderEditor() {
 }
 
 function renderMonolith(p) {
-    return `<textarea id="pr-content" class="pr-textarea" placeholder="Enter your prompt...">${esc(p.content || '')}</textarea>`;
+    return `<textarea id="pr-content" class="pr-textarea" placeholder="Enter your assistant style...">${esc(p.content || '')}</textarea>`;
 }
 
 function renderAssembled(p) {
@@ -767,7 +767,7 @@ function openImportExport() {
                 <div class="pr-io-section">
                     <h4>Export</h4>
                     <label class="pr-io-option">
-                        <input type="checkbox" id="io-export-pieces" checked> Include pieces used by this prompt
+                        <input type="checkbox" id="io-export-pieces" checked> Include pieces used by this assistant style
                     </label>
                     <div class="pr-io-buttons">
                         <button class="btn-sm" id="io-export-clip">Copy to Clipboard</button>
@@ -778,7 +778,7 @@ function openImportExport() {
                 <div class="pr-io-section">
                     <h4>Import</h4>
                     <label class="pr-io-option">
-                        <input type="checkbox" id="io-import-overwrite"> Overwrite mode (replace existing pieces and prompt)
+                        <input type="checkbox" id="io-import-overwrite"> Overwrite mode (replace existing pieces and assistant style)
                     </label>
                     <div class="pr-io-buttons">
                         <button class="btn-sm" id="io-import-clip">Paste from Clipboard</button>
@@ -831,14 +831,14 @@ function openImportExport() {
         const status = modal.querySelector('#io-status');
         try {
             const data = JSON.parse(json);
-            if (!data.prompt) { status.textContent = 'Invalid format: missing prompt data'; return; }
+            if (!data.prompt) { status.textContent = 'Invalid format: missing assistant style data'; return; }
             const overwrite = modal.querySelector('#io-import-overwrite').checked;
 
             // Resolve prompt name
             let name = data.name || selected;
             const exists = prompts.some(p => p.name === name);
             if (exists && !overwrite) {
-                const newName = prompt(`Prompt "${name}" already exists. Enter a new name:`, name + '-imported');
+                const newName = prompt(`Assistant style "${name}" already exists. Enter a new name:`, name + '-imported');
                 if (!newName?.trim()) { status.textContent = 'Import cancelled'; return; }
                 name = newName.trim();
             }

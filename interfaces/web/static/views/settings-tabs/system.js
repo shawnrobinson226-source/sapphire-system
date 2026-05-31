@@ -17,7 +17,7 @@ export default {
             ${ctx.renderAccordion('sys-adv', this.advancedKeys)}
 
             <div class="system-tools" style="margin:20px 0;padding:16px;border:1px solid var(--border);border-radius:var(--radius)">
-                <h4 style="margin:0 0 10px;font-size:var(--font-sm)">Tools</h4>
+                <h4 style="margin:0 0 10px;font-size:var(--font-sm)">Capabilities</h4>
                 <button class="btn-primary" id="sys-setup-wizard">Run Setup Wizard</button>
                 <p class="text-muted" style="font-size:var(--font-xs);margin:4px 0 0">Configure LLM, audio, voice, and identity settings step by step.</p>
             </div>
@@ -30,11 +30,11 @@ export default {
                     <p class="text-muted" style="font-size:var(--font-xs);margin:4px 0 0">Reverts everything to defaults. Requires restart.</p>
                 </div>
                 <div class="danger-section">
-                    <h5>Prompts & Personas</h5>
+                <h5>Assistant Styles & Personas</h5>
                     <button class="btn-primary" id="dz-merge-updates" style="margin-bottom:6px">Import App Updates</button>
-                    <p class="text-muted" style="font-size:var(--font-xs);margin:0 0 10px">Adds new prompts and personas from updates without touching your stuff. Backs up first.</p>
-                    <button class="btn-sm danger" id="dz-reset-prompts">Reset Prompts to Defaults</button>
-                    <p class="text-muted" style="font-size:var(--font-xs);margin:4px 0 0">Overwrites all prompt files with factory versions. Creates backup first.</p>
+                    <p class="text-muted" style="font-size:var(--font-xs);margin:0 0 10px">Adds new assistant styles and personas from updates without touching your stuff. Backs up first.</p>
+                    <button class="btn-sm danger" id="dz-reset-prompts">Reset Assistant Styles to Defaults</button>
+                    <p class="text-muted" style="font-size:var(--font-xs);margin:4px 0 0">Overwrites all assistant style files with factory versions. Creates backup first.</p>
                 </div>
                 <div class="danger-section">
                     <h5>Chat Defaults</h5>
@@ -65,18 +65,18 @@ export default {
         });
 
         el.querySelector('#dz-reset-prompts')?.addEventListener('click', async () => {
-            if (!confirm('Reset ALL prompts to factory defaults?')) return;
+            if (!confirm('Reset ALL assistant styles to factory defaults?')) return;
             const t = prompt('Type RESET to confirm:');
             if (t?.toUpperCase() !== 'RESET') return;
             try {
                 await resetPrompts();
-                ui.showToast('Prompts reset', 'success');
+                ui.showToast('Assistant styles reset', 'success');
                 updateScene();
             } catch { ui.showToast('Failed', 'error'); }
         });
 
         el.querySelector('#dz-merge-updates')?.addEventListener('click', async () => {
-            if (!confirm('Import new prompts and personas from app updates?\n\nYour existing content is untouched. A backup is created first.')) return;
+            if (!confirm('Import new assistant styles and personas from app updates?\n\nYour existing content is untouched. A backup is created first.')) return;
             try {
                 const result = await mergeUpdates();
                 const a = result.added || {};
@@ -88,7 +88,7 @@ export default {
                     if (a.components) parts.push(`${a.components} components`);
                     if (a.presets) parts.push(`${a.presets} presets`);
                     if (a.monoliths) parts.push(`${a.monoliths} monoliths`);
-                    if (a.spice_categories) parts.push(`${a.spice_categories} spice categories`);
+                    if (a.spice_categories) parts.push(`${a.spice_categories} tone categories`);
                     if (a.personas) parts.push(`${a.personas} personas`);
                     ui.showToast(`Added ${parts.join(', ')}`, 'success');
                 }

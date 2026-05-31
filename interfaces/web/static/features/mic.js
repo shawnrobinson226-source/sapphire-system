@@ -43,7 +43,7 @@ export function updateMicButtonState() {
     if (ttsActive) {
         micBtn.classList.add('tts-playing');
         micBtn.textContent = '⏹';
-        micBtn.title = 'Stop TTS';
+        micBtn.title = 'Stop voice output';
     } else {
         micBtn.classList.remove('tts-playing');
         micBtn.textContent = '🎤';

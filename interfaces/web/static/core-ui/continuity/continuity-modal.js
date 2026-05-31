@@ -67,7 +67,7 @@ export default class ContinuityModal {
       <div class="continuity-panel">
         <div class="continuity-header">
           <h2>
-            ⏰ Continuity
+            ⏰ Progress Over Time
             <span class="status-badge ${this.status.running ? '' : 'stopped'}">
               ${this.status.running !== false ? 'Running' : 'Stopped'}
             </span>

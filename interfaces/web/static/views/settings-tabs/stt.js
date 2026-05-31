@@ -3,7 +3,7 @@ import { renderProviderTab, attachProviderListeners } from '../../shared/provide
 
 const tabConfig = {
     providerKey: 'STT_PROVIDER',
-    disabledMessage: 'Speech-to-text is disabled. Select a provider above to enable voice input.',
+    disabledMessage: 'Speech input is disabled. Select a provider above to enable voice input.',
 
     providers: {
         none: {
@@ -42,9 +42,9 @@ const tabConfig = {
 
 export default {
     id: 'stt',
-    name: 'STT',
+    name: 'Speech Input',
     icon: '\uD83C\uDFA4',
-    description: 'Speech-to-text engine and voice detection',
+    description: 'Speech input engine and voice detection',
 
     render(ctx) {
         return renderProviderTab(tabConfig, ctx);

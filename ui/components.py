@@ -33,7 +33,7 @@ def ResultView(state: UIState) -> str:
 def TriSystemView(state: UIState) -> str:
     blocks = [render_tri_state(item) for item in [state.tri_des_result, state.tri_axis_preview, state.tri_state]]
     body = "\n\n".join(block for block in blocks if block)
-    return "Tri-System Flow" if not body else body
+    return "Review Action" if not body else body
 
 
 def HistoryView(state: UIState) -> str:

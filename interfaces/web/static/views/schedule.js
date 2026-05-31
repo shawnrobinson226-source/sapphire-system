@@ -598,7 +598,7 @@ async function openEditor(task, isHeartbeat = false) {
                 </div>
 
                 <div class="sched-field" style="margin-top:16px">
-                    <label>\uD83D\uDC64 Persona <span class="help-tip" data-tip="Auto-fills prompt, voice, toolset, model, scopes, and more from a persona profile. You can still override individual settings in the accordions below.">?</span></label>
+                    <label>\uD83D\uDC64 Persona <span class="help-tip" data-tip="Auto-fills assistant style, voice, capabilities, model, scopes, and more from a persona profile. You can still override individual settings in the accordions below.">?</span></label>
                     <select id="ed-persona">
                         <option value="">None (manual settings)</option>
                         ${personas.map(p => `<option value="${p.name}" ${t.persona === p.name ? 'selected' : ''}>${p.name}${p.tagline ? ' — ' + p.tagline : ''}</option>`).join('')}
@@ -612,14 +612,14 @@ async function openEditor(task, isHeartbeat = false) {
                     <div class="sched-acc-body"><div class="sched-acc-inner">
                         <div class="sched-field-row">
                             <div class="sched-field">
-                                <label>Prompt</label>
+                                <label>Assistant Style</label>
                                 <select id="ed-prompt">
                                     <option value="default">default</option>
                                     ${prompts.map(p => `<option value="${p.name}" ${t.prompt === p.name ? 'selected' : ''}>${p.name}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="sched-field">
-                                <label>Toolset</label>
+                                <label>Capabilities</label>
                                 <select id="ed-toolset">
                                     <option value="none" ${t.toolset === 'none' ? 'selected' : ''}>none</option>
                                     <option value="default" ${t.toolset === 'default' ? 'selected' : ''}>default</option>
@@ -661,16 +661,16 @@ async function openEditor(task, isHeartbeat = false) {
                 </details>
 
                 <details class="sched-accordion">
-                    <summary class="sched-acc-header">Voice <span class="sched-preview" id="ed-voice-preview">${(() => { const serverOn = isHeartbeat ? !!t.tts_enabled : t.tts_enabled !== false; if (t.browser_tts) return 'Browser'; if (serverOn) return t.voice || 'Server'; return 'No TTS'; })()}</span></summary>
+                    <summary class="sched-acc-header">Voice <span class="sched-preview" id="ed-voice-preview">${(() => { const serverOn = isHeartbeat ? !!t.tts_enabled : t.tts_enabled !== false; if (t.browser_tts) return 'Browser'; if (serverOn) return t.voice || 'Server'; return 'No voice output'; })()}</span></summary>
                     <div class="sched-acc-body"><div class="sched-acc-inner">
                         <div class="sched-checkbox"${window.__managed ? ' style="display:none"' : ''}>
                             <label><input type="checkbox" id="ed-tts" ${t.tts_enabled !== false && !isHeartbeat ? 'checked' : ''}${isHeartbeat && t.tts_enabled ? ' checked' : ''}> Speak on server speakers</label>
                         </div>
                         <div class="sched-checkbox">
-                            <label><input type="checkbox" id="ed-browser-tts" ${t.browser_tts ? 'checked' : ''}> Play in browser <span class="help-tip" data-tip="Send TTS audio to open browser tabs instead of server speakers. One tab claims and plays.">?</span></label>
+                            <label><input type="checkbox" id="ed-browser-tts" ${t.browser_tts ? 'checked' : ''}> Play in browser <span class="help-tip" data-tip="Send voice output audio to open browser tabs instead of server speakers. One tab claims and plays.">?</span></label>
                         </div>
                         <div class="sched-field">
-                            <label>Voice <span class="help-tip" data-tip="TTS voice to use. Leave on default to use whatever voice is currently active.">?</span></label>
+                            <label>Voice <span class="help-tip" data-tip="Voice output to use. Leave on default to use whatever voice is currently active.">?</span></label>
                             <select id="ed-voice">
                                 <option value="">Default (current voice)</option>
                                 ${voiceOpts}
@@ -690,7 +690,7 @@ async function openEditor(task, isHeartbeat = false) {
                 </details>
 
                 <details class="sched-accordion">
-                    <summary class="sched-acc-header">Mind</summary>
+                    <summary class="sched-acc-header">Memory</summary>
                     <div class="sched-acc-body"><div class="sched-acc-inner">
                         ${renderScopeField('Memory', 'ed-memory', t.memory_scope, memoryScopes, '/api/memory/scopes')}
                         ${renderScopeField('Knowledge', 'ed-knowledge', t.knowledge_scope, knowledgeScopes, '/api/knowledge/scopes')}
@@ -958,7 +958,7 @@ async function openEditor(task, isHeartbeat = false) {
         const browserTts = modal.querySelector('#ed-browser-tts')?.checked;
         if (browserTts) { el.textContent = 'Browser'; return; }
         const ttsOn = modal.querySelector('#ed-tts')?.checked;
-        el.textContent = ttsOn ? (modal.querySelector('#ed-voice')?.value || 'Server') : 'No TTS';
+        el.textContent = ttsOn ? (modal.querySelector('#ed-voice')?.value || 'Server') : 'No voice output';
     };
     modal.querySelector('#ed-voice')?.addEventListener('change', updateVoicePreview);
     modal.querySelector('#ed-tts')?.addEventListener('change', updateVoicePreview);

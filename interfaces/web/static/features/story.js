@@ -24,7 +24,7 @@ export async function openStoryPicker() {
         grid.innerHTML = presetsCache.map(p => {
             const tags = [];
             if (p.has_tools) tags.push('<span class="story-preset-tag has-tools">Custom Tools</span>');
-            if (p.has_prompt) tags.push('<span class="story-preset-tag has-prompt">Story Prompt</span>');
+            if (p.has_prompt) tags.push('<span class="story-preset-tag has-prompt">Story Style</span>');
             if (p.key_count) tags.push(`<span class="story-preset-tag">${p.key_count} vars</span>`);
             return `
                 <button class="story-preset-card" data-preset="${p.name}">

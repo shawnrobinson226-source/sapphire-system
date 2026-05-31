@@ -120,7 +120,7 @@ export function renderAudioDevicesSection() {
 
       <div class="audio-output-section">
         <h4>Output Device (Speakers)</h4>
-        <p class="section-desc">Select speakers/headphones for TTS playback. Use "System default" for automatic selection.</p>
+        <p class="section-desc">Select speakers/headphones for voice output playback. Use "System default" for automatic selection.</p>
         ${renderOutputDeviceSelector()}
       </div>
     </div>

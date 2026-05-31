@@ -53,14 +53,14 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
     data = state.get("data") or {}
 
     if state_type == "idle":
-        return "Tri-System Flow\nIdle"
+        return "Review Action\nIdle"
 
     if state_type == "question":
         options = data.get("options") or []
         option_lines = [f"- {option}" for option in options]
         return "\n".join(
             [
-                "Tri-System DES Question",
+                "A few questions",
                 data.get("text", ""),
                 "Options:",
                 *option_lines,
@@ -70,7 +70,7 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
     if state_type == "result":
         return "\n".join(
             [
-                "Tri-System DES Result",
+                "Decision Summary",
                 repr(data),
             ]
         )
@@ -78,17 +78,17 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
     if state_type == "axis_preview":
         fields = [
             ("trigger", data.get("trigger", "")),
-            ("classification", data.get("classification", "")),
-            ("next_action", data.get("next_action", "")),
+            ("Category", data.get("classification", "")),
+            ("Next Step", data.get("next_action", "")),
             ("reference", data.get("reference")),
             ("stability", data.get("stability")),
             ("impact", data.get("impact")),
         ]
         return "\n".join(
             [
-                "Tri-System AXIS Preview",
-                f"CLASSIFICATION: {data.get('classification', '')}",
-                f"NEXT ACTION: {data.get('next_action', '')}",
+                "Proposed Action",
+                f"CATEGORY: {data.get('classification', '')}",
+                f"NEXT STEP: {data.get('next_action', '')}",
                 *[f"{key}: {value}" for key, value in fields],
             ]
         )
@@ -98,8 +98,8 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
         return "\n".join(
             [
                 "Proposed Action",
-                f"Classification: {payload.get('classification', '')}",
-                f"Next Action: {payload.get('next_action', '')}",
+                f"Category: {payload.get('classification', '')}",
+                f"Next Step: {payload.get('next_action', '')}",
                 f"Trigger: {payload.get('trigger', '')}",
                 "[Confirm Execution]",
                 "[Reject]",
@@ -109,7 +109,7 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
     if state_type == "axis_result":
         return "\n".join(
             [
-                "Tri-System AXIS Result",
+                "Action Result",
                 repr(data),
             ]
         )
@@ -117,10 +117,10 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
     if state_type == "error":
         return "\n".join(
             [
-                "Tri-System Error",
+                "Review Action Error",
                 data.get("message", "Unknown error."),
                 f"Recoverable: {data.get('recoverable')}",
             ]
         )
 
-    return "Tri-System Flow\nUnknown state."
+    return "Review Action\nUnknown state."

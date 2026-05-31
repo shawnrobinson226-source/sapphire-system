@@ -1,9 +1,9 @@
 // settings-tabs/tools.js - Function calling settings
 export default {
     id: 'tools',
-    name: 'Tools',
+    name: 'Capabilities',
     icon: '\uD83D\uDD27',
-    description: 'Function calling and tool settings',
+    description: 'Function calling and capability settings',
     essentialKeys: ['MAX_TOOL_ITERATIONS', 'MAX_PARALLEL_TOOLS'],
     advancedKeys: ['DEBUG_TOOL_CALLING'],
 

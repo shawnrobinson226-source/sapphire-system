@@ -3,7 +3,7 @@ import { renderProviderTab, attachProviderListeners } from '../../shared/provide
 
 const tabConfig = {
     providerKey: 'TTS_PROVIDER',
-    disabledMessage: 'Text-to-speech is disabled. Select a provider above to enable voice output.',
+    disabledMessage: 'Voice output is disabled. Select a provider above to enable voice output.',
 
     providers: {
         none: {
@@ -37,9 +37,9 @@ const tabConfig = {
 
 export default {
     id: 'tts',
-    name: 'TTS',
+    name: 'Voice Output',
     icon: '\uD83D\uDD0A',
-    description: 'Text-to-speech engine configuration',
+    description: 'Voice output configuration',
 
     render(ctx) {
         let html = renderProviderTab(tabConfig, ctx);
@@ -47,7 +47,7 @@ export default {
             <div class="settings-grid" style="margin-top: 1rem;">
                 <div class="setting-row full-width">
                     <button id="tts-test-btn" class="btn btn-secondary" style="width: auto;">
-                        Test TTS
+                        Test Voice Output
                     </button>
                     <span id="tts-test-result" style="margin-left: 0.75rem; font-size: var(--font-sm);"></span>
                 </div>
@@ -81,7 +81,7 @@ export default {
                 result.textContent = `Error: ${e.message}`;
             }
             btn.disabled = false;
-            btn.textContent = 'Test TTS';
+            btn.textContent = 'Test Voice Output';
         });
     }
 };

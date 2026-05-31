@@ -129,14 +129,14 @@ export const playText = async (txt, cacheKey = null) => {
     }
 
     ui.showStatus();
-    ui.updateStatus('Generating TTS...');
+    ui.updateStatus('Generating voice output...');
 
     try {
         // Check cache first
         let blob;
         if (cacheKey !== null && ttsCache.has(cacheKey)) {
             blob = ttsCache.get(cacheKey);
-            ui.updateStatus('Playing cached TTS...');
+            ui.updateStatus('Playing cached voice output...');
         } else {
             blob = await api.fetchAudio(clean, ttsCtrl.signal);
             // Cache if key provided

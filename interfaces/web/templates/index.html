@@ -66,9 +66,9 @@
             <span class="nav-label">Persona</span>
             <div class="nav-flyout">
                 <div class="nav-flyout-item" data-view="personas" role="button" tabindex="0">&#x1F3AD; Personas</div>
-                <div class="nav-flyout-item" data-view="prompts" role="button" tabindex="0">&#x1F464; Prompts</div>
-                <div class="nav-flyout-item" data-view="toolsets" role="button" tabindex="0">&#x1F527; Toolsets</div>
-                <div class="nav-flyout-item" data-view="spices" role="button" tabindex="0">&#x1F336;&#xFE0F; Spices</div>
+                <div class="nav-flyout-item" data-view="prompts" role="button" tabindex="0">&#x1F464; Assistant Styles</div>
+                <div class="nav-flyout-item" data-view="toolsets" role="button" tabindex="0">&#x1F527; Capabilities</div>
+                <div class="nav-flyout-item" data-view="spices" role="button" tabindex="0">&#x1F336;&#xFE0F; Tones</div>
             </div>
         </div>
         <button class="nav-item" data-view="schedule">
@@ -77,7 +77,7 @@
         </button>
         <button class="nav-item" data-view="mind">
             <span class="nav-icon">&#x1F9E0;</span>
-            <span class="nav-label">Mind</span>
+            <span class="nav-label">Memory</span>
         </button>
         <button class="nav-item" data-view="settings">
             <span class="nav-icon">&#x2699;&#xFE0F;</span>
@@ -191,24 +191,24 @@
                         <div class="sb-full-content">
                         <div class="sidebar-section">
                             <div class="sb-field">
-                                <label for="sb-prompt">prompt</label>
+                                <label for="sb-prompt">assistant style</label>
                                 <div class="sb-field-row">
                                     <select id="sb-prompt"><option value="sapphire">Sapphire</option></select>
-                                    <button type="button" class="sb-btn-sm sb-goto-view" data-view="prompts" data-select="sb-prompt" title="Open in Prompts">&#x2197;</button>
+                                    <button type="button" class="sb-btn-sm sb-goto-view" data-view="prompts" data-select="sb-prompt" title="Open in Assistant Styles">&#x2197;</button>
                                 </div>
                             </div>
                             <div class="sb-field">
-                                <label for="sb-toolset">toolset</label>
+                                <label for="sb-toolset">capabilities</label>
                                 <div class="sb-field-row">
                                     <select id="sb-toolset"><option value="all">All</option></select>
-                                    <button type="button" class="sb-btn-sm sb-goto-view" data-view="toolsets" data-select="sb-toolset" title="Open in Toolsets">&#x2197;</button>
+                                    <button type="button" class="sb-btn-sm sb-goto-view" data-view="toolsets" data-select="sb-toolset" title="Open in Capabilities">&#x2197;</button>
                                 </div>
                             </div>
                             <div class="sb-field">
-                                <label for="sb-spice-set">spice set</label>
+                                <label for="sb-spice-set">tone</label>
                                 <div class="sb-field-row">
                                     <select id="sb-spice-set"><option value="default">default</option></select>
-                                    <button type="button" class="sb-btn-sm sb-goto-view" data-view="spices" data-select="sb-spice-set" title="Open in Spices">&#x2197;</button>
+                                    <button type="button" class="sb-btn-sm sb-goto-view" data-view="spices" data-select="sb-spice-set" title="Open in Tones">&#x2197;</button>
                                 </div>
                             </div>
                             <div class="sb-field">
@@ -227,43 +227,43 @@
 
                         <!-- Quick toggles -->
                         <div class="sb-toggles">
-                            <button type="button" class="sb-toggle active" id="sb-spice-toggle" data-active="true">Spice &middot; 3</button>
+                            <button type="button" class="sb-toggle active" id="sb-spice-toggle" data-active="true">Tone &middot; 3</button>
                             <button type="button" class="sb-toggle" id="sb-datetime-toggle" data-active="false">Date/Time</button>
                         </div>
 
-                        <!-- Mind Scopes Accordion -->
+                        <!-- Memory Scopes Accordion -->
                         <div class="sidebar-section sidebar-accordion">
                             <div class="sidebar-accordion-header">
                                 <span class="accordion-arrow">&#x25B6;</span>
-                                <span>&#x1F9E0; Mind</span>
+                                <span>&#x1F9E0; Memory</span>
                             </div>
                             <div class="sidebar-accordion-content" style="display:none">
                             <div class="sb-field">
                                 <label for="sb-memory-scope">memory</label>
                                 <div class="sb-field-row">
                                     <select id="sb-memory-scope"><option value="none">None</option><option value="default">default</option></select>
-                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="memories" title="Open in Mind">&#x2197;</button>
+                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="memories" title="Open in Memory">&#x2197;</button>
                                 </div>
                             </div>
                             <div class="sb-field">
                                 <label for="sb-goal-scope">goals</label>
                                 <div class="sb-field-row">
                                     <select id="sb-goal-scope"><option value="none">None</option><option value="default">default</option></select>
-                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="goals" title="Open in Mind">&#x2197;</button>
+                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="goals" title="Open in Memory">&#x2197;</button>
                                 </div>
                             </div>
                             <div class="sb-field">
                                 <label for="sb-knowledge-scope">knowl.</label>
                                 <div class="sb-field-row">
                                     <select id="sb-knowledge-scope"><option value="none">None</option><option value="default">default</option></select>
-                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="knowledge" title="Open in Mind">&#x2197;</button>
+                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="knowledge" title="Open in Memory">&#x2197;</button>
                                 </div>
                             </div>
                             <div class="sb-field">
                                 <label for="sb-people-scope">people</label>
                                 <div class="sb-field-row">
                                     <select id="sb-people-scope"><option value="none">None</option><option value="default">default</option></select>
-                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="people" title="Open in Mind">&#x2197;</button>
+                                    <button type="button" class="sb-btn-sm sb-goto-mind" data-tab="people" title="Open in Memory">&#x2197;</button>
                                 </div>
                             </div>
                             <div class="sb-field" data-plugin-scope="email">
@@ -312,11 +312,11 @@
                             </div>
                         </div>
 
-                        <!-- TTS (Voice) Accordion -->
+                        <!-- Voice Output Accordion -->
                         <div class="sidebar-section sidebar-accordion">
                             <div class="sidebar-accordion-header">
                                 <span class="accordion-arrow">&#x25B6;</span>
-                                <span>TTS (Voice)</span>
+                                <span>Voice Output</span>
                             </div>
                             <div class="sidebar-accordion-content" style="display:none">
                                 <div class="sb-field">
@@ -334,20 +334,20 @@
                             </div>
                         </div>
 
-                        <!-- System Prompt Accordion -->
+                        <!-- Assistant Style Accordion -->
                         <div class="sidebar-section sidebar-accordion">
                             <div class="sidebar-accordion-header">
                                 <span class="accordion-arrow">&#x25B6;</span>
-                                <span>System Prompt</span>
+                                <span>Assistant Style</span>
                             </div>
                             <div class="sidebar-accordion-content" style="display:none">
                                 <div class="sb-field">
-                                    <label for="sb-spice-turns">spice turns</label>
+                                    <label for="sb-spice-turns">tone turns</label>
                                     <input type="number" id="sb-spice-turns" min="1" max="20" value="3">
                                 </div>
                                 <div class="sb-field sb-field-stack">
                                     <label for="sb-custom-context">Custom Context</label>
-                                    <textarea id="sb-custom-context" rows="3" placeholder="Injected into system prompt..."></textarea>
+                                    <textarea id="sb-custom-context" rows="3" placeholder="Added to assistant instructions..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -367,10 +367,10 @@
                                     <select id="sb-story-preset"><option value="">None</option></select>
                                 </div>
                                 <div class="sb-field">
-                                    <label><input type="checkbox" id="sb-story-in-prompt" checked> Story in prompt</label>
+                                    <label><input type="checkbox" id="sb-story-in-prompt" checked> Story in assistant style</label>
                                 </div>
                                 <div class="sb-field">
-                                    <label><input type="checkbox" id="sb-story-vars"> Variables in prompt</label>
+                                    <label><input type="checkbox" id="sb-story-vars"> Variables in assistant style</label>
                                 </div>
                                 <div class="sb-field sb-actions">
                                     <button type="button" id="sb-story-view" class="sb-btn-sm">View</button>
@@ -405,31 +405,31 @@
         </div>
         <div id="view-prompts" class="view" style="display:none">
             <div class="view-placeholder">
-                <h2>Prompts</h2>
-                <p>Prompt editor - coming next</p>
+                <h2>Assistant Styles</h2>
+                <p>Assistant style editor - coming next</p>
             </div>
         </div>
         <div id="view-toolsets" class="view" style="display:none">
             <div class="view-placeholder">
-                <h2>Toolsets</h2>
-                <p>Ability manager - coming next</p>
+                <h2>Capabilities</h2>
+                <p>Capability manager - coming next</p>
             </div>
         </div>
         <div id="view-spices" class="view" style="display:none">
             <div class="view-placeholder">
-                <h2>Spices</h2>
-                <p>Spice manager - coming next</p>
+                <h2>Tones</h2>
+                <p>Tone manager - coming next</p>
             </div>
         </div>
         <div id="view-schedule" class="view" style="display:none">
             <div class="view-placeholder">
                 <h2>Schedule</h2>
-                <p>Continuity manager - coming next</p>
+                <p>Progress Over Time manager - coming next</p>
             </div>
         </div>
         <div id="view-mind" class="view" style="display:none">
             <div class="view-placeholder">
-                <h2>Mind</h2>
+                <h2>Memory</h2>
                 <p>Knowledge base - loading...</p>
             </div>
         </div>

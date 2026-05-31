@@ -3,9 +3,9 @@ import { switchView } from '../core/router.js';
 
 const TABS = [
     { id: 'personas', label: 'Personas', icon: '\u{1F3AD}' },
-    { id: 'prompts', label: 'Prompts', icon: '\u{1F464}' },
-    { id: 'toolsets', label: 'Toolsets', icon: '\u{1F527}' },
-    { id: 'spices', label: 'Spices', icon: '\u{1F336}\u{FE0F}' },
+    { id: 'prompts', label: 'Assistant Styles', icon: '\u{1F464}' },
+    { id: 'toolsets', label: 'Capabilities', icon: '\u{1F527}' },
+    { id: 'spices', label: 'Tones', icon: '\u{1F336}\u{FE0F}' },
 ];
 
 /**

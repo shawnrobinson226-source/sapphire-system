@@ -17,8 +17,8 @@
       "lazy": true
     },
     "continuity": {
-      "title": "Continuity",
-      "menuText": "Continuity Tasks",
+      "title": "Progress Over Time",
+      "menuText": "Progress Over Time Tasks",
       "showInSidebar": false,
       "lazy": true
     }
