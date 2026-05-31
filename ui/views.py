@@ -107,12 +107,22 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
         )
 
     if state_type == "axis_result":
-        return "\n".join(
-            [
-                "Action Result",
-                repr(data),
-            ]
-        )
+        outcome = data.get("outcome") or "completed"
+        protocol_output = data.get("protocol_output") or ""
+        session_id = data.get("sessionId") or data.get("session_id") or ""
+
+        lines = [
+            "Action Result",
+            f"Status: {str(outcome).replace('_', ' ').title()}",
+        ]
+
+        if protocol_output:
+            lines.extend(["", protocol_output])
+
+        if session_id:
+            lines.extend(["", f"Reference: {session_id}"])
+
+        return "\n".join(lines)
 
     if state_type == "error":
         return "\n".join(
