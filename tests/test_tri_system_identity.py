@@ -470,5 +470,3 @@ def test_ui_debug_trace_exposes_only_safe_events():
     assert "SECRET-UI-ANSWER" not in trace_text
     assert "operator_id" not in trace_text
     assert "classification" not in trace_text
-
-

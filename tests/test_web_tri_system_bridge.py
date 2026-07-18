@@ -229,5 +229,3 @@ def test_hybrid_stream_completion_preserves_visible_response():
     assert "finishStreaming = async (ephemeral = false, skipHistorySwap = false)" in ui_js
     assert "if (skipHistorySwap)" in ui_js
     assert "await ui.finishStreaming(false, hybrid === true);" in send_handlers
-
-
