@@ -434,8 +434,8 @@ def test_tri_flow_mount_renders_result_preview_and_confirm():
     assert "Proposed Action" in rendered
     assert "Category:" in rendered
     assert "Next Step:" in rendered
-    assert "[Confirm Execution]" in rendered
-    assert "[Reject]" in rendered
+    assert "Type confirm to execute AXIS." in rendered
+    assert "Type reject to cancel." in rendered
 
 
 def test_tri_question_render_does_not_include_hidden_mic_input():
@@ -470,3 +470,5 @@ def test_ui_debug_trace_exposes_only_safe_events():
     assert "SECRET-UI-ANSWER" not in trace_text
     assert "operator_id" not in trace_text
     assert "classification" not in trace_text
+
+

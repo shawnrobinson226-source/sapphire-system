@@ -101,8 +101,8 @@ def render_tri_state(state: dict[str, Any] | None) -> str:
                 f"Category: {payload.get('classification', '')}",
                 f"Next Step: {payload.get('next_action', '')}",
                 f"Trigger: {payload.get('trigger', '')}",
-                "[Confirm Execution]",
-                "[Reject]",
+                "Type confirm to execute AXIS.",
+                "Type reject to cancel.",
             ]
         )
 

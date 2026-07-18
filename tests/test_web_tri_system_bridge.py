@@ -86,8 +86,8 @@ def test_answer_renders_des_result_preview_and_pending_confirm():
     assert "Decision Summary" in response
     assert "Proposed Action" in response
     assert "Proposed Action" in response
-    assert "[Confirm Execution]" in response
-    assert "[Reject]" in response
+    assert "Type confirm to execute AXIS." in response
+    assert "Type reject to cancel." in response
     assert bridge.active is True
 
 
@@ -229,3 +229,5 @@ def test_hybrid_stream_completion_preserves_visible_response():
     assert "finishStreaming = async (ephemeral = false, skipHistorySwap = false)" in ui_js
     assert "if (skipHistorySwap)" in ui_js
     assert "await ui.finishStreaming(false, hybrid === true);" in send_handlers
+
+
