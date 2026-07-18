@@ -2,6 +2,8 @@
   "_comment": "Example settings - copy to settings.json and customize",
   "identity": {
     "DEFAULT_USERNAME": "Human Protagonist",
+    "OPERATOR_ID": "",
+    "OPERATOR_ID": "",
     "AVATARS_IN_CHAT": true,
     "DEFAULT_PERSONA": "",
     "USER_TIMEZONE": "UTC"
