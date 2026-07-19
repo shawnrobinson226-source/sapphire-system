@@ -173,6 +173,13 @@ async def update_settings_batch(request: Request, _=Depends(require_login)):
     }
     for key, value in settings_dict.items():
         try:
+            if key == 'OPERATOR_ID':
+                from core.identity.operator import validate_operator_id_for_save
+                is_valid, result = validate_operator_id_for_save(value)
+                if not is_valid:
+                    raise ValueError(result)
+                value = result
+
             # Route service API keys to credentials, not settings.json
             if key in _SERVICE_CRED_MAP and value and isinstance(value, str) and value.strip():
                 from core.credentials_manager import credentials
@@ -343,6 +350,12 @@ async def update_setting(key: str, request: Request, _=Depends(require_login)):
     if value == '••••••••':
         return {"status": "success", "key": key, "value": value, "tier": settings.validate_tier(key), "persisted": False}
     persist = data.get('persist', True)
+    if key == 'OPERATOR_ID':
+        from core.identity.operator import validate_operator_id_for_save
+        is_valid, result = validate_operator_id_for_save(value)
+        if not is_valid:
+            raise HTTPException(status_code=400, detail=result)
+        value = result
     tier = settings.validate_tier(key)
     settings.set(key, value, persist=persist)
     if key in {'SOCKS_ENABLED', 'SOCKS_HOST', 'SOCKS_PORT', 'SOCKS_TIMEOUT'}:
