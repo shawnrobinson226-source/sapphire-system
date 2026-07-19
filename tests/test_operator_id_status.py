@@ -87,3 +87,48 @@ def test_status_invalid_when_settings_value_fails_save_validation():
         assert response.json() == {"status": "invalid", "source": "settings"}
     finally:
         _restore_operator_id(original)
+
+
+def test_settings_api_exposes_operator_id_status_helper():
+    source = open(
+        "interfaces/web/static/shared/settings-api.js",
+        encoding="utf-8",
+    ).read()
+
+    assert "export async function getOperatorIdStatus()" in source
+    assert "fetchWithTimeout('/api/settings/operator-id/status')" in source
+
+
+def test_system_tab_renders_operator_id_status_panel():
+    source = open(
+        "interfaces/web/static/views/settings-tabs/system.js",
+        encoding="utf-8",
+    ).read()
+
+    assert 'id="operator-id-status"' in source
+    assert "this.refreshOperatorIdStatus(el);" in source
+    assert "const data = await getOperatorIdStatus();" in source
+
+
+def test_system_tab_exposes_all_operator_id_status_states():
+    source = open(
+        "interfaces/web/static/views/settings-tabs/system.js",
+        encoding="utf-8",
+    ).read()
+
+    assert "Configured — environment override" in source
+    assert "Configured — local setting" in source
+    assert "Invalid Operator ID" in source
+    assert "Operator ID missing" in source
+    assert "Unable to check Operator ID status" in source
+
+
+def test_operator_id_status_ui_does_not_render_identity_value():
+    source = open(
+        "interfaces/web/static/views/settings-tabs/system.js",
+        encoding="utf-8",
+    ).read()
+
+    assert "data.operator_id" not in source
+    assert "data.value" not in source
+    assert "${data" not in source
