@@ -88,6 +88,35 @@ async def set_system_prompt(request: Request, _=Depends(require_login), system=D
 _SENSITIVE_SUFFIXES = ('_API_KEY', '_SECRET', '_PASSWORD', '_TOKEN')
 _SENSITIVE_KEYS = {'SAPPHIRE_ROUTER_URL', 'SAPPHIRE_ROUTER_TENANT_ID', 'OPERATOR_ID'}
 
+@router.get("/api/settings/operator-id/status")
+async def get_operator_id_status(request: Request, _=Depends(require_login)):
+    """Return Operator ID configuration state without exposing the identity.
+
+    Mirrors read_operator_id()'s actual precedence chain (via the lenient
+    validate_operator_id) rather than reimplementing it, so this can never
+    report a state the real resolution chain would disagree with.
+    """
+    from core.identity.operator import (
+        OPERATOR_ID_ENV,
+        OPERATOR_ID_SETTING,
+        validate_operator_id,
+        validate_operator_id_for_save,
+    )
+    from core.settings_manager import settings
+
+    env_resolved = validate_operator_id(os.environ.get(OPERATOR_ID_ENV, ""))
+    if env_resolved:
+        is_valid, _ = validate_operator_id_for_save(env_resolved)
+        return {"status": "configured" if is_valid else "invalid", "source": "environment"}
+
+    settings_resolved = validate_operator_id(settings.get(OPERATOR_ID_SETTING, ""))
+    if not settings_resolved:
+        return {"status": "missing", "source": None}
+
+    is_valid, _ = validate_operator_id_for_save(settings_resolved)
+    return {"status": "configured" if is_valid else "invalid", "source": "settings"}
+
+
 @router.get("/api/settings")
 async def get_all_settings(request: Request, _=Depends(require_login)):
     """Get all current settings."""
