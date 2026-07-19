@@ -86,7 +86,7 @@ async def set_system_prompt(request: Request, _=Depends(require_login), system=D
 # =============================================================================
 
 _SENSITIVE_SUFFIXES = ('_API_KEY', '_SECRET', '_PASSWORD', '_TOKEN')
-_SENSITIVE_KEYS = {'SAPPHIRE_ROUTER_URL', 'SAPPHIRE_ROUTER_TENANT_ID'}
+_SENSITIVE_KEYS = {'SAPPHIRE_ROUTER_URL', 'SAPPHIRE_ROUTER_TENANT_ID', 'OPERATOR_ID'}
 
 @router.get("/api/settings")
 async def get_all_settings(request: Request, _=Depends(require_login)):
