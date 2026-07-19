@@ -55,3 +55,6 @@ tmp_*.py
 Thumbs.db
 .vscode/
 .idea/
+
+# Claude Code
+.claude/
