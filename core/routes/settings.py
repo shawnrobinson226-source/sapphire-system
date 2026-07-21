@@ -117,6 +117,44 @@ async def get_operator_id_status(request: Request, _=Depends(require_login)):
     return {"status": "configured" if is_valid else "invalid", "source": "settings"}
 
 
+@router.post("/api/settings/operator-id/test-axis-identity")
+async def test_axis_identity(request: Request, _=Depends(require_login)):
+    """Read-only diagnostic: confirm AXIS can resolve the operator profile for
+    the currently configured Operator ID. Never returns the identity value or
+    the raw AXIS response — UI-safe status only. Fails closed with no AXIS
+    call when identity is missing or zero-tools mode is active.
+    """
+    from core.identity.operator import resolve_operator_id
+    from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
+
+    operator_id = resolve_operator_id(prompt=False)
+    if not operator_id:
+        return {"status": "missing"}
+
+    allowed, _guard_result = assert_axis_execution_allowed("settings.test_axis_identity")
+    if not allowed:
+        return {"status": "blocked"}
+
+    def _call_axis():
+        from plugins.axis_integration.axis_tools import _fetch_axis_operator_profile
+        return _fetch_axis_operator_profile(operator_id)
+
+    try:
+        result, ok = await asyncio.to_thread(_call_axis)
+    except Exception:
+        logger.warning("[AXIS_IDENTITY_TEST] Unexpected error calling AXIS operator-profile")
+        return {"status": "offline"}
+
+    if ok:
+        return {"status": "success"}
+    if isinstance(result, dict) and result.get("status_code") is None:
+        return {"status": "offline"}
+    # Any HTTP response we got back but didn't like (4xx or 5xx alike) lands here.
+    # "rejected" means "AXIS answered and it wasn't a 2xx" — not specifically an
+    # auth/permission denial. A dedicated 5xx "axis_error" state is out of scope (V2.2).
+    return {"status": "rejected"}
+
+
 @router.get("/api/settings")
 async def get_all_settings(request: Request, _=Depends(require_login)):
     """Get all current settings."""

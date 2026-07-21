@@ -9,6 +9,10 @@ export async function getOperatorIdStatus() {
     return await fetchWithTimeout('/api/settings/operator-id/status');
 }
 
+export async function testAxisIdentity() {
+    return await fetchWithTimeout('/api/settings/operator-id/test-axis-identity', { method: 'POST' });
+}
+
 export async function updateSettingsBatch(settings) {
     return await fetchWithTimeout('/api/settings/batch', {
         method: 'PUT',

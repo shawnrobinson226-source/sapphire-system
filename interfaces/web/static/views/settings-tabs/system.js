@@ -1,5 +1,5 @@
 // settings-tabs/system.js - System settings and danger zone
-import { getOperatorIdStatus, resetAllSettings, resetPrompts, mergeUpdates, resetChatDefaults } from '../../shared/settings-api.js';
+import { getOperatorIdStatus, testAxisIdentity, resetAllSettings, resetPrompts, mergeUpdates, resetChatDefaults } from '../../shared/settings-api.js';
 import * as ui from '../../ui.js';
 import { updateScene } from '../../features/scene.js';
 
@@ -20,6 +20,11 @@ export default {
                 style="margin:8px 0 14px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:var(--font-sm)"
             >
                 <span style="color:var(--text-muted)">Checking Operator ID status...</span>
+            </div>
+
+            <div style="margin:0 0 14px">
+                <button class="btn-sm" id="axis-identity-test">Test AXIS Identity</button>
+                <div class="net-test-result" id="axis-identity-result" style="display:none;margin-top:8px;font-size:var(--font-sm)"></div>
             </div>
 
             ${ctx.renderAccordion('sys-adv', this.advancedKeys)}
@@ -82,6 +87,36 @@ export default {
 
     attachListeners(ctx, el) {
         this.refreshOperatorIdStatus(el);
+
+        el.querySelector('#axis-identity-test')?.addEventListener('click', async () => {
+            const result = el.querySelector('#axis-identity-result');
+            if (!result) return;
+
+            result.style.display = 'block';
+            result.textContent = 'Testing...';
+            result.className = 'net-test-result';
+
+            const MESSAGES = {
+                missing: 'Operator ID missing',
+                blocked: 'Blocked \u2014 zero-tools mode is active',
+                success: '\u2713 AXIS confirmed operator identity',
+                offline: '\u2717 AXIS unreachable',
+                rejected: '\u2717 AXIS rejected the request',
+            };
+
+            try {
+                const data = await testAxisIdentity();
+                const key = Object.prototype.hasOwnProperty.call(MESSAGES, data.status)
+                    ? data.status
+                    : 'offline';
+
+                result.textContent = MESSAGES[key];
+                result.classList.add(key === 'success' ? 'success' : 'error');
+            } catch {
+                result.textContent = MESSAGES.offline;
+                result.classList.add('error');
+            }
+        });
 
         el.querySelector('#sys-setup-wizard')?.addEventListener('click', () => {
             if (window.sapphireSetupWizard) {
