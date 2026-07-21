@@ -368,7 +368,7 @@ function renderInput(key, value, type) {
             <button class="btn-small browse-voices-btn" data-target="${id}">Browse</button>
         </div>`;
     }
-    if (key.endsWith('_API_KEY')) {
+    if (key === 'OPERATOR_ID' || key.endsWith('_API_KEY')) {
         return `<input type="password" id="${id}" data-key="${key}" value="${escapeAttr(String(value))}" autocomplete="off">`;
     }
     if (type === 'checkbox') {
@@ -618,6 +618,16 @@ async function saveChanges() {
         }
 
         const result = await api.updateSettingsBatch(parsed);
+        const failures = (result.results || []).filter(r => r.status === 'error');
+
+        if (failures.length) {
+            const message = failures
+                .map(failure => `${formatLabel(failure.key)}: ${failure.error}`)
+                .join('; ');
+            ui.showToast(`Save failed: ${message}`, 'error');
+            return;
+        }
+
         await api.reloadSettings();
         ui.showToast(`Saved ${Object.keys(parsed).length} settings`, 'success');
 

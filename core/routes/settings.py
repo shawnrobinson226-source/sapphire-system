@@ -86,7 +86,74 @@ async def set_system_prompt(request: Request, _=Depends(require_login), system=D
 # =============================================================================
 
 _SENSITIVE_SUFFIXES = ('_API_KEY', '_SECRET', '_PASSWORD', '_TOKEN')
-_SENSITIVE_KEYS = {'SAPPHIRE_ROUTER_URL', 'SAPPHIRE_ROUTER_TENANT_ID'}
+_SENSITIVE_KEYS = {'SAPPHIRE_ROUTER_URL', 'SAPPHIRE_ROUTER_TENANT_ID', 'OPERATOR_ID'}
+
+@router.get("/api/settings/operator-id/status")
+async def get_operator_id_status(request: Request, _=Depends(require_login)):
+    """Return Operator ID configuration state without exposing the identity.
+
+    Mirrors read_operator_id()'s actual precedence chain (via the lenient
+    validate_operator_id) rather than reimplementing it, so this can never
+    report a state the real resolution chain would disagree with.
+    """
+    from core.identity.operator import (
+        OPERATOR_ID_ENV,
+        OPERATOR_ID_SETTING,
+        validate_operator_id,
+        validate_operator_id_for_save,
+    )
+    from core.settings_manager import settings
+
+    env_resolved = validate_operator_id(os.environ.get(OPERATOR_ID_ENV, ""))
+    if env_resolved:
+        is_valid, _ = validate_operator_id_for_save(env_resolved)
+        return {"status": "configured" if is_valid else "invalid", "source": "environment"}
+
+    settings_resolved = validate_operator_id(settings.get(OPERATOR_ID_SETTING, ""))
+    if not settings_resolved:
+        return {"status": "missing", "source": None}
+
+    is_valid, _ = validate_operator_id_for_save(settings_resolved)
+    return {"status": "configured" if is_valid else "invalid", "source": "settings"}
+
+
+@router.post("/api/settings/operator-id/test-axis-identity")
+async def test_axis_identity(request: Request, _=Depends(require_login)):
+    """Read-only diagnostic: confirm AXIS can resolve the operator profile for
+    the currently configured Operator ID. Never returns the identity value or
+    the raw AXIS response — UI-safe status only. Fails closed with no AXIS
+    call when identity is missing or zero-tools mode is active.
+    """
+    from core.identity.operator import resolve_operator_id
+    from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
+
+    operator_id = resolve_operator_id(prompt=False)
+    if not operator_id:
+        return {"status": "missing"}
+
+    allowed, _guard_result = assert_axis_execution_allowed("settings.test_axis_identity")
+    if not allowed:
+        return {"status": "blocked"}
+
+    def _call_axis():
+        from plugins.axis_integration.axis_tools import _fetch_axis_operator_profile
+        return _fetch_axis_operator_profile(operator_id)
+
+    try:
+        result, ok = await asyncio.to_thread(_call_axis)
+    except Exception:
+        logger.warning("[AXIS_IDENTITY_TEST] Unexpected error calling AXIS operator-profile")
+        return {"status": "offline"}
+
+    if ok:
+        return {"status": "success"}
+    if isinstance(result, dict) and result.get("status_code") is None:
+        return {"status": "offline"}
+    # Any HTTP response we got back but didn't like (4xx or 5xx alike) lands here.
+    # "rejected" means "AXIS answered and it wasn't a 2xx" — not specifically an
+    # auth/permission denial. A dedicated 5xx "axis_error" state is out of scope (V2.2).
+    return {"status": "rejected"}
+
 
 @router.get("/api/settings")
 async def get_all_settings(request: Request, _=Depends(require_login)):
@@ -173,6 +240,13 @@ async def update_settings_batch(request: Request, _=Depends(require_login)):
     }
     for key, value in settings_dict.items():
         try:
+            if key == 'OPERATOR_ID':
+                from core.identity.operator import validate_operator_id_for_save
+                is_valid, result = validate_operator_id_for_save(value)
+                if not is_valid:
+                    raise ValueError(result)
+                value = result
+
             # Route service API keys to credentials, not settings.json
             if key in _SERVICE_CRED_MAP and value and isinstance(value, str) and value.strip():
                 from core.credentials_manager import credentials
@@ -343,6 +417,12 @@ async def update_setting(key: str, request: Request, _=Depends(require_login)):
     if value == '••••••••':
         return {"status": "success", "key": key, "value": value, "tier": settings.validate_tier(key), "persisted": False}
     persist = data.get('persist', True)
+    if key == 'OPERATOR_ID':
+        from core.identity.operator import validate_operator_id_for_save
+        is_valid, result = validate_operator_id_for_save(value)
+        if not is_valid:
+            raise HTTPException(status_code=400, detail=result)
+        value = result
     tier = settings.validate_tier(key)
     settings.set(key, value, persist=persist)
     if key in {'SOCKS_ENABLED', 'SOCKS_HOST', 'SOCKS_PORT', 'SOCKS_TIMEOUT'}:

@@ -27,6 +27,26 @@ def read_operator_id():
     return validate_operator_id(settings.get(OPERATOR_ID_SETTING, ""))
 
 
+def validate_operator_id_for_save(value):
+    """Validate an OPERATOR_ID submitted through settings."""
+    if value is None or value == "":
+        return True, ""
+
+    if not isinstance(value, str):
+        return False, "Operator ID must be text."
+
+    if value != value.strip():
+        return False, "Operator ID cannot begin or end with spaces."
+
+    if len(value) > 128:
+        return False, "Operator ID must be 128 characters or fewer."
+
+    if any(ord(char) < 32 or ord(char) == 127 for char in value):
+        return False, "Operator ID cannot contain control characters."
+
+    return True, value
+
+
 def resolve_operator_id(prompt=False, input_fn=None):
     operator_id = read_operator_id()
     if operator_id:

@@ -5,6 +5,10 @@
     "short": "Your display name in conversations",
     "long": "The name used to identify you in chat messages. This appears in the message history and can be changed at any time without affecting past messages. Used in prompts via the {user_name} placeholder."
   },
+  "OPERATOR_ID": {
+    "short": "AXIS operator identity used for governed execution",
+    "long": "Stored locally and masked in this UI. Sent only to AXIS as the operator identity header during TRI-SYSTEM execution — never sent to DES. The SAPPHIRE_OPERATOR_ID environment variable overrides this setting when set."
+  },
   "AVATARS_IN_CHAT": {
     "short": "Show avatar images in chat messages",
     "long": "When enabled, user and assistant avatar images appear next to each message in the chat. Disable to hide avatars for a cleaner, text-focused interface. Changes take effect on page refresh."

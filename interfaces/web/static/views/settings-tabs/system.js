@@ -1,5 +1,5 @@
 // settings-tabs/system.js - System settings and danger zone
-import { resetAllSettings, resetPrompts, mergeUpdates, resetChatDefaults } from '../../shared/settings-api.js';
+import { getOperatorIdStatus, testAxisIdentity, resetAllSettings, resetPrompts, mergeUpdates, resetChatDefaults } from '../../shared/settings-api.js';
 import * as ui from '../../ui.js';
 import { updateScene } from '../../features/scene.js';
 
@@ -8,12 +8,25 @@ export default {
     name: 'System',
     icon: '\u26A1',
     description: 'System settings and danger zone',
-    essentialKeys: ['WEB_UI_SSL_ADHOC'],
+    essentialKeys: ['OPERATOR_ID', 'WEB_UI_SSL_ADHOC'],
     advancedKeys: ['WEB_UI_HOST', 'WEB_UI_PORT'],
 
     render(ctx) {
         return `
             ${ctx.renderFields(this.essentialKeys)}
+
+            <div
+                id="operator-id-status"
+                style="margin:8px 0 14px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:var(--font-sm)"
+            >
+                <span style="color:var(--text-muted)">Checking Operator ID status...</span>
+            </div>
+
+            <div style="margin:0 0 14px">
+                <button class="btn-sm" id="axis-identity-test">Test AXIS Identity</button>
+                <div class="net-test-result" id="axis-identity-result" style="display:none;margin-top:8px;font-size:var(--font-sm)"></div>
+            </div>
+
             ${ctx.renderAccordion('sys-adv', this.advancedKeys)}
 
             <div class="system-tools" style="margin:20px 0;padding:16px;border:1px solid var(--border);border-radius:var(--radius)">
@@ -44,7 +57,67 @@ export default {
         `;
     },
 
+    async refreshOperatorIdStatus(el) {
+        const status = el.querySelector('#operator-id-status');
+        if (!status) return;
+
+        try {
+            const data = await getOperatorIdStatus();
+
+            if (data.status === 'configured' && data.source === 'environment') {
+                status.innerHTML = '<span style="color:var(--success,#22c55e)">&#10003; Configured — environment override</span>';
+                return;
+            }
+
+            if (data.status === 'configured' && data.source === 'settings') {
+                status.innerHTML = '<span style="color:var(--success,#22c55e)">&#10003; Configured — local setting</span>';
+                return;
+            }
+
+            if (data.status === 'invalid') {
+                status.innerHTML = '<span style="color:var(--error)">&#10007; Invalid Operator ID</span>';
+                return;
+            }
+
+            status.innerHTML = '<span style="color:var(--text-muted)">&#9675; Operator ID missing</span>';
+        } catch {
+            status.innerHTML = '<span style="color:var(--error)">&#10007; Unable to check Operator ID status</span>';
+        }
+    },
+
     attachListeners(ctx, el) {
+        this.refreshOperatorIdStatus(el);
+
+        el.querySelector('#axis-identity-test')?.addEventListener('click', async () => {
+            const result = el.querySelector('#axis-identity-result');
+            if (!result) return;
+
+            result.style.display = 'block';
+            result.textContent = 'Testing...';
+            result.className = 'net-test-result';
+
+            const MESSAGES = {
+                missing: 'Operator ID missing',
+                blocked: 'Blocked \u2014 zero-tools mode is active',
+                success: '\u2713 AXIS confirmed operator identity',
+                offline: '\u2717 AXIS unreachable',
+                rejected: '\u2717 AXIS rejected the request',
+            };
+
+            try {
+                const data = await testAxisIdentity();
+                const key = Object.prototype.hasOwnProperty.call(MESSAGES, data.status)
+                    ? data.status
+                    : 'offline';
+
+                result.textContent = MESSAGES[key];
+                result.classList.add(key === 'success' ? 'success' : 'error');
+            } catch {
+                result.textContent = MESSAGES.offline;
+                result.classList.add('error');
+            }
+        });
+
         el.querySelector('#sys-setup-wizard')?.addEventListener('click', () => {
             if (window.sapphireSetupWizard) {
                 window.sapphireSetupWizard.open(true);
