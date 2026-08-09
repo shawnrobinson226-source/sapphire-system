@@ -47,6 +47,7 @@ plugins/axis_plugin/
 # Temp / Scratch Files
 # =========================
 tmp_*.py
+tmp_axis_boundary_tests/
 
 # =========================
 # OS / Editor
