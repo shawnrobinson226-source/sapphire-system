@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 ENABLED = True
 EMOJI = "A"
 AVAILABLE_FUNCTIONS = [
-    "execute_axis",
     "fetch_axis_analytics",
     "fetch_axis_operator_profile",
 ]
@@ -23,49 +22,6 @@ BASE_URL = "https://vanta-app-gilt.vercel.app/api/v2"
 DEFAULT_TIMEOUT_SECONDS = 20
 
 TOOLS = [
-    {
-        "type": "function",
-        "is_local": False,
-        "network": True,
-        "function": {
-            "name": "execute_axis",
-            "description": "Execute an AXIS trigger for a specific operator.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "trigger": {
-                        "type": "string",
-                        "description": "AXIS trigger name or payload string.",
-                    },
-                    "classification": {
-                        "type": "string",
-                        "description": "AXIS classification value.",
-                    },
-                    "next_action": {
-                        "type": "string",
-                        "description": "AXIS next action value.",
-                    },
-                    "stability": {
-                        "type": "number",
-                        "description": "Optional AXIS guard stability value.",
-                    },
-                    "reference": {
-                        "type": "boolean",
-                        "description": "Optional AXIS guard reference value.",
-                    },
-                    "impact": {
-                        "type": "number",
-                        "description": "Optional AXIS guard impact value.",
-                    },
-                    "operator_id": {
-                        "type": "string",
-                        "description": "Operator ID passed in x-operator-id header.",
-                    },
-                },
-                "required": ["trigger", "classification", "next_action", "operator_id"],
-            },
-        },
-    },
     {
         "type": "function",
         "is_local": False,
