@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 import requests
+from core.identity.operator import resolve_operator_id
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
 logger = logging.getLogger(__name__)
@@ -10,7 +11,9 @@ logger = logging.getLogger(__name__)
 TRIGGER_PREFIX = "AXIS:"
 DES_BASE_URL = "http://127.0.0.1:8000"
 AXIS_EXECUTE_URL = "https://vanta-app-gilt.vercel.app/api/v2/execute"
-AXIS_OPERATOR_ID = "Grim"
+AXIS_IDENTITY_BLOCKED_MESSAGE = (
+    "AXIS execution blocked: no operator identity configured. Execution stopped."
+)
 STATE_PATH = Path("user/axis_runtime_state.json")
 ALLOWED_CLASSIFICATIONS = {
     "narrative",
@@ -144,12 +147,16 @@ def _execute_axis_preview(preview, system=None):
     if not allowed:
         return _format_axis_failure(blocked)
 
+    operator_id = resolve_operator_id(prompt=False)
+    if not operator_id:
+        return AXIS_IDENTITY_BLOCKED_MESSAGE
+
     payload = _build_axis_payload(preview)
     try:
         response = requests.post(
             AXIS_EXECUTE_URL,
             headers={
-                "x-operator-id": AXIS_OPERATOR_ID,
+                "x-operator-id": operator_id,
                 "content-type": "application/json",
             },
             json=payload,
@@ -194,8 +201,12 @@ def _execute_axis_preview(preview, system=None):
 
 
 def _start_des(raw):
+    operator_id = resolve_operator_id(prompt=False)
+    if not operator_id:
+        return AXIS_IDENTITY_BLOCKED_MESSAGE
+
     payload = {
-        "user_id": "Grim",
+        "user_id": operator_id,
         "session_id": "sapphire-web-axis-runtime",
         "trigger_type": "repeat_pricing_visit"
     }

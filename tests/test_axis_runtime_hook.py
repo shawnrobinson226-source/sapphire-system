@@ -25,6 +25,9 @@ class Response:
     def json(self):
         return self._data
 
+    def raise_for_status(self):
+        pass
+
 
 def load_hook(tmp_path):
     spec = importlib.util.spec_from_file_location("axis_runtime_pre_chat_test", HOOK_PATH)
@@ -99,6 +102,7 @@ def test_confirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch
             },
         )
 
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
     monkeypatch.setattr(module.requests, "post", fake_post)
 
     event = Event("confirm")
@@ -110,7 +114,7 @@ def test_confirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch
         {
             "url": "https://vanta-app-gilt.vercel.app/api/v2/execute",
             "headers": {
-                "x-operator-id": "Grim",
+                "x-operator-id": "operator-1",
                 "content-type": "application/json",
             },
             "json": {
@@ -164,12 +168,14 @@ def test_comfirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch
             },
         )
 
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
     monkeypatch.setattr(module.requests, "post", fake_post)
 
     event = Event("comfirm")
     module.pre_chat(event)
 
     assert len(calls) == 1
+    assert calls[0]["headers"]["x-operator-id"] == "operator-1"
     assert calls[0]["json"] == {
         "trigger": "des_decision_friction",
         "classification": "perceptual",
@@ -200,6 +206,7 @@ def test_reject_clears_state_without_axis_call(tmp_path, monkeypatch):
 def test_axis_rejection_renders_failure_and_clears_state(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
     save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
     monkeypatch.setattr(
         module.requests,
         "post",
@@ -218,6 +225,7 @@ def test_axis_rejection_renders_failure_and_clears_state(tmp_path, monkeypatch):
 def test_success_missing_nested_fields_renders_raw_payload_and_clears_state(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
     save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
     monkeypatch.setattr(
         module.requests,
         "post",
@@ -233,6 +241,67 @@ def test_success_missing_nested_fields_renders_raw_payload_and_clears_state(tmp_
     assert "session-1" in event.response
     assert "outcome: None" not in event.response
     assert not module.STATE_PATH.exists()
+
+
+def test_confirm_fails_closed_without_operator_identity(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: None)
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    event = Event("confirm")
+    module.pre_chat(event)
+
+    assert calls == []
+    assert event.response == (
+        "AXIS execution blocked: no operator identity configured. Execution stopped."
+    )
+    assert "Grim" not in event.response
+    assert not module.STATE_PATH.exists()
+
+
+def test_start_des_uses_configured_operator_id_not_grim(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
+    calls = []
+
+    def fake_post(url, json=None, timeout=None):
+        calls.append({"url": url, "json": json, "timeout": timeout})
+        return Response(
+            200,
+            {
+                "interaction_id": "int-1",
+                "question": {"id": "q1", "text": "First question"},
+            },
+        )
+
+    monkeypatch.setattr(module.requests, "post", fake_post)
+
+    event = Event("AXIS: start something")
+    module.pre_chat(event)
+
+    assert len(calls) == 1
+    assert calls[0]["url"] == f"{module.DES_BASE_URL}/interaction/start"
+    assert calls[0]["json"]["user_id"] == "operator-1"
+    assert calls[0]["json"]["user_id"] != "Grim"
+    assert "First question" in event.response
+
+
+def test_start_des_fails_closed_without_operator_identity(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: None)
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    event = Event("AXIS: start something")
+    module.pre_chat(event)
+
+    assert calls == []
+    assert event.response == (
+        "AXIS execution blocked: no operator identity configured. Execution stopped."
+    )
+    assert "Grim" not in event.response
 
 
 def test_zero_tools_mode_prevents_axis_runtime_hook_execution(tmp_path, monkeypatch):
