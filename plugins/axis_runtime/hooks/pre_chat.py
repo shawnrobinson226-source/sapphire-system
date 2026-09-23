@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 from pathlib import Path
@@ -14,7 +15,8 @@ AXIS_EXECUTE_URL = "https://vanta-app-gilt.vercel.app/api/v2/execute"
 AXIS_IDENTITY_BLOCKED_MESSAGE = (
     "AXIS execution blocked: no operator identity configured. Execution stopped."
 )
-STATE_PATH = Path("user/axis_runtime_state.json")
+STATE_DIR = Path("user/axis_runtime_state")
+NO_SESSION_KEY = "_no_session"
 ALLOWED_CLASSIFICATIONS = {
     "narrative",
     "emotional",
@@ -60,24 +62,68 @@ def _is_zero_tools_mode(system):
         return True
 
 
-def _load_state():
-    if not STATE_PATH.exists():
+def _resolve_chat_key(system):
+    """Resolve the active-chat identifier used to scope pending AXIS state.
+
+    Falls back to NO_SESSION_KEY (preserving the old single-file behavior)
+    when system/llm_chat/session_manager/active_chat_name isn't available —
+    e.g. the CLI path, or a caller that doesn't pass a system object.
+    """
+    llm_chat = getattr(system, "llm_chat", None)
+    session_manager = getattr(llm_chat, "session_manager", None)
+    chat_name = getattr(session_manager, "active_chat_name", None)
+    if not chat_name or not isinstance(chat_name, str):
+        return NO_SESSION_KEY
+    return chat_name
+
+
+def _state_path(system):
+    """Per-chat state file path, keyed by a hash of the active chat name.
+
+    Scoping state by chat name prevents a "confirm"/"reject" typed in one
+    chat from resolving a pending AXIS preview that belongs to a different
+    chat (see plugins/axis_runtime/hooks/pre_chat.py governance history).
+
+    Known residual risk (accepted, not closed by this scoping): two
+    concurrent tabs/requests both active on the SAME chat name still share
+    one state file. There is no per-connection/per-request identifier
+    threaded through the pre_chat hook pipeline (HookEvent carries only
+    `input`/`config`/`metadata={"system": ...}` — see core/hooks.py), so a
+    same-chat multi-tab collision cannot be closed without threading a real
+    per-request session id through core/hooks.py and the chat pipeline,
+    which is out of scope for this change.
+    """
+    chat_key = _resolve_chat_key(system)
+    hashed = hashlib.sha256(chat_key.encode("utf-8")).hexdigest()
+    path = STATE_DIR / f"{hashed}.json"
+    logger.debug(
+        "[AXIS_RUNTIME_STATE] chat_key=%r hashed=%s path=%s",
+        chat_key, hashed, path,
+    )
+    return path
+
+
+def _load_state(system):
+    path = _state_path(system)
+    if not path.exists():
         return {}
 
     try:
-        return json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return {}
 
 
-def _save_state(state):
-    STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
+def _save_state(system, state):
+    path = _state_path(system)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
-def _clear_state():
-    if STATE_PATH.exists():
-        STATE_PATH.unlink()
+def _clear_state(system):
+    path = _state_path(system)
+    if path.exists():
+        path.unlink()
 
 
 def _format_question(question):
@@ -200,7 +246,7 @@ def _execute_axis_preview(preview, system=None):
     return _format_axis_success(data)
 
 
-def _start_des(raw):
+def _start_des(raw, system=None):
     operator_id = resolve_operator_id(prompt=False)
     if not operator_id:
         return AXIS_IDENTITY_BLOCKED_MESSAGE
@@ -230,19 +276,19 @@ def _start_des(raw):
         "original_input": raw
     }
 
-    _save_state(state)
+    _save_state(system, state)
 
     return _format_question(question)
 
 
-def _answer_des(answer):
-    state = _load_state()
+def _answer_des(answer, system=None):
+    state = _load_state(system)
 
     interaction_id = state.get("interaction_id")
     question_id = state.get("last_question_id", "q1")
 
     if not interaction_id:
-        _clear_state()
+        _clear_state(system)
         return "AXIS Runtime state missing interaction_id."
 
     payload = {
@@ -266,7 +312,7 @@ def _answer_des(answer):
 
         state["last_question_id"] = question.get("id", "q2")
 
-        _save_state(state)
+        _save_state(system, state)
 
         return _format_question(question)
 
@@ -301,7 +347,7 @@ def _answer_des(answer):
         "impact": 4
     }
 
-    _save_state({
+    _save_state(system, {
         "active": True,
         "phase": "axis_preview",
         "preview": preview
@@ -338,7 +384,7 @@ def pre_chat(event):
 
     text = (event.input or "").strip()
 
-    state = _load_state()
+    state = _load_state(system)
 
     if not text.upper().startswith(TRIGGER_PREFIX) and not state.get("active"):
         return
@@ -361,9 +407,9 @@ def pre_chat(event):
                 try:
                     event.response = _execute_axis_preview(preview, system=system)
                 finally:
-                    _clear_state()
+                    _clear_state(system)
             elif lowered == "reject":
-                _clear_state()
+                _clear_state(system)
                 event.response = "AXIS execution rejected."
             else:
                 event.response = "AXIS Preview pending. Type: confirm OR reject"
@@ -371,9 +417,9 @@ def pre_chat(event):
             return
 
         if state.get("active"):
-            event.response = _answer_des(raw)
+            event.response = _answer_des(raw, system=system)
         else:
-            event.response = _start_des(raw)
+            event.response = _start_des(raw, system=system)
 
     except Exception as e:
         logger.exception("AXIS Runtime failure")
