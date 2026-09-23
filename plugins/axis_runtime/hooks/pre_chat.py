@@ -94,7 +94,11 @@ def _state_path(system):
     which is out of scope for this change.
     """
     chat_key = _resolve_chat_key(system)
-    hashed = hashlib.sha256(chat_key.encode("utf-8")).hexdigest()
+    if chat_key == NO_SESSION_KEY:
+        hash_input = "fallback:no_session"
+    else:
+        hash_input = f"chat:{chat_key}"
+    hashed = hashlib.sha256(hash_input.encode("utf-8")).hexdigest()
     path = STATE_DIR / f"{hashed}.json"
     logger.debug(
         "[AXIS_RUNTIME_STATE] chat_key=%r hashed=%s path=%s",
