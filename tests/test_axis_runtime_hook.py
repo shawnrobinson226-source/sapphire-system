@@ -424,7 +424,7 @@ def test_state_path_falls_back_to_default_key_without_session_manager(tmp_path):
     assert path_no_system == path_zero_tools_system
     assert path_no_system.parent == module.STATE_DIR
 
-    expected = module.STATE_DIR / f"{hashlib.sha256(module.NO_SESSION_KEY.encode('utf-8')).hexdigest()}.json"
+    expected = module.STATE_DIR / f"{hashlib.sha256(b'fallback:no_session').hexdigest()}.json"
     assert path_no_system == expected
 
 
@@ -440,7 +440,7 @@ def test_chat_name_is_hashed_for_state_filename(tmp_path, caplog):
     assert hostile_name not in str(path)
     assert path.parent == module.STATE_DIR
 
-    expected_hash = hashlib.sha256(hostile_name.encode("utf-8")).hexdigest()
+    expected_hash = hashlib.sha256(f"chat:{hostile_name}".encode("utf-8")).hexdigest()
     assert path.name == f"{expected_hash}.json"
 
     assert any(hostile_name in m and expected_hash in m for m in caplog.messages)
