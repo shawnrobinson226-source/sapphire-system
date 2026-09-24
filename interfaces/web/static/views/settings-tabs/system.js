@@ -103,6 +103,9 @@ export default {
                 offline: '\u2717 AXIS unreachable',
                 rejected: '\u2717 AXIS rejected the request',
             };
+            // Reason-specific text for a "blocked" response; other blocked
+            // responses keep the zero-tools message above.
+            const AXIS_NOT_CONFIGURED_MESSAGE = 'Blocked \u2014 AXIS base URL is not configured';
 
             try {
                 const data = await testAxisIdentity();
@@ -110,7 +113,9 @@ export default {
                     ? data.status
                     : 'offline';
 
-                result.textContent = MESSAGES[key];
+                result.textContent = key === 'blocked' && data.reason === 'axis_not_configured'
+                    ? AXIS_NOT_CONFIGURED_MESSAGE
+                    : MESSAGES[key];
                 result.classList.add(key === 'success' ? 'success' : 'error');
             } catch {
                 result.textContent = MESSAGES.offline;

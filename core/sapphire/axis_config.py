@@ -21,6 +21,7 @@ LOCAL_HTTP_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 _REASON_MESSAGES = {
     "missing": f"AXIS base URL is not configured. Set {AXIS_BASE_URL_ENV}.",
     "whitespace_not_allowed": "AXIS base URL is invalid: it must not contain whitespace.",
+    "malformed_url": "AXIS base URL is invalid: it could not be parsed (check brackets around IPv6 hosts).",
     "invalid_scheme": "AXIS base URL is invalid: scheme must be http or https.",
     "missing_host": "AXIS base URL is invalid: a host is required.",
     "invalid_port": "AXIS base URL is invalid: the port is not valid.",
@@ -54,7 +55,15 @@ def validate_axis_base_url(value: object) -> str:
     if _WHITESPACE.search(candidate):
         raise AxisConfigError("whitespace_not_allowed")
 
-    parts = urlsplit(candidate)
+    # urlsplit and .hostname raise ValueError on malformed input (e.g. an
+    # unbalanced or non-IP "[...]" host); their messages can echo the input,
+    # so they are replaced with a fixed, safe reason.
+    try:
+        parts = urlsplit(candidate)
+        host = parts.hostname
+    except ValueError:
+        raise AxisConfigError("malformed_url") from None
+
     scheme = parts.scheme.lower()
     if scheme not in {"http", "https"}:
         raise AxisConfigError("invalid_scheme")
@@ -62,7 +71,6 @@ def validate_axis_base_url(value: object) -> str:
     if parts.username is not None or parts.password is not None:
         raise AxisConfigError("credentials_not_allowed")
 
-    host = parts.hostname
     if not host:
         raise AxisConfigError("missing_host")
 

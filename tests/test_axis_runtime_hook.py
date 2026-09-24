@@ -581,3 +581,21 @@ def test_zero_tools_guard_takes_precedence_over_missing_axis_base_url(tmp_path, 
     assert "AXIS Execution Rejected" in result
     assert "Zero tools mode is active" in result
     assert "axis_not_configured" not in result
+
+
+def test_confirm_with_malformed_ipv6_axis_base_url_blocks_without_request(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", "http://[s3cr3t-not-ipv6]")
+    save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    event = Event("confirm")
+    module.pre_chat(event)
+
+    assert calls == []
+    assert "error: axis_not_configured" in event.response
+    assert "reason: malformed_url" in event.response
+    assert "AXIS Runtime error" not in event.response
+    assert "s3cr3t" not in event.response

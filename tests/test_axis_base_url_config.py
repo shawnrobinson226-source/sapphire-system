@@ -416,3 +416,65 @@ def test_cli_explicit_axis_base_url_is_validated_and_used(
         monkeypatch, capsys, "t", "--operator-id", "op_1", "--json", "--axis-base-url", "https://axis.example/"
     )
     assert adapter_requests[0]["url"] == "https://axis.example/api/v2/execute"
+
+
+# ---- malformed URLs (urlsplit / hostname ValueError) ----
+
+MALFORMED_BASE_URLS = [
+    "https://[::1",
+    "http://[::1]x",
+    "https://]axis.example[",
+    "https://ax]is.example",
+    "http://[s3cr3t-not-ipv6]",
+    "https://[s3cr3t-host.example]:443",
+]
+
+
+@pytest.mark.parametrize("value", MALFORMED_BASE_URLS)
+def test_malformed_urls_raise_safe_config_error(value):
+    with pytest.raises(AxisConfigError) as excinfo:
+        validate_axis_base_url(value)
+    assert excinfo.value.reason == "malformed_url"
+    assert "s3cr3t" not in str(excinfo.value)
+    assert value not in str(excinfo.value)
+
+
+def test_bracketed_ipv6_with_bad_port_is_invalid_port():
+    with pytest.raises(AxisConfigError) as excinfo:
+        validate_axis_base_url("https://[::1]:99999")
+    assert excinfo.value.reason == "invalid_port"
+
+
+@pytest.mark.parametrize("value", MALFORMED_BASE_URLS)
+def test_malformed_url_through_adapter_and_service_makes_no_request(
+    value, tmp_path, monkeypatch, violation_log, adapter_requests
+):
+    monkeypatch.setenv("AXIS_BASE_URL", value)
+
+    result = AxisAdapter().call_axis("GET", "/api/v2/analytics", "op_1")
+    assert result["error"] == "axis_not_configured"
+    assert result["reason"] == "malformed_url"
+
+    service = ExecutionService(
+        axis_adapter=AxisAdapter(),
+        session_service=SessionService(session_store=SessionStore(root_dir=tmp_path / "sessions")),
+    )
+    service_result = service.execute("trigger text", operator_id="op_1")
+    assert service_result["error_type"] == "axis_not_configured"
+    assert service_result["safe_details"] == {"reason": "malformed_url"}
+    assert "s3cr3t" not in json.dumps(service_result)
+    assert adapter_requests == []
+
+
+@pytest.mark.parametrize("value", MALFORMED_BASE_URLS)
+def test_malformed_url_through_axis_tools_makes_no_request(value, monkeypatch, axis_tools_module):
+    axis_tools, calls = axis_tools_module
+    monkeypatch.setenv("AXIS_BASE_URL", value)
+
+    result, ok = axis_tools._fetch_axis_operator_profile("op_1")
+
+    assert ok is False
+    assert result["error"] == "axis_not_configured"
+    assert result["reason"] == "malformed_url"
+    assert "s3cr3t" not in json.dumps(result)
+    assert calls == []
