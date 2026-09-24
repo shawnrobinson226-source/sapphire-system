@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 HOOK_PATH = ROOT / "plugins" / "axis_runtime" / "hooks" / "pre_chat.py"
+TEST_AXIS_BASE_URL = "https://axis.example"
 
 
 class Event:
@@ -93,6 +94,7 @@ class FakeSystem:
 
 def test_confirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", TEST_AXIS_BASE_URL)
     save_preview(module)
     calls = []
 
@@ -133,7 +135,7 @@ def test_confirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch
     assert event.stop_propagation is True
     assert calls == [
         {
-            "url": "https://vanta-app-gilt.vercel.app/api/v2/execute",
+            "url": "https://axis.example/api/v2/execute",
             "headers": {
                 "x-operator-id": "operator-1",
                 "content-type": "application/json",
@@ -162,6 +164,7 @@ def test_confirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch
 
 def test_comfirm_executes_saved_preview_with_axis_contract(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", TEST_AXIS_BASE_URL)
     save_preview(module)
     calls = []
 
@@ -226,6 +229,7 @@ def test_reject_clears_state_without_axis_call(tmp_path, monkeypatch):
 
 def test_axis_rejection_renders_failure_and_clears_state(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", TEST_AXIS_BASE_URL)
     save_preview(module)
     monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
     monkeypatch.setattr(
@@ -245,6 +249,7 @@ def test_axis_rejection_renders_failure_and_clears_state(tmp_path, monkeypatch):
 
 def test_success_missing_nested_fields_renders_raw_payload_and_clears_state(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", TEST_AXIS_BASE_URL)
     save_preview(module)
     monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
     monkeypatch.setattr(
@@ -327,6 +332,7 @@ def test_start_des_fails_closed_without_operator_identity(tmp_path, monkeypatch)
 
 def test_pending_preview_scoped_to_chat_name_does_not_leak_across_chats(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", TEST_AXIS_BASE_URL)
     monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
 
     system_a = FakeSystem("chat-a")
@@ -374,6 +380,7 @@ def test_pending_preview_scoped_to_chat_name_does_not_leak_across_chats(tmp_path
 
 def test_confirm_still_resolves_correct_chat_after_scoping(tmp_path, monkeypatch):
     module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", TEST_AXIS_BASE_URL)
     monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
 
     system_a = FakeSystem("chat-a")
@@ -501,3 +508,94 @@ def test_zero_tools_global_system_blocks_axis_runtime_without_event_metadata(tmp
     assert "Zero tools mode is active" in event.response
     assert "AXIS Execution Complete" not in event.response
     assert not module._state_path(None).exists()
+
+
+# ---- AXIS base URL configuration (resolved at the request boundary) ----
+
+def test_confirm_without_axis_base_url_blocks_without_request_and_clears_state(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.delenv("AXIS_BASE_URL", raising=False)
+    save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    event = Event("confirm")
+    module.pre_chat(event)
+
+    assert calls == []
+    assert event.response.startswith("AXIS Execution Blocked")
+    assert "error: axis_not_configured" in event.response
+    assert "reason: missing" in event.response
+    assert "unreachable" not in event.response.lower()
+    assert "AXIS Runtime error" not in event.response
+    assert module._load_state(None) == {}
+
+
+def test_confirm_with_invalid_axis_base_url_blocks_without_echoing_it(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", "http://user:hunter2@axis.example/api/v2")
+    save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    event = Event("confirm")
+    module.pre_chat(event)
+
+    assert calls == []
+    assert "error: axis_not_configured" in event.response
+    assert "hunter2" not in event.response
+    assert "axis.example" not in event.response
+
+
+def test_missing_identity_takes_precedence_over_missing_axis_base_url(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.delenv("AXIS_BASE_URL", raising=False)
+    save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: None)
+
+    event = Event("confirm")
+    module.pre_chat(event)
+
+    assert event.response == module.AXIS_IDENTITY_BLOCKED_MESSAGE
+
+
+def test_zero_tools_guard_takes_precedence_over_missing_axis_base_url(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.delenv("AXIS_BASE_URL", raising=False)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
+
+    result = module._execute_axis_preview(
+        {
+            "trigger": "des_decision_friction",
+            "classification": "perceptual",
+            "next_action": "Review one step.",
+            "reference": True,
+            "stability": 6,
+            "impact": 4,
+        },
+        system=ZeroToolsSystem(),
+    )
+
+    assert "AXIS Execution Rejected" in result
+    assert "Zero tools mode is active" in result
+    assert "axis_not_configured" not in result
+
+
+def test_confirm_with_malformed_ipv6_axis_base_url_blocks_without_request(tmp_path, monkeypatch):
+    module = load_hook(tmp_path)
+    monkeypatch.setenv("AXIS_BASE_URL", "http://[s3cr3t-not-ipv6]")
+    save_preview(module)
+    monkeypatch.setattr(module, "resolve_operator_id", lambda prompt=False: "operator-1")
+    calls = []
+    monkeypatch.setattr(module.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+
+    event = Event("confirm")
+    module.pre_chat(event)
+
+    assert calls == []
+    assert "error: axis_not_configured" in event.response
+    assert "reason: malformed_url" in event.response
+    assert "AXIS Runtime error" not in event.response
+    assert "s3cr3t" not in event.response

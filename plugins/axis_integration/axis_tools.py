@@ -7,6 +7,12 @@ import math
 from typing import Any, Dict, Tuple
 
 import requests
+from core.sapphire.axis_config import (
+    AXIS_NOT_CONFIGURED,
+    AxisConfigError,
+    build_axis_url,
+    resolve_axis_base_url,
+)
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
 logger = logging.getLogger(__name__)
@@ -18,7 +24,6 @@ AVAILABLE_FUNCTIONS = [
     "fetch_axis_operator_profile",
 ]
 
-BASE_URL = "https://vanta-app-gilt.vercel.app/api/v2"
 DEFAULT_TIMEOUT_SECONDS = 20
 
 TOOLS = [
@@ -98,7 +103,17 @@ def _request_axis(
     if not ok:
         return operator_validation, False
 
-    url = f"{BASE_URL}/{endpoint}"
+    try:
+        url = build_axis_url(resolve_axis_base_url(), f"/api/v2/{endpoint}")
+    except AxisConfigError as exc:
+        return {
+            "endpoint": endpoint,
+            "status_code": None,
+            "error": AXIS_NOT_CONFIGURED,
+            "reason": exc.reason,
+            "message": str(exc),
+        }, False
+
     headers = {"x-operator-id": operator_id}
 
     request_kwargs: Dict[str, Any] = {

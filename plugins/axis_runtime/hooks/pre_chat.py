@@ -5,13 +5,19 @@ from pathlib import Path
 
 import requests
 from core.identity.operator import resolve_operator_id
+from core.sapphire.axis_config import (
+    AXIS_NOT_CONFIGURED,
+    AxisConfigError,
+    build_axis_url,
+    resolve_axis_base_url,
+)
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
 logger = logging.getLogger(__name__)
 
 TRIGGER_PREFIX = "AXIS:"
 DES_BASE_URL = "http://127.0.0.1:8000"
-AXIS_EXECUTE_URL = "https://vanta-app-gilt.vercel.app/api/v2/execute"
+AXIS_EXECUTE_PATH = "/api/v2/execute"
 AXIS_IDENTITY_BLOCKED_MESSAGE = (
     "AXIS execution blocked: no operator identity configured. Execution stopped."
 )
@@ -192,6 +198,15 @@ def _format_axis_failure(data):
     )
 
 
+def _format_axis_not_configured(exc):
+    return (
+        "AXIS Execution Blocked\n\n"
+        f"error: {AXIS_NOT_CONFIGURED}\n"
+        f"reason: {exc.reason}\n"
+        f"message: {exc}"
+    )
+
+
 def _execute_axis_preview(preview, system=None):
     allowed, blocked = assert_axis_execution_allowed("axis_runtime._execute_axis_preview", system=system)
     if not allowed:
@@ -203,8 +218,13 @@ def _execute_axis_preview(preview, system=None):
 
     payload = _build_axis_payload(preview)
     try:
+        axis_execute_url = build_axis_url(resolve_axis_base_url(), AXIS_EXECUTE_PATH)
+    except AxisConfigError as exc:
+        return _format_axis_not_configured(exc)
+
+    try:
         response = requests.post(
-            AXIS_EXECUTE_URL,
+            axis_execute_url,
             headers={
                 "x-operator-id": operator_id,
                 "content-type": "application/json",

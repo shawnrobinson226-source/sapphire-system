@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from core.sapphire.axis_adapter import AxisAdapter
+from core.sapphire.axis_config import AXIS_NOT_CONFIGURED
 from core.sapphire.session_service import SessionService
 from core.security.violations import log_boundary_violation
 
@@ -195,6 +196,37 @@ class ExecutionService:
                         "violation_type": adapter_response.get("violation_type"),
                         "endpoint": adapter_response.get("endpoint"),
                     },
+                )
+                if session_id and self.session_service is not None:
+                    try:
+                        self.session_service.append_to_session(
+                            session_id=session_id,
+                            execution_result=result,
+                            trigger=clean_trigger,
+                            operator_id=clean_operator_id,
+                        )
+                    except Exception as exc:
+                        log_boundary_violation(
+                            violation_type="session_error",
+                            endpoint=endpoint_label,
+                            operator_id=clean_operator_id,
+                            payload={"session_id": session_id},
+                            details={"exception_type": type(exc).__name__},
+                        )
+                return result
+
+            if adapter_response.get("error") == AXIS_NOT_CONFIGURED:
+                log_boundary_violation(
+                    violation_type=AXIS_NOT_CONFIGURED,
+                    endpoint=endpoint_label,
+                    operator_id=clean_operator_id,
+                    payload=None,
+                    details={"reason": adapter_response.get("reason")},
+                )
+                result = self._failure(
+                    error_type=AXIS_NOT_CONFIGURED,
+                    message=adapter_response.get("message") or "AXIS base URL is not configured.",
+                    safe_details={"reason": adapter_response.get("reason")},
                 )
                 if session_id and self.session_service is not None:
                     try:

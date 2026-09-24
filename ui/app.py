@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any, Callable
 
 from core.des.tri_system_flow import TriSystemFlow
@@ -34,7 +33,8 @@ class SapphireUIApp:
         self.session_service = session_service
 
         if execution_service is None:
-            adapter = AxisAdapter(axis_base_url=axis_base_url or os.environ.get("AXIS_BASE_URL", "http://localhost:3000"))
+            # AXIS_BASE_URL is resolved by the adapter at request time, not here.
+            adapter = AxisAdapter(axis_base_url=axis_base_url)
             execution_service = ExecutionService(axis_adapter=adapter, session_service=self.session_service)
         self.execution_service = execution_service
         self.tri_flow_factory = tri_flow_factory or TriSystemFlow
