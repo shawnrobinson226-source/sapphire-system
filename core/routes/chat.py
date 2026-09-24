@@ -31,7 +31,11 @@ def _sync_active_chat_settings(system):
         return {}
     session_manager = system.llm_chat.session_manager
     settings = session_manager.get_chat_settings()
-    _apply_chat_settings(system, settings)
+    # Per-message sync exists to enforce the toolset / zero-tools mode. The
+    # spice set is applied only on operator actions (chat activation, persona
+    # load, settings changes): re-applying it here rewrote prompt_spices.json
+    # and undid Spice Manager category toggles on every message.
+    _apply_chat_settings(system, {k: v for k, v in settings.items() if k != "spice_set"})
     try:
         from core.hooks import hook_runner
 
