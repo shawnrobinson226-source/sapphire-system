@@ -166,6 +166,12 @@ class TriSystemFlow:
             )
             if not ok:
                 self._trace("AXIS_REJECTED", "fail")
+                if isinstance(axis_result, dict) and axis_result.get("error") == "axis_not_configured":
+                    return self._error(
+                        "AXIS is not configured. Execution stopped.",
+                        recoverable=True,
+                        data=axis_result,
+                    )
                 return self._error("AXIS execution failed.", recoverable=True, data=axis_result)
             self._trace("AXIS_EXECUTED", "ok")
             return self._state("axis_result", axis_result)

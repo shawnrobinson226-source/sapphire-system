@@ -6,6 +6,12 @@ from typing import Any
 
 import requests
 
+from core.sapphire.axis_config import (
+    AXIS_NOT_CONFIGURED,
+    AxisConfigError,
+    build_axis_url,
+    resolve_axis_base_url,
+)
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 from core.sapphire.distortion_lock import ALLOWED_DISTORTION_CLASSES
 from core.security.violations import log_boundary_violation
@@ -20,8 +26,11 @@ ALLOWED_ENDPOINTS = {
 class AxisAdapter:
     """Strict AXIS transport wrapper with endpoint allowlist enforcement."""
 
-    def __init__(self, axis_base_url: str, timeout_seconds: int = 20):
-        self.axis_base_url = axis_base_url.rstrip("/")
+    def __init__(self, axis_base_url: str | None = None, timeout_seconds: int = 20):
+        # Not validated here: an explicit value (e.g. the CLI flag) or, when
+        # None, AXIS_BASE_URL is resolved at the request boundary so that
+        # constructing the adapter never requires AXIS configuration.
+        self._axis_base_url = axis_base_url
         self.timeout_seconds = timeout_seconds
 
     @staticmethod
@@ -124,7 +133,18 @@ class AxisAdapter:
                 operator_id=None,
             )
 
-        url = f"{self.axis_base_url}{clean_endpoint}"
+        try:
+            url = build_axis_url(resolve_axis_base_url(self._axis_base_url), clean_endpoint)
+        except AxisConfigError as exc:
+            return {
+                "ok": False,
+                "status_code": None,
+                "error": AXIS_NOT_CONFIGURED,
+                "reason": exc.reason,
+                "message": str(exc),
+                "endpoint": f"{clean_method} {clean_endpoint}",
+            }
+
         headers = {"x-operator-id": clean_operator_id}
         kwargs = {"headers": headers, "timeout": self.timeout_seconds}
 

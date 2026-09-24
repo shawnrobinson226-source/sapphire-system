@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 
 from core.sapphire.axis_adapter import AxisAdapter
 from core.sapphire.execution_service import ExecutionService
@@ -23,8 +22,8 @@ def main() -> int:
     parser.add_argument("--show-session", dest="show_session_id", help="Show stored session timeline")
     parser.add_argument(
         "--axis-base-url",
-        default=os.environ.get("AXIS_BASE_URL", "http://localhost:3000"),
-        help="AXIS base URL",
+        default=None,
+        help="AXIS base URL, e.g. https://axis.example (default: the AXIS_BASE_URL environment variable)",
     )
     args = parser.parse_args()
 

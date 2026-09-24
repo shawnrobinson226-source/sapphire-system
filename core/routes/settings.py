@@ -147,6 +147,10 @@ async def test_axis_identity(request: Request, _=Depends(require_login)):
 
     if ok:
         return {"status": "success"}
+    # Missing/invalid AXIS_BASE_URL: blocked locally before any request, so it
+    # is reported as "blocked" (not "offline") with an explicit reason.
+    if isinstance(result, dict) and result.get("error") == "axis_not_configured":
+        return {"status": "blocked", "reason": "axis_not_configured"}
     if isinstance(result, dict) and result.get("status_code") is None:
         return {"status": "offline"}
     # Any HTTP response we got back but didn't like (4xx or 5xx alike) lands here.
