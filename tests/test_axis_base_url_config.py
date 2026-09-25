@@ -247,10 +247,14 @@ def test_execution_service_reports_axis_not_configured_not_axis_error(
 def axis_tools_module(monkeypatch):
     from plugins.axis_integration import axis_tools
 
+    from core.sapphire import axis_http
+
     calls = []
+    envelope = {"ok": True, "version": "v1", "data": {"profile": "ok"}}
     monkeypatch.setattr(axis_tools, "assert_axis_execution_allowed", lambda *a, **k: (True, {}))
-    monkeypatch.setattr(axis_tools.requests, "get", lambda *a, **k: calls.append((a, k)) or _FakeResponse())
-    monkeypatch.setattr(axis_tools.requests, "post", lambda *a, **k: calls.append((a, k)) or _FakeResponse())
+    monkeypatch.setattr(
+        axis_http.requests, "request", lambda *a, **k: calls.append((a, k)) or _FakeResponse(200, envelope)
+    )
     return axis_tools, calls
 
 
@@ -268,7 +272,8 @@ def test_axis_tools_composes_endpoint_under_api_v2_once(monkeypatch, axis_tools_
     monkeypatch.setenv("AXIS_BASE_URL", "https://axis.example/")
     result, ok = axis_tools._fetch_axis_operator_profile("op_1")
     assert ok is True
-    assert calls[0][0][0] == "https://axis.example/api/v2/operator-profile"
+    assert calls[0][0] == ("GET", "https://axis.example/api/v2/operator-profile")
+    assert calls[0][1]["allow_redirects"] is False
 
 
 def test_axis_tools_guard_precedes_url_resolution(no_axis_env, monkeypatch):

@@ -6,6 +6,8 @@ from core.des.axis_preview import build_axis_preview
 from core.des.client import check_health
 from core.des.service import DESFlow
 from core.identity.operator import resolve_operator_id
+from core.sapphire import axis_http
+from core.sapphire.axis_config import AXIS_NOT_CONFIGURED
 from plugins.axis_integration.axis_tools import _execute_axis
 
 
@@ -36,6 +38,23 @@ TRACE_STEPS = {
 }
 TRACE_STATUSES = {"ok", "fail"}
 
+# Failure kinds the S1 AXIS callers produce. Any other executor "error" value
+# is untrusted (it may carry response text, URLs or credentials) and is
+# replaced with GENERIC_AXIS_FAILURE.
+AXIS_FAILURE_KINDS = frozenset(
+    {
+        AXIS_NOT_CONFIGURED,
+        "missing_session_id",
+        axis_http.KIND_REDIRECT,
+        axis_http.KIND_HTTP_ERROR,
+        axis_http.KIND_TIMEOUT,
+        axis_http.KIND_CONNECTION_ERROR,
+        axis_http.KIND_NON_JSON,
+        axis_http.KIND_NOT_OK,
+    }
+)
+GENERIC_AXIS_FAILURE = "axis_failed"
+
 
 class TriSystemFlow:
     def __init__(
@@ -54,7 +73,10 @@ class TriSystemFlow:
         self.des_result = None
         self.axis_payload = None
         self.pending_execution = None
-        self.axis_executed = False
+        # axis_attempted: a dispatch was made (single-shot guard).
+        # axis_succeeded: AXIS verifiably executed (2xx envelope + data.sessionId).
+        self.axis_attempted = False
+        self.axis_succeeded = False
         self.trace = []
         self.preview_traced = False
         self.gate_events = []
@@ -106,7 +128,8 @@ class TriSystemFlow:
             self.des_result = response
             self.axis_payload = build_axis_preview(response)
             self._create_pending_execution(self.axis_payload)
-            self.axis_executed = False
+            self.axis_attempted = False
+            self.axis_succeeded = False
             self.preview_traced = False
             self._trace("DES_RETURNED", "ok")
             return self._state("result", response)
@@ -141,8 +164,8 @@ class TriSystemFlow:
         pending = self._valid_pending_execution()
         if not pending:
             return self._error("AXIS payload is not ready for execution.", recoverable=True)
-        if self.axis_executed:
-            return self._error("AXIS execution already completed.", recoverable=False)
+        if self.axis_attempted:
+            return self._error("AXIS execution already attempted.", recoverable=False)
 
         self._trace("USER_CONFIRMED", "ok")
         operator_id = self.identity_resolver(prompt=True)
@@ -151,7 +174,7 @@ class TriSystemFlow:
             return self._error("Missing operator_id. Execution stopped.", recoverable=True)
 
         pending["operator_id"] = operator_id
-        self.axis_executed = True
+        self.axis_attempted = True
         payload = pending["payload"]
         self._log_gate_event("confirmed", payload)
         try:
@@ -164,15 +187,17 @@ class TriSystemFlow:
                 stability=payload["stability"],
                 impact=payload["impact"],
             )
-            if not ok:
+            if not (ok is True and self._is_verified_execution(axis_result)):
                 self._trace("AXIS_REJECTED", "fail")
-                if isinstance(axis_result, dict) and axis_result.get("error") == "axis_not_configured":
+                detail = self._failure_detail(axis_result, ok)
+                if detail["error"] == "axis_not_configured":
                     return self._error(
                         "AXIS is not configured. Execution stopped.",
                         recoverable=True,
-                        data=axis_result,
+                        data=detail,
                     )
-                return self._error("AXIS execution failed.", recoverable=True, data=axis_result)
+                return self._error("AXIS execution failed.", recoverable=True, data=detail)
+            self.axis_succeeded = True
             self._trace("AXIS_EXECUTED", "ok")
             return self._state("axis_result", axis_result)
         finally:
@@ -194,7 +219,8 @@ class TriSystemFlow:
         self.des_result = None
         self.axis_payload = None
         self.pending_execution = None
-        self.axis_executed = False
+        self.axis_attempted = False
+        self.axis_succeeded = False
         self.preview_traced = False
 
     def _create_pending_execution(self, payload):
@@ -260,6 +286,30 @@ class TriSystemFlow:
             and bool(question.get("text").strip())
             and isinstance(question.get("options", []), list)
         )
+
+    @staticmethod
+    def _is_verified_execution(axis_result):
+        """Execute success rule: validated AXIS data with a non-empty sessionId."""
+        session_id = axis_result.get("sessionId") if isinstance(axis_result, dict) else None
+        return isinstance(session_id, str) and bool(session_id.strip())
+
+    @staticmethod
+    def _failure_detail(axis_result, ok):
+        """Allowlisted failure kind and a valid HTTP status only.
+
+        Executor output is untrusted: an unknown "error" value becomes
+        GENERIC_AXIS_FAILURE, and status_code is kept only when it is an int
+        (not bool) in 100-599. No other executor field is forwarded.
+        """
+        if ok is True:
+            return {"error": "missing_session_id", "status_code": None}
+        kind = axis_result.get("error") if isinstance(axis_result, dict) else None
+        status = axis_result.get("status_code") if isinstance(axis_result, dict) else None
+        if not (isinstance(kind, str) and kind in AXIS_FAILURE_KINDS):
+            kind = GENERIC_AXIS_FAILURE
+        if not (isinstance(status, int) and not isinstance(status, bool) and 100 <= status <= 599):
+            status = None
+        return {"error": kind, "status_code": status}
 
     @staticmethod
     def _has_error(response):

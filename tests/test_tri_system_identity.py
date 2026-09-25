@@ -267,7 +267,8 @@ def test_axis_rejection_does_not_retry_or_mutate_payload():
     second = flow.confirm()
 
     assert first["type"] == "error"
-    assert first["data"]["detail"] == {"ok": False, "reason": "rejected"}
+    # Failure detail carries only kind and HTTP status, never executor output.
+    assert first["data"]["detail"] == {"error": "axis_failed", "status_code": None}
     assert second == {
         "type": "error",
         "data": {
