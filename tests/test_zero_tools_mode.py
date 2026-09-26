@@ -353,7 +353,9 @@ def test_central_axis_guard_blocks_axis_tools_when_settings_are_zero_tools(monke
 
     calls = []
     monkeypatch.setattr(api_fastapi, "_system", StaleAllToolsSystem())
-    monkeypatch.setattr(axis_tools.requests, "post", lambda *args, **kwargs: calls.append(kwargs))
+    from core.sapphire import axis_http
+
+    monkeypatch.setattr(axis_http.requests, "request", lambda *args, **kwargs: calls.append(kwargs))
 
     result, ok = axis_tools._execute_axis(
         trigger="des_decision_friction",

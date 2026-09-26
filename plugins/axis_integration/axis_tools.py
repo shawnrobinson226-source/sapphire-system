@@ -4,15 +4,10 @@ AXIS (VANTA) integration tools for Sapphire.
 
 import logging
 import math
-from typing import Any, Dict, Tuple
+from typing import Any, Callable, Dict, Tuple
 
-import requests
-from core.sapphire.axis_config import (
-    AXIS_NOT_CONFIGURED,
-    AxisConfigError,
-    build_axis_url,
-    resolve_axis_base_url,
-)
+from core.sapphire import axis_http
+from core.sapphire.axis_config import AXIS_NOT_CONFIGURED, AxisConfigError
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
 logger = logging.getLogger(__name__)
@@ -24,7 +19,7 @@ AVAILABLE_FUNCTIONS = [
     "fetch_axis_operator_profile",
 ]
 
-DEFAULT_TIMEOUT_SECONDS = 20
+DEFAULT_TIMEOUT_SECONDS = axis_http.DEFAULT_TIMEOUT_SECONDS
 
 TOOLS = [
     {
@@ -68,16 +63,6 @@ TOOLS = [
 ]
 
 
-def _safe_json_response(response: requests.Response) -> Dict[str, Any]:
-    try:
-        return response.json()
-    except ValueError:
-        return {
-            "status_code": response.status_code,
-            "text": response.text,
-        }
-
-
 def _validate_operator_id(operator_id: str) -> Tuple[Dict[str, Any] | None, bool]:
     if not operator_id or not operator_id.strip():
         return {"error": "A non-empty 'operator_id' is required."}, False
@@ -93,6 +78,7 @@ def _request_axis(
     endpoint: str,
     operator_id: str,
     payload: Dict[str, Any] | None = None,
+    success_check: Tuple[str, Callable[[Dict[str, Any]], bool]] | None = None,
 ) -> Tuple[Dict[str, Any], bool]:
     guard_path = f"axis_integration.{method.lower()}_{endpoint}"
     allowed, blocked = assert_axis_execution_allowed(guard_path)
@@ -103,45 +89,38 @@ def _request_axis(
     if not ok:
         return operator_validation, False
 
-    try:
-        url = build_axis_url(resolve_axis_base_url(), f"/api/v2/{endpoint}")
-    except AxisConfigError as exc:
+    headers = {"x-operator-id": operator_id}
+    if payload is not None:
+        headers["Content-Type"] = "application/json"
+
+    result = axis_http.request_axis(
+        method,
+        f"/api/v2/{endpoint}",
+        headers=headers,
+        json_body=payload,
+        timeout=DEFAULT_TIMEOUT_SECONDS,
+    )
+    if not result.ok:
+        return _failure(endpoint, result), False
+    if success_check is not None:
+        failure_kind, check = success_check
+        if not check(result.data):
+            logger.warning("[AXIS_HTTP] request failed kind=%s status=%s", failure_kind, result.status)
+            return {"endpoint": endpoint, "status_code": result.status, "error": failure_kind}, False
+    return result.data, True
+
+
+def _failure(endpoint: str, result: axis_http.AxisResult) -> Dict[str, Any]:
+    """Controlled failure: kind, HTTP status and (config only) a fixed reason."""
+    if result.kind == axis_http.KIND_NOT_CONFIGURED:
         return {
             "endpoint": endpoint,
             "status_code": None,
             "error": AXIS_NOT_CONFIGURED,
-            "reason": exc.reason,
-            "message": str(exc),
-        }, False
-
-    headers = {"x-operator-id": operator_id}
-
-    request_kwargs: Dict[str, Any] = {
-        "headers": headers,
-        "timeout": DEFAULT_TIMEOUT_SECONDS,
-    }
-
-    if payload is not None:
-        headers["Content-Type"] = "application/json"
-        request_kwargs["json"] = payload
-
-    request_fn = requests.post if method == "POST" else requests.get
-    try:
-        response = request_fn(url, **request_kwargs)
-        if 200 <= response.status_code < 300:
-            return _safe_json_response(response), True
-        return {
-            "endpoint": endpoint,
-            "status_code": response.status_code,
-            "response_text": response.text or "",
-        }, False
-    except requests.RequestException as error:
-        logger.error("AXIS request failed for endpoint '%s': %s", endpoint, error, exc_info=True)
-        return {
-            "endpoint": endpoint,
-            "status_code": None,
-            "response_text": str(error),
-        }, False
+            "reason": result.reason,
+            "message": str(AxisConfigError(result.reason)),
+        }
+    return {"endpoint": endpoint, "status_code": result.status, "error": result.kind}
 
 
 def _execute_axis(
@@ -176,7 +155,16 @@ def _execute_axis(
         payload["reference"] = reference
     if impact is not None:
         payload["impact"] = impact
-    return _request_axis("POST", "execute", operator_id, payload)
+    return _request_axis(
+        "POST", "execute", operator_id, payload,
+        success_check=("missing_session_id", has_execute_session_id),
+    )
+
+
+def has_execute_session_id(data: Any) -> bool:
+    """Execute success rule: a verified execution returns a non-empty data.sessionId."""
+    session_id = data.get("sessionId") if isinstance(data, dict) else None
+    return isinstance(session_id, str) and bool(session_id.strip())
 
 
 def _fetch_axis_analytics(operator_id: str) -> Tuple[Dict[str, Any], bool]:
