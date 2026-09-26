@@ -38,7 +38,7 @@ TRACE_STEPS = {
 }
 TRACE_STATUSES = {"ok", "fail"}
 
-# Failure kinds the S1 AXIS callers produce. Any other executor "error" value
+# Failure kinds the S1/S3 AXIS callers produce. Any other executor "error" value
 # is untrusted (it may carry response text, URLs or credentials) and is
 # replaced with GENERIC_AXIS_FAILURE.
 AXIS_FAILURE_KINDS = frozenset(
@@ -51,6 +51,9 @@ AXIS_FAILURE_KINDS = frozenset(
         axis_http.KIND_CONNECTION_ERROR,
         axis_http.KIND_NON_JSON,
         axis_http.KIND_NOT_OK,
+        axis_http.KIND_AUTH_NOT_CONFIGURED,
+        axis_http.KIND_BYPASS_INVALID,
+        axis_http.KIND_INSECURE_TRANSPORT,
     }
 )
 GENERIC_AXIS_FAILURE = "axis_failed"

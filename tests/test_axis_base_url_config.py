@@ -412,6 +412,8 @@ def test_cli_explicit_axis_base_url_is_validated_and_used(
     tmp_path, monkeypatch, capsys, no_axis_env, violation_log, adapter_requests
 ):
     monkeypatch.chdir(tmp_path)
+    # S3: execute fails closed without a service token.
+    monkeypatch.setenv("AXIS_SERVICE_TOKEN", "test-service-token-0123456789abcdef")
     _, out = _run_cli(
         monkeypatch, capsys, "t", "--operator-id", "op_1", "--json", "--axis-base-url", "http://axis.example"
     )

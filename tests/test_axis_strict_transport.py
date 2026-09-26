@@ -74,6 +74,9 @@ def no_network(monkeypatch):
 @pytest.fixture(autouse=True)
 def axis_env(monkeypatch):
     monkeypatch.setenv("AXIS_BASE_URL", AXIS_BASE)
+    # S3: execute fails closed without a service token; bypass stays unset.
+    monkeypatch.setenv("AXIS_SERVICE_TOKEN", "test-service-token-0123456789abcdef")
+    monkeypatch.delenv("VERCEL_PROTECTION_BYPASS_SECRET", raising=False)
 
 
 class FakeResponse:
@@ -262,7 +265,11 @@ def test_execute_verified_success_returns_validated_data(http, axis_tools_allowe
     assert ok is True
     assert data["sessionId"] == SESSION_ID
     assert fake.calls[0]["method"] == "POST" and fake.calls[0]["url"].endswith("/api/v2/execute")
-    assert fake.calls[0]["headers"] == {"x-operator-id": OPERATOR, "Content-Type": "application/json"}
+    assert fake.calls[0]["headers"] == {
+        "x-operator-id": OPERATOR,
+        "Content-Type": "application/json",
+        "Authorization": "Bearer test-service-token-0123456789abcdef",
+    }
 
 
 @pytest.mark.parametrize(

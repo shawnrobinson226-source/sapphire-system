@@ -68,6 +68,9 @@ EXECUTE_PAYLOAD = {"trigger": TRIGGER, "classification": "narrative", "next_acti
 @pytest.fixture(autouse=True)
 def axis_env(monkeypatch):
     monkeypatch.setenv("AXIS_BASE_URL", AXIS_BASE)
+    # S3: execute fails closed without a service token; bypass stays unset.
+    monkeypatch.setenv("AXIS_SERVICE_TOKEN", "test-service-token-0123456789abcdef")
+    monkeypatch.delenv("VERCEL_PROTECTION_BYPASS_SECRET", raising=False)
 
 
 @pytest.fixture(autouse=True)
@@ -458,7 +461,11 @@ def test_adapter_verified_success_returns_validated_data(http):
     assert call["method"] == "POST"
     assert call["url"] == AXIS_BASE + "/api/v2/execute"
     assert call["json"] == EXECUTE_PAYLOAD
-    assert call["headers"] == {"x-operator-id": OPERATOR, "Content-Type": "application/json"}
+    assert call["headers"] == {
+        "x-operator-id": OPERATOR,
+        "Content-Type": "application/json",
+        "Authorization": "Bearer test-service-token-0123456789abcdef",
+    }
     assert call["allow_redirects"] is False
 
 
