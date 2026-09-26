@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 import uuid
 from pathlib import Path
@@ -31,6 +32,11 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
         self.violations_patch = mock.patch.object(violations, "VIOLATION_LOG_PATH", self.log_path)
         self.violations_patch.start()
         self.addCleanup(self.violations_patch.stop)
+        # S3: execute fails closed without a service token; bypass stays unset.
+        env_patch = mock.patch.dict(os.environ, {"AXIS_SERVICE_TOKEN": "test-service-token-0123456789abcdef"})
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+        os.environ.pop("VERCEL_PROTECTION_BYPASS_SECRET", None)
         self.adapter = AxisAdapter(axis_base_url="https://axis.example")
 
     def _cleanup_tmp_root(self):

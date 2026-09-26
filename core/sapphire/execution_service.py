@@ -43,6 +43,9 @@ REMOTE_FAILURE_KINDS = frozenset({
     axis_http.KIND_CONNECTION_ERROR,
     axis_http.KIND_NON_JSON,
     axis_http.KIND_NOT_OK,
+    axis_http.KIND_AUTH_NOT_CONFIGURED,
+    axis_http.KIND_BYPASS_INVALID,
+    axis_http.KIND_INSECURE_TRANSPORT,
     KIND_MISSING_SESSION_ID,
 })
 
