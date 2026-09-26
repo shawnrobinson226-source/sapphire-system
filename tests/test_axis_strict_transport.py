@@ -4,17 +4,29 @@ Fully offline: an autouse fixture makes any real socket connect raise, and the
 transport's HTTP entry point (core.sapphire.axis_http.requests.request) is
 mocked. Response shapes follow the AXIS v1 contract (ok/version/data envelope;
 401/503 bodies without ok/version).
+
+The one exception is socket.socketpair(): on Windows it is Python's
+_fallback_socketpair, which connects a loopback socket to itself, and asyncio
+calls it whenever an event loop is created. The real connect is allowed only
+on the calling thread and only while the guarded socketpair wrapper is running
+the real implementation.
 """
 
+import asyncio
 import json
 import logging
 import math
 import socket
+import threading
+import types
 
 import pytest
 import requests
 
 from core.sapphire import axis_http
+
+_REAL_CONNECT = socket.socket.connect
+_SOCKETPAIR_GUARD = threading.local()
 
 AXIS_BASE = "https://leak-host.example"
 BODY_MARKER = "SECRET-BODY-MARKER"
@@ -29,11 +41,34 @@ OUTCOMES = {"reduced", "unresolved", "escalated"}
 
 @pytest.fixture(autouse=True)
 def no_network(monkeypatch):
+    """Block connect/connect_ex, except connect inside the guarded socketpair.
+
+    Returns the guard; ``guard.impl`` is the socketpair implementation the
+    wrapper runs, so a test can force the fallback without replacing the wrapper.
+    """
+
     def refuse(*args, **kwargs):
         raise AssertionError("network access attempted in an offline test")
 
-    monkeypatch.setattr(socket.socket, "connect", refuse)
+    def guarded_connect(self, *args, **kwargs):
+        if getattr(_SOCKETPAIR_GUARD, "active", False):
+            return _REAL_CONNECT(self, *args, **kwargs)
+        refuse()
+
+    guard = types.SimpleNamespace(impl=socket.socketpair, wrapper=None)
+
+    def guarded_socketpair(*args, **kwargs):
+        _SOCKETPAIR_GUARD.active = True
+        try:
+            return guard.impl(*args, **kwargs)
+        finally:
+            _SOCKETPAIR_GUARD.active = False
+
+    guard.wrapper = guarded_socketpair
+    monkeypatch.setattr(socket.socket, "connect", guarded_connect)
     monkeypatch.setattr(socket.socket, "connect_ex", refuse)
+    monkeypatch.setattr(socket, "socketpair", guarded_socketpair)
+    return guard
 
 
 @pytest.fixture(autouse=True)
@@ -553,3 +588,81 @@ def test_tri_not_configured_kind_keeps_fixed_message_without_extra_fields():
     assert state["data"]["message"] == "AXIS is not configured. Execution stopped."
     assert state["data"]["detail"] == {"error": "axis_not_configured", "status_code": None}
     assert BODY_MARKER not in json.dumps(state) and EXC_MARKER not in json.dumps(state)
+
+
+# ---- Windows socketpair fallback (event-loop self-pipe) under the guard ----
+
+@pytest.fixture
+def forced_fallback(no_network, monkeypatch):
+    """Route the guarded socket.socketpair wrapper to Python's _fallback_socketpair.
+
+    Only the implementation behind the wrapper changes; the wrapper itself (and
+    therefore the connect guard) stays exactly as the autouse fixture set it.
+    """
+    fallback = getattr(socket, "_fallback_socketpair", None)
+    if fallback is None:
+        pytest.skip("this Python has no socket._fallback_socketpair")
+    calls = []
+
+    def counting_fallback(*args, **kwargs):
+        calls.append(threading.get_ident())
+        return fallback(*args, **kwargs)
+
+    monkeypatch.setattr(no_network, "impl", counting_fallback)
+    assert socket.socketpair is no_network.wrapper
+    return calls
+
+
+BLOCKED_TARGETS = [("127.0.0.1", 8000), ("127.0.0.1", 9), ("localhost", 80), ("93.184.216.34", 443)]
+
+
+def _assert_connects_blocked():
+    assert not getattr(_SOCKETPAIR_GUARD, "active", False)
+    for target in BLOCKED_TARGETS:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            with pytest.raises(AssertionError, match="network access attempted"):
+                sock.connect(target)
+            with pytest.raises(AssertionError, match="network access attempted"):
+                sock.connect_ex(target)
+
+
+def test_forced_fallback_socketpair_works_only_inside_the_guard(forced_fallback):
+    _assert_connects_blocked()
+
+    left, right = socket.socketpair()
+    try:
+        left.sendall(b"ping")
+        assert right.recv(4) == b"ping"
+        right.sendall(b"pong")
+        assert left.recv(4) == b"pong"
+    finally:
+        left.close()
+        right.close()
+    assert left.fileno() == -1 and right.fileno() == -1
+    assert len(forced_fallback) == 1
+
+    _assert_connects_blocked()
+
+
+def test_forced_fallback_event_loop_create_and_close(forced_fallback):
+    loop = asyncio.new_event_loop()
+    try:
+        assert loop.run_until_complete(asyncio.sleep(0, result="ran")) == "ran"
+    finally:
+        loop.close()
+    assert loop.is_closed()
+    assert forced_fallback, "event loop creation did not go through the guarded socketpair"
+
+    _assert_connects_blocked()
+
+
+def test_forced_fallback_settings_identity_client(forced_fallback, http, identity_client):
+    fake = http(response=FakeResponse(200, body=envelope({"operatorId": "x"})))
+    response = identity_client.post("/api/settings/operator-id/test-axis-identity")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "success"}
+    assert len(fake.calls) == 1 and fake.calls[0]["url"].endswith("/api/v2/operator-profile")
+    assert forced_fallback, "TestClient's event loop did not go through the guarded socketpair"
+
+    _assert_connects_blocked()
