@@ -1,26 +1,77 @@
-"""Sapphire AXIS adapter: strict boundary + request mediation only."""
+"""Sapphire AXIS adapter: strict boundary + request mediation only.
+
+Every request goes through core.sapphire.axis_http.request_axis (one request,
+redirects never followed, status first, v1 envelope). Execute additionally
+requires a non-empty data.sessionId (core.sapphire.axis_contract).
+
+Results are plain dicts:
+- success: {"ok": True, "status_code": int, "data": dict}
+- remote failure: {"ok": False, "error": <transport kind>, "status_code": int 100-599 | None}
+- not configured: {"ok": False, "error": AXIS_NOT_CONFIGURED, "status_code": None,
+  "reason": <fixed code>, "message": <fixed text>}
+- local boundary rejection: {"ok": False, "error": "boundary_violation",
+  "status_code": None, "violation_type": <fixed code>, "message": <fixed text>,
+  "endpoint": <allowlisted label> | None}
+
+No response text, URL, host, headers, exception text, AXIS error message,
+operator ID, payload value or caller-supplied field name is ever returned or
+logged.
+"""
 
 from __future__ import annotations
 
 from typing import Any
 
-import requests
-
-from core.sapphire.axis_config import (
-    AXIS_NOT_CONFIGURED,
-    AxisConfigError,
-    build_axis_url,
-    resolve_axis_base_url,
+from core.sapphire import axis_http
+from core.sapphire.axis_config import AXIS_NOT_CONFIGURED, AxisConfigError
+from core.sapphire.axis_contract import (
+    AXIS_EXECUTE_FIELDS,
+    EXECUTE_ENDPOINT,
+    has_execute_session_id,
 )
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 from core.sapphire.distortion_lock import ALLOWED_DISTORTION_CLASSES
 from core.security.violations import log_boundary_violation
 
 ALLOWED_ENDPOINTS = {
-    ("POST", "/api/v2/execute"),
+    ("POST", EXECUTE_ENDPOINT),
     ("GET", "/api/v2/analytics"),
     ("GET", "/api/v2/operator-profile"),
 }
+
+KIND_MISSING_SESSION_ID = "missing_session_id"
+
+FORBIDDEN_ENDPOINT_LABEL = "forbidden_endpoint"
+
+_BOUNDARY_MESSAGES = {
+    "zero_tools_mode": "AXIS execution blocked because Zero tools mode is active.",
+    "forbidden_endpoint": "Endpoint not allowed.",
+    "invalid_operator_id": "operator_id must be a non-empty string.",
+    "invalid_payload": "Request contains fields outside the AXIS contract.",
+    "invalid_distortion_class": "classification is not allowed by Sapphire lock.",
+}
+
+
+def safe_status(value: Any) -> int | None:
+    """Return an HTTP status only when it is an int in 100-599."""
+    if isinstance(value, int) and not isinstance(value, bool) and 100 <= value <= 599:
+        return value
+    return None
+
+
+def payload_summary(payload: Any) -> dict | None:
+    """Log-safe payload description: allowlisted field names + a count of the rest.
+
+    Caller-supplied keys outside AXIS_EXECUTE_FIELDS are never recorded, since
+    a key can itself carry a secret. Values are reduced to shapes by the
+    violation logger.
+    """
+    if payload is None:
+        return None
+    if not isinstance(payload, dict):
+        return {"payload_type": "non_dict"}
+    known = {key: payload[key] for key in payload if isinstance(key, str) and key in AXIS_EXECUTE_FIELDS}
+    return {"fields": known, "unknown_field_count": len(payload) - len(known)}
 
 
 class AxisAdapter:
@@ -35,7 +86,8 @@ class AxisAdapter:
 
     @staticmethod
     def _normalize(method: str, endpoint: str) -> tuple[str, str]:
-        clean_method = (method or "").upper().strip()
+        clean_method = method.upper().strip() if isinstance(method, str) else ""
+        endpoint = endpoint if isinstance(endpoint, str) else ""
         clean_endpoint = endpoint if endpoint.startswith("/") else f"/{endpoint}"
         return clean_method, clean_endpoint
 
@@ -45,48 +97,20 @@ class AxisAdapter:
             raise ValueError(f"{field_name} must be a non-empty string.")
         return value.strip()
 
-    def _enforce_allowed_endpoint(self, method: str, endpoint: str) -> tuple[str, str]:
-        clean_method, clean_endpoint = self._normalize(method, endpoint)
-        if (clean_method, clean_endpoint) not in ALLOWED_ENDPOINTS:
-            log_boundary_violation(
-                violation_type="forbidden_endpoint",
-                endpoint=f"{clean_method} {clean_endpoint}",
-                operator_id=None,
-                payload=None,
-            )
-            raise ValueError(f"Endpoint not allowed: {clean_method} {clean_endpoint}")
-        return clean_method, clean_endpoint
-
     @staticmethod
-    def _boundary_failure(
-        violation_type: str,
-        endpoint: str,
-        message: str,
-        operator_id: str | None = None,
-        payload: dict | None = None,
-    ) -> dict:
+    def _boundary_failure(violation_type: str, endpoint: str | None) -> dict:
         return {
             "ok": False,
-            "status_code": 0,
+            "status_code": None,
             "error": "boundary_violation",
             "violation_type": violation_type,
-            "message": message,
+            "message": _BOUNDARY_MESSAGES[violation_type],
             "endpoint": endpoint,
-            "operator_id": operator_id,
-            "payload_snapshot": payload or None,
         }
 
     @staticmethod
-    def _parse_response(response: requests.Response) -> dict:
-        try:
-            data = response.json()
-        except ValueError:
-            data = {"text": response.text}
-        return {
-            "ok": response.ok,
-            "status_code": response.status_code,
-            "data": data,
-        }
+    def _remote_failure(kind: str, status: Any) -> dict:
+        return {"ok": False, "status_code": safe_status(status), "error": kind}
 
     def call_axis(
         self,
@@ -95,65 +119,82 @@ class AxisAdapter:
         operator_id: str,
         payload: dict | None = None,
     ) -> dict:
-        allowed, blocked = assert_axis_execution_allowed(f"axis_adapter.{method.upper()} {endpoint}")
-        if not allowed:
-            return self._boundary_failure(
-                violation_type="zero_tools_mode",
-                endpoint=f"{method.upper()} {endpoint}",
-                message=blocked["error"],
-                operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
-                payload=payload,
-            )
+        clean_method, clean_endpoint = self._normalize(method, endpoint)
+        allowed_endpoint = (clean_method, clean_endpoint) in ALLOWED_ENDPOINTS
+        # Only an allowlisted endpoint is ever echoed, as a fixed label.
+        endpoint_label = f"{clean_method} {clean_endpoint}" if allowed_endpoint else None
 
-        try:
-            clean_method, clean_endpoint = self._enforce_allowed_endpoint(method, endpoint)
-        except ValueError as exc:
-            clean_method, clean_endpoint = self._normalize(method, endpoint)
-            return self._boundary_failure(
+        allowed, _blocked = assert_axis_execution_allowed(
+            f"axis_adapter.{endpoint_label or FORBIDDEN_ENDPOINT_LABEL}"
+        )
+        if not allowed:
+            return self._boundary_failure("zero_tools_mode", endpoint_label)
+
+        if not allowed_endpoint:
+            log_boundary_violation(
                 violation_type="forbidden_endpoint",
-                endpoint=f"{clean_method} {clean_endpoint}",
-                message=str(exc),
+                endpoint=FORBIDDEN_ENDPOINT_LABEL,
                 operator_id=None,
+                payload=None,
             )
+            return self._boundary_failure("forbidden_endpoint", None)
 
         try:
             clean_operator_id = self._require_non_empty_string(operator_id, "operator_id")
-        except ValueError as exc:
-            endpoint_label = f"{clean_method} {clean_endpoint}"
+        except ValueError:
             log_boundary_violation(
                 violation_type="invalid_operator_id",
                 endpoint=endpoint_label,
                 operator_id=None,
-                payload=payload,
+                payload=payload_summary(payload),
             )
-            return self._boundary_failure(
-                violation_type="invalid_operator_id",
-                endpoint=endpoint_label,
-                message=str(exc),
-                operator_id=None,
-            )
+            return self._boundary_failure("invalid_operator_id", endpoint_label)
 
-        try:
-            url = build_axis_url(resolve_axis_base_url(self._axis_base_url), clean_endpoint)
-        except AxisConfigError as exc:
+        is_execute = clean_endpoint == EXECUTE_ENDPOINT
+        payload_ok = (
+            isinstance(payload, dict) and all(isinstance(k, str) and k in AXIS_EXECUTE_FIELDS for k in payload)
+            if is_execute
+            else payload is None
+        )
+        if not payload_ok:
+            log_boundary_violation(
+                violation_type="invalid_payload",
+                endpoint=endpoint_label,
+                operator_id=None,
+                payload=payload_summary(payload),
+            )
+            return self._boundary_failure("invalid_payload", endpoint_label)
+
+        headers = {"x-operator-id": clean_operator_id}
+        if payload is not None:
+            headers["Content-Type"] = "application/json"
+
+        result = axis_http.request_axis(
+            clean_method,
+            clean_endpoint,
+            headers=headers,
+            json_body=payload,
+            base_url=self._axis_base_url,
+            timeout=self.timeout_seconds,
+        )
+
+        if result.kind == axis_http.KIND_NOT_CONFIGURED:
             return {
                 "ok": False,
                 "status_code": None,
                 "error": AXIS_NOT_CONFIGURED,
-                "reason": exc.reason,
-                "message": str(exc),
-                "endpoint": f"{clean_method} {clean_endpoint}",
+                "reason": result.reason,
+                "message": str(AxisConfigError(result.reason)),
+                "endpoint": endpoint_label,
             }
-
-        headers = {"x-operator-id": clean_operator_id}
-        kwargs = {"headers": headers, "timeout": self.timeout_seconds}
-
-        if payload is not None:
-            kwargs["json"] = payload
-            headers["Content-Type"] = "application/json"
-
-        response = requests.request(clean_method, url, **kwargs)
-        return self._parse_response(response)
+        if not result.ok:
+            return self._remote_failure(result.kind, result.status)
+        if is_execute and not has_execute_session_id(result.data):
+            return self._remote_failure(KIND_MISSING_SESSION_ID, result.status)
+        status = safe_status(result.status)
+        if status is None or not isinstance(result.data, dict):
+            return self._remote_failure(axis_http.KIND_NOT_OK, None)
+        return {"ok": True, "status_code": status, "data": result.data}
 
     def execute(
         self,
@@ -169,19 +210,15 @@ class AxisAdapter:
         clean_classification = self._require_non_empty_string(classification, "classification")
         clean_next_action = self._require_non_empty_string(next_action, "next_action")
 
+        endpoint_label = f"POST {EXECUTE_ENDPOINT}"
         if clean_classification not in ALLOWED_DISTORTION_CLASSES:
             log_boundary_violation(
                 violation_type="invalid_distortion_class",
-                endpoint="POST /api/v2/execute",
-                operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
+                endpoint=endpoint_label,
+                operator_id=None,
                 payload={"classification": clean_classification},
             )
-            return self._boundary_failure(
-                violation_type="invalid_distortion_class",
-                endpoint="POST /api/v2/execute",
-                message="classification is not allowed by Sapphire lock.",
-                operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
-            )
+            return self._boundary_failure("invalid_distortion_class", endpoint_label)
 
         payload = {
             "trigger": clean_trigger,
@@ -194,7 +231,7 @@ class AxisAdapter:
             payload["reference"] = reference
         if impact is not None:
             payload["impact"] = impact
-        return self.call_axis("POST", "/api/v2/execute", operator_id, payload=payload)
+        return self.call_axis("POST", EXECUTE_ENDPOINT, operator_id, payload=payload)
 
     def fetch_analytics(self, operator_id: str) -> dict:
         return self.call_axis("GET", "/api/v2/analytics", operator_id)

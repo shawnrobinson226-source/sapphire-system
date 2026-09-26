@@ -5,8 +5,10 @@ The existing suite exercises /api/v2/execute (via execute()) and /api/v2/analyti
 (positive control), but never /api/v2/operator-profile, the fetch wrappers, or
 _normalize directly.
 
-Hermeticity mirrors C5: core.sapphire.axis_adapter.requests is mocked entirely
-and the guard is mocked so tests never touch the network or global _system.
+Hermeticity mirrors C5: the strict transport's HTTP entry point
+(core.sapphire.axis_http.requests.request, used by AxisAdapter since S2) is
+mocked and the guard is mocked so tests never touch the network or global
+_system. Responses use the AXIS v1 envelope.
 """
 
 import json
@@ -60,17 +62,18 @@ class AxisAdapterEndpointTests(unittest.TestCase):
     def test_operator_profile_is_an_allowed_endpoint(self):
         self.assertIn(("GET", "/api/v2/operator-profile"), ALLOWED_ENDPOINTS)
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_operator_profile_reaches_http_with_operator_header(self, guard, req):
         guard.return_value = (True, {})
-        req.request.return_value = _FakeResponse(200, {"profile": "ok"})
+        req.return_value = _FakeResponse(200, {"ok": True, "version": "v1", "data": {"profile": "ok"}})
         result = self.adapter.call_axis("GET", "/api/v2/operator-profile", "op_1")
-        req.request.assert_called_once_with(
+        req.assert_called_once_with(
             "GET",
             "https://axis.example/api/v2/operator-profile",
             headers={"x-operator-id": "op_1"},
             timeout=20,
+            allow_redirects=False,
         )
         self.assertEqual(result, {"ok": True, "status_code": 200, "data": {"profile": "ok"}})
         self.assertEqual(self._read_log_lines(), [])
@@ -104,34 +107,38 @@ class AxisAdapterEndpointTests(unittest.TestCase):
 
     # ---- normalization is applied before both the allowlist and the request ----
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_call_axis_normalizes_method_and_endpoint_before_request(self, guard, req):
         guard.return_value = (True, {})
-        req.request.return_value = _FakeResponse(200, {"ok": True})
+        req.return_value = _FakeResponse(200, {"ok": True, "version": "v1", "data": {}})
         result = self.adapter.call_axis("get", "api/v2/analytics", "op_1")
-        req.request.assert_called_once_with(
+        req.assert_called_once_with(
             "GET",
             "https://axis.example/api/v2/analytics",
             headers={"x-operator-id": "op_1"},
             timeout=20,
+            allow_redirects=False,
         )
         self.assertTrue(result["ok"])
         self.assertEqual(self._read_log_lines(), [])
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_normalized_forbidden_endpoint_is_blocked_and_logged(self, guard, req):
         guard.return_value = (True, {})
         result = self.adapter.call_axis("get", "api/v2/forbidden", "op_1")
         self.assertEqual(result["violation_type"], "forbidden_endpoint")
-        # Logged/returned endpoint is the normalized form.
-        self.assertEqual(result["endpoint"], "GET /api/v2/forbidden")
-        req.request.assert_not_called()
+        # S2: a caller-supplied (non-allowlisted) path is never echoed; the
+        # result and log carry only a fixed label.
+        self.assertIsNone(result["endpoint"])
+        self.assertEqual(result["message"], "Endpoint not allowed.")
+        req.assert_not_called()
         lines = self._read_log_lines()
         self.assertEqual(len(lines), 1)
         self.assertEqual(lines[0]["violation_type"], "forbidden_endpoint")
-        self.assertEqual(lines[0]["endpoint"], "GET /api/v2/forbidden")
+        self.assertEqual(lines[0]["endpoint"], "forbidden_endpoint")
+        self.assertNotIn("api/v2/forbidden", json.dumps(lines[0]))
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import logging
 import math
 from typing import Any, Callable, Dict, Tuple
 
-from core.sapphire import axis_http
+from core.sapphire import axis_contract, axis_http
 from core.sapphire.axis_config import AXIS_NOT_CONFIGURED, AxisConfigError
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
@@ -163,8 +163,7 @@ def _execute_axis(
 
 def has_execute_session_id(data: Any) -> bool:
     """Execute success rule: a verified execution returns a non-empty data.sessionId."""
-    session_id = data.get("sessionId") if isinstance(data, dict) else None
-    return isinstance(session_id, str) and bool(session_id.strip())
+    return axis_contract.has_execute_session_id(data)
 
 
 def _fetch_axis_analytics(operator_id: str) -> Tuple[Dict[str, Any], bool]:

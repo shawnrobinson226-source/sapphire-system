@@ -55,13 +55,15 @@ class RendererTests(unittest.TestCase):
                 "message": "operator_id is required.",
             }
         )
+        # S2: fixed text per error type; the supplied message is not displayed.
         self.assertEqual(
             output,
-            "=== EXECUTION FAILURE ===\nType: validation_error\nMessage: operator_id is required.",
+            "=== EXECUTION FAILURE ===\nType: validation_error\nMessage: Request failed validation.",
         )
         self._assert_no_injected_language(output)
 
-    def test_failure_renderer_displays_preserved_axis_error_message(self):
+    def test_failure_renderer_never_displays_axis_error_message(self):
+        # S2: AXIS's own error string (e.g. in a legacy entry) is never shown.
         output = render_failure(
             {
                 "ok": False,
@@ -72,11 +74,13 @@ class RendererTests(unittest.TestCase):
         )
         self.assertEqual(
             output,
-            "=== EXECUTION FAILURE ===\nType: axis_error\nMessage: Guard blocked session",
+            "=== EXECUTION FAILURE ===\nType: axis_error\nMessage: AXIS request failed.",
         )
+        self.assertNotIn("Guard blocked session", output)
+        self.assertNotIn("v2.3.1", output)
         self._assert_no_injected_language(output)
 
-    def test_gated_response_renders_correctly(self):
+    def test_legacy_gated_response_renders_fixed_message(self):
         output = render_gated(
             {
                 "ok": True,
@@ -85,7 +89,10 @@ class RendererTests(unittest.TestCase):
                 "message": "Pause and breathe.",
             }
         )
-        self.assertEqual(output, "=== SYSTEM PAUSE === Pause and breathe.")
+        # S2: gated results come only from legacy entries, whose stored
+        # message may be AXIS free text; it is never re-displayed.
+        self.assertEqual(output, "=== SYSTEM PAUSE === Legacy pause entry. Stored message is not displayed.")
+        self.assertNotIn("Pause and breathe.", output)
         self._assert_no_injected_language(output)
 
     def test_renderer_does_not_mutate_data(self):

@@ -28,22 +28,29 @@ class PayloadSnapshotRedactionTests(unittest.TestCase):
         for value in ("secret", 42, 3.14):
             self.assertNotIn(str(value), json.dumps(_payload_snapshot(value)))
 
-    def test_dict_keeps_keys_but_values_are_shape_only(self):
-        snap = _payload_snapshot({"password": "hunter2", "count": 5})
+    def test_dict_keeps_only_fixed_label_keys_and_values_are_shape_only(self):
+        # S2: caller-controlled key names are counted, never written; fixed
+        # labels (e.g. AXIS field names) keep their names.
+        snap = _payload_snapshot({"password": "hunter2", "count": 5, "trigger": "t"})
         self.assertEqual(snap["type"], "dict")
-        self.assertEqual(snap["size"], 2)
-        self.assertIn("password", snap["keys"])
-        self.assertIn("count", snap["keys"])
-        self.assertEqual(snap["value_shapes"]["password"], {"type": "str", "length": 7})
-        self.assertEqual(snap["value_shapes"]["count"], {"type": "int"})
-        # Value is redacted even though the key is retained by design.
-        self.assertNotIn("hunter2", json.dumps(snap))
+        self.assertEqual(snap["size"], 3)
+        self.assertEqual(snap["keys"], ["trigger"])
+        self.assertEqual(snap["value_shapes"], {"trigger": {"type": "str", "length": 1}})
+        self.assertEqual(snap["other_key_count"], 2)
+        self.assertEqual(snap["other_value_shapes"], [{"type": "str", "length": 7}, {"type": "int"}])
+        dumped = json.dumps(snap)
+        self.assertNotIn("hunter2", dumped)
+        self.assertNotIn("password", dumped)
+        self.assertNotIn("count", dumped.replace("other_key_count", ""))
 
-    def test_non_string_dict_keys_are_stringified(self):
+    def test_non_string_dict_keys_are_counted_not_written(self):
         snap = _payload_snapshot({42: "secret"})
-        self.assertEqual(snap["keys"], ["42"])
-        self.assertEqual(snap["value_shapes"], {"42": {"type": "str", "length": 6}})
+        self.assertEqual(snap["keys"], [])
+        self.assertEqual(snap["value_shapes"], {})
+        self.assertEqual(snap["other_key_count"], 1)
+        self.assertEqual(snap["other_value_shapes"], [{"type": "str", "length": 6}])
         self.assertNotIn("secret", json.dumps(snap))
+        self.assertNotIn("42", json.dumps(snap))
 
     def test_list_items_are_shape_only(self):
         items = ["alpha-secret", "beta-secret"]
@@ -75,23 +82,27 @@ class PayloadSnapshotRedactionTests(unittest.TestCase):
         self.assertTrue(all(shape["type"] == "str" for shape in snap["item_shapes"]))
         self.assertNotIn("secret-", json.dumps(snap))
 
-    def test_dict_keys_capped_at_50_values_at_20_size_is_full(self):
+    def test_other_keys_counted_in_full_value_shapes_sampled_at_20(self):
         snap = _payload_snapshot({f"k{i}": f"v{i}" for i in range(60)})
         self.assertEqual(snap["size"], 60)
-        self.assertEqual(len(snap["keys"]), 50)
-        self.assertEqual(len(snap["value_shapes"]), 20)
-        # Values never leak, even for the sampled entries.
+        self.assertEqual(snap["keys"], [])
+        self.assertEqual(snap["other_key_count"], 60)
+        self.assertEqual(len(snap["other_value_shapes"]), 20)
+        # Neither values nor caller key names leak, even for sampled entries.
         self.assertNotIn("v0", json.dumps(snap))
+        self.assertNotIn("k0", json.dumps(snap))
 
     def test_max_depth_truncates_without_leaking_deep_value(self):
         payload = {"l1": {"l2": {"l3": {"l4": "DEEP-SECRET"}}}}
         snap = _payload_snapshot(payload)
+        # Caller key names are not written, so the path is positional.
         deepest = (
-            snap["value_shapes"]["l1"]["value_shapes"]["l2"]
-            ["value_shapes"]["l3"]["value_shapes"]["l4"]
+            snap["other_value_shapes"][0]["other_value_shapes"][0]
+            ["other_value_shapes"][0]["other_value_shapes"][0]
         )
         self.assertEqual(deepest, {"type": "truncated", "reason": "max_depth"})
         self.assertNotIn("DEEP-SECRET", json.dumps(snap))
+        self.assertNotIn("l1", json.dumps(snap))
 
     def test_unknown_types_record_type_name_only(self):
         self.assertEqual(_payload_snapshot(b"secret-bytes"), {"type": "bytes"})
@@ -143,13 +154,18 @@ class LogBoundaryViolationTests(unittest.TestCase):
         )
         raw = self._read_lines()[-1]
         entry = json.loads(raw)
-        # Metadata is stored raw; payload/details are structure-only.
-        self.assertEqual(entry["operator_id"], "op-1")
+        # Endpoint is stored raw; the operator ID only as presence; payload and
+        # details are structure-only and caller key names are not written.
+        self.assertNotIn("operator_id", entry)
+        self.assertTrue(entry["operator_id_present"])
+        self.assertNotIn("op-1", raw)
         self.assertEqual(entry["endpoint"], "POST /api/v2/execute")
+        self.assertEqual(entry["payload_snapshot"]["other_key_count"], 1)
         self.assertEqual(
-            entry["payload_snapshot"]["value_shapes"]["secret_value"],
-            {"type": "str", "length": 10},
+            entry["payload_snapshot"]["other_value_shapes"],
+            [{"type": "str", "length": 10}],
         )
+        self.assertNotIn("secret_value", raw)
         self.assertEqual(entry["details"]["value_shapes"]["field"]["type"], "str")
         self.assertNotIn("TOP-SECRET", raw)
 

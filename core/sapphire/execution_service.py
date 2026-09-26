@@ -1,23 +1,60 @@
-"""Sapphire execution surface: validate, delegate to AXIS adapter, normalize response."""
+"""Sapphire execution surface: validate, delegate to AXIS adapter, normalize response.
+
+Execution succeeds only on a verified adapter success: the transport verified
+the AXIS v1 envelope and the execute rule verified a non-empty data.sessionId.
+The success result copies only named contract fields. Failures carry a fixed
+message plus a controlled kind and HTTP status; no AXIS-supplied text,
+exception text, operator ID or caller-supplied field name is returned,
+stored in a session entry, or written to the boundary log.
+"""
 
 from __future__ import annotations
 
 from typing import Any
 
-from core.sapphire.axis_adapter import AxisAdapter
-from core.sapphire.axis_config import AXIS_NOT_CONFIGURED
+from core.sapphire import axis_http
+from core.sapphire.axis_adapter import (
+    ALLOWED_ENDPOINTS,
+    KIND_MISSING_SESSION_ID,
+    AxisAdapter,
+    payload_summary,
+    safe_status,
+)
+from core.sapphire.axis_config import AXIS_NOT_CONFIGURED, AxisConfigError
+from core.sapphire.axis_contract import (
+    AXIS_EXECUTE_FIELDS,
+    EXECUTE_DATA_FIELDS,
+    EXECUTE_ENDPOINT,
+    has_execute_session_id,
+)
 from core.sapphire.session_service import SessionService
 from core.security.violations import log_boundary_violation
 
-AXIS_EXECUTE_FIELDS = {
-    "trigger",
-    "classification",
-    "next_action",
-    "outcome",
-    "stability",
-    "reference",
-    "impact",
-}
+__all__ = ["AXIS_EXECUTE_FIELDS", "ExecutionService"]
+
+AXIS_FAILURE_MESSAGE = "AXIS request failed."
+AXIS_UNEXPECTED_MESSAGE = "AXIS request failed unexpectedly."
+BOUNDARY_MESSAGE = "Request rejected by AXIS boundary rules."
+
+REMOTE_FAILURE_KINDS = frozenset({
+    axis_http.KIND_REDIRECT,
+    axis_http.KIND_HTTP_ERROR,
+    axis_http.KIND_TIMEOUT,
+    axis_http.KIND_CONNECTION_ERROR,
+    axis_http.KIND_NON_JSON,
+    axis_http.KIND_NOT_OK,
+    KIND_MISSING_SESSION_ID,
+})
+
+BOUNDARY_VIOLATION_TYPES = frozenset({
+    "zero_tools_mode",
+    "forbidden_endpoint",
+    "invalid_operator_id",
+    "invalid_payload",
+    "invalid_distortion_class",
+})
+
+ALLOWED_ENDPOINT_LABELS = frozenset(f"{method} {path}" for method, path in ALLOWED_ENDPOINTS)
 
 
 class ExecutionService:
@@ -43,33 +80,114 @@ class ExecutionService:
         }
 
     @staticmethod
-    def _unknown_axis_fields(payload: dict[str, Any]) -> list[str]:
-        return sorted(key for key in payload if key not in AXIS_EXECUTE_FIELDS)
+    def _unknown_axis_fields(payload: dict[str, Any]) -> list[Any]:
+        return [key for key in payload if key not in AXIS_EXECUTE_FIELDS]
 
     @staticmethod
-    def _first_action(axis_data: dict[str, Any]) -> Any:
-        if "action" in axis_data:
-            return axis_data.get("action")
-        steps = axis_data.get("steps")
-        if isinstance(steps, list) and steps:
-            return steps[0]
-        return None
+    def _verified_success(adapter_response: dict[str, Any]) -> dict | None:
+        """Success result from a verified adapter response, else None.
 
-    def _normalize_success(self, axis_data: dict[str, Any], *, status_code: int | None = None) -> dict:
+        Re-applies the execute rule so a success is never built from
+        unverified data. Only sessionId's type is verified; the other named
+        contract fields are copied as-is when present.
+        """
+        if adapter_response.get("ok") is not True:
+            return None
+        data = adapter_response.get("data")
+        if not has_execute_session_id(data):
+            return None
+        axis = {"session_id": data["sessionId"].strip()}
+        for field in EXECUTE_DATA_FIELDS:
+            if field != "sessionId" and field in data:
+                axis[field] = data[field]
         return {
             "ok": True,
-            "axis": {
-                "classification": axis_data.get("classification"),
-                "protocol": axis_data.get("protocol"),
-                "action": self._first_action(axis_data),
-                "outcome": axis_data.get("outcome"),
-                "continuity": axis_data.get("continuity"),
-            },
+            "axis": axis,
             "pipeline": {
                 "source": "axis_adapter",
-                "status_code": status_code,
+                "status_code": safe_status(adapter_response.get("status_code")),
             },
         }
+
+    def _append(self, session_id: str | None, result: dict, trigger: str, operator_id: str) -> None:
+        if not session_id or self.session_service is None:
+            return
+        try:
+            self.session_service.append_to_session(
+                session_id=session_id,
+                execution_result=result,
+                trigger=trigger,
+                operator_id=operator_id,
+            )
+        except Exception as exc:
+            log_boundary_violation(
+                violation_type="session_error",
+                endpoint=f"POST {EXECUTE_ENDPOINT}",
+                operator_id=None,
+                payload=None,
+                details={"exception_type": type(exc).__name__},
+            )
+
+    def _failure_from_adapter(self, adapter_response: Any, request_payload: dict[str, Any]) -> dict:
+        endpoint_label = f"POST {EXECUTE_ENDPOINT}"
+        response = adapter_response if isinstance(adapter_response, dict) else {}
+        error = response.get("error")
+
+        if error == "boundary_violation":
+            violation_type = response.get("violation_type")
+            violation_type = violation_type if violation_type in BOUNDARY_VIOLATION_TYPES else None
+            endpoint = response.get("endpoint")
+            endpoint = endpoint if endpoint in ALLOWED_ENDPOINT_LABELS else None
+            log_boundary_violation(
+                violation_type="boundary_violation",
+                endpoint=endpoint_label,
+                operator_id=None,
+                payload=payload_summary(request_payload),
+                details={"violation_type": violation_type},
+            )
+            return self._failure(
+                error_type="boundary_violation",
+                message=BOUNDARY_MESSAGE,
+                safe_details={"violation_type": violation_type, "endpoint": endpoint},
+            )
+
+        if error == AXIS_NOT_CONFIGURED:
+            try:
+                config_error = AxisConfigError(response.get("reason"))
+                reason, message = config_error.reason, str(config_error)
+            except (KeyError, TypeError):
+                reason, message = None, "AXIS base URL is not configured."
+            log_boundary_violation(
+                violation_type=AXIS_NOT_CONFIGURED,
+                endpoint=endpoint_label,
+                operator_id=None,
+                payload=None,
+                details={"reason": reason},
+            )
+            return self._failure(
+                error_type=AXIS_NOT_CONFIGURED,
+                message=message,
+                safe_details={"reason": reason},
+            )
+
+        if response.get("ok") is True:
+            # Adapter claimed success but the execute rule does not hold.
+            kind = KIND_MISSING_SESSION_ID
+        else:
+            kind = error if error in REMOTE_FAILURE_KINDS else None
+        status_code = safe_status(response.get("status_code"))
+        log_boundary_violation(
+            violation_type="axis_error",
+            endpoint=endpoint_label,
+            operator_id=None,
+            payload=payload_summary(request_payload),
+            details={"kind": kind, "status_code": status_code},
+        )
+        return self._failure(
+            error_type="axis_error",
+            message=AXIS_FAILURE_MESSAGE,
+            safe_details={"kind": kind, "status_code": status_code},
+        )
 
     def execute(
         self,
@@ -77,7 +195,7 @@ class ExecutionService:
         operator_id: str | None = None,
         session_id: str | None = None,
     ) -> dict:
-        endpoint_label = "POST /api/v2/execute"
+        endpoint_label = f"POST {EXECUTE_ENDPOINT}"
         try:
             if isinstance(trigger_or_request, dict):
                 request_payload = dict(trigger_or_request)
@@ -111,7 +229,7 @@ class ExecutionService:
                 log_boundary_violation(
                     violation_type="validation_error",
                     endpoint=endpoint_label,
-                    operator_id=clean_operator_id,
+                    operator_id=None,
                     payload={"trigger": trigger},
                     details={"field": "trigger"},
                 )
@@ -127,178 +245,41 @@ class ExecutionService:
                 log_boundary_violation(
                     violation_type="validation_error",
                     endpoint=endpoint_label,
-                    operator_id=clean_operator_id,
-                    payload={"unknown_fields": unknown_fields},
+                    operator_id=None,
+                    payload={"unknown_field_count": len(unknown_fields)},
                     details={"field": "axis_payload"},
                 )
                 return self._failure(
                     error_type="validation_error",
                     message="Request contains fields outside the AXIS contract.",
-                    safe_details={"field": "axis_payload", "unknown_fields": unknown_fields},
+                    safe_details={"field": "axis_payload", "unknown_field_count": len(unknown_fields)},
                 )
 
             adapter_response = self.axis_adapter.call_axis(
                 "POST",
-                "/api/v2/execute",
+                EXECUTE_ENDPOINT,
                 clean_operator_id,
                 payload=request_payload,
             )
 
-            if adapter_response.get("ok"):
-                axis_data = adapter_response.get("data")
-                if not isinstance(axis_data, dict):
-                    axis_data = {}
-                if axis_data.get("gated") is True:
-                    result = {
-                        "ok": True,
-                        "gated": True,
-                        "gate_type": axis_data.get("gate_type"),
-                        "message": axis_data.get("message", ""),
-                    }
-                else:
-                    result = self._normalize_success(
-                        axis_data,
-                        status_code=adapter_response.get("status_code"),
-                    )
-                if session_id and self.session_service is not None:
-                    try:
-                        self.session_service.append_to_session(
-                            session_id=session_id,
-                            execution_result=result,
-                            trigger=clean_trigger,
-                            operator_id=clean_operator_id,
-                        )
-                    except Exception as exc:
-                        log_boundary_violation(
-                            violation_type="session_error",
-                            endpoint=endpoint_label,
-                            operator_id=clean_operator_id,
-                            payload={"session_id": session_id},
-                            details={"exception_type": type(exc).__name__},
-                        )
-                return result
-
-            if adapter_response.get("error") == "boundary_violation":
-                log_boundary_violation(
-                    violation_type="boundary_violation",
-                    endpoint=adapter_response.get("endpoint") or endpoint_label,
-                    operator_id=clean_operator_id,
-                    payload=request_payload,
-                    details={
-                        "violation_type": adapter_response.get("violation_type"),
-                        "status_code": adapter_response.get("status_code"),
-                    },
-                )
-                result = self._failure(
-                    error_type="boundary_violation",
-                    message="Request rejected by AXIS boundary rules.",
-                    safe_details={
-                        "violation_type": adapter_response.get("violation_type"),
-                        "endpoint": adapter_response.get("endpoint"),
-                    },
-                )
-                if session_id and self.session_service is not None:
-                    try:
-                        self.session_service.append_to_session(
-                            session_id=session_id,
-                            execution_result=result,
-                            trigger=clean_trigger,
-                            operator_id=clean_operator_id,
-                        )
-                    except Exception as exc:
-                        log_boundary_violation(
-                            violation_type="session_error",
-                            endpoint=endpoint_label,
-                            operator_id=clean_operator_id,
-                            payload={"session_id": session_id},
-                            details={"exception_type": type(exc).__name__},
-                        )
-                return result
-
-            if adapter_response.get("error") == AXIS_NOT_CONFIGURED:
-                log_boundary_violation(
-                    violation_type=AXIS_NOT_CONFIGURED,
-                    endpoint=endpoint_label,
-                    operator_id=clean_operator_id,
-                    payload=None,
-                    details={"reason": adapter_response.get("reason")},
-                )
-                result = self._failure(
-                    error_type=AXIS_NOT_CONFIGURED,
-                    message=adapter_response.get("message") or "AXIS base URL is not configured.",
-                    safe_details={"reason": adapter_response.get("reason")},
-                )
-                if session_id and self.session_service is not None:
-                    try:
-                        self.session_service.append_to_session(
-                            session_id=session_id,
-                            execution_result=result,
-                            trigger=clean_trigger,
-                            operator_id=clean_operator_id,
-                        )
-                    except Exception as exc:
-                        log_boundary_violation(
-                            violation_type="session_error",
-                            endpoint=endpoint_label,
-                            operator_id=clean_operator_id,
-                            payload={"session_id": session_id},
-                            details={"exception_type": type(exc).__name__},
-                        )
-                return result
-
-            log_boundary_violation(
-                violation_type="axis_error",
-                endpoint=endpoint_label,
-                operator_id=clean_operator_id,
-                payload=request_payload,
-                details={"status_code": adapter_response.get("status_code")},
-            )
-            axis_data = adapter_response.get("data")
-            status_code = adapter_response.get("status_code")
-            message = "AXIS request failed."
-            safe_details: dict[str, Any] = {"status_code": status_code}
-            if isinstance(axis_data, dict):
-                axis_error = axis_data.get("error")
-                axis_ok = axis_data.get("ok")
-                axis_version = axis_data.get("version")
-                if axis_ok is False and isinstance(axis_error, str) and axis_error.strip():
-                    message = axis_error.strip()
-                    safe_details = {}
-                    if isinstance(axis_version, str) and axis_version.strip():
-                        safe_details["version"] = axis_version.strip()
-            result = self._failure(
-                error_type="axis_error",
-                message=message,
-                safe_details=safe_details,
-            )
-            if session_id and self.session_service is not None:
-                try:
-                    self.session_service.append_to_session(
-                        session_id=session_id,
-                        execution_result=result,
-                        trigger=clean_trigger,
-                        operator_id=clean_operator_id,
-                    )
-                except Exception as exc:
-                    log_boundary_violation(
-                        violation_type="session_error",
-                        endpoint=endpoint_label,
-                        operator_id=clean_operator_id,
-                        payload={"session_id": session_id},
-                        details={"exception_type": type(exc).__name__},
-                    )
+            result = None
+            if isinstance(adapter_response, dict):
+                result = self._verified_success(adapter_response)
+            if result is None:
+                result = self._failure_from_adapter(adapter_response, request_payload)
+            self._append(session_id, result, clean_trigger, clean_operator_id)
             return result
 
         except Exception as exc:
             log_boundary_violation(
                 violation_type="axis_error",
                 endpoint=endpoint_label,
-                operator_id=operator_id if isinstance(operator_id, str) and operator_id.strip() else None,
+                operator_id=None,
                 payload=None,
                 details={"exception_type": type(exc).__name__},
             )
             return self._failure(
                 error_type="axis_error",
-                message="AXIS request failed unexpectedly.",
+                message=AXIS_UNEXPECTED_MESSAGE,
                 safe_details={"exception_type": type(exc).__name__},
             )

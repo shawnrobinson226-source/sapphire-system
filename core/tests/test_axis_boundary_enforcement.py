@@ -48,9 +48,9 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
             return []
         return [json.loads(line) for line in self.log_path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
-    @mock.patch("core.sapphire.axis_adapter.requests.request")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     def test_allowed_endpoints_pass(self, mock_request):
-        mock_request.return_value = _FakeResponse(200, {"ok": True})
+        mock_request.return_value = _FakeResponse(200, {"ok": True, "version": "v1", "data": {}})
         result = self.adapter.call_axis("GET", "/api/v2/analytics", operator_id="op_123")
         self.assertTrue(result["ok"])
         self.assertEqual(result["status_code"], 200)
@@ -58,7 +58,7 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
         _, kwargs = mock_request.call_args
         self.assertEqual(kwargs["headers"]["x-operator-id"], "op_123")
 
-    @mock.patch("core.sapphire.axis_adapter.requests.request")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     def test_forbidden_endpoints_fail(self, mock_request):
         result = self.adapter.call_axis("GET", "/api/v2/forbidden", operator_id="op_123")
         mock_request.assert_not_called()
@@ -101,19 +101,24 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
         logs = self._read_log_lines()
         self.assertEqual(logs[-1]["component"], "sapphire_boundary")
         self.assertEqual(logs[-1]["violation_type"], entry["violation_type"])
-        self.assertEqual(logs[-1]["operator_id"], "op_test")
+        # The operator ID value is never written, only its presence.
+        self.assertNotIn("operator_id", logs[-1])
+        self.assertTrue(logs[-1]["operator_id_present"])
+        self.assertNotIn("op_test", self.log_path.read_text(encoding="utf-8"))
         self.assertEqual(logs[-1]["payload_snapshot"]["type"], "dict")
-        self.assertIn("foo", logs[-1]["payload_snapshot"]["keys"])
-        self.assertEqual(logs[-1]["payload_snapshot"]["value_shapes"]["foo"]["type"], "str")
+        # Caller-controlled key names are not written; counted and shaped only.
+        self.assertNotIn("foo", logs[-1]["payload_snapshot"]["keys"])
+        self.assertEqual(logs[-1]["payload_snapshot"]["other_key_count"], 1)
+        self.assertEqual(logs[-1]["payload_snapshot"]["other_value_shapes"][0]["type"], "str")
 
-    @mock.patch("core.sapphire.axis_adapter.requests.request")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     def test_adapter_does_not_call_unknown_routes(self, mock_request):
         result = self.adapter.call_axis("POST", "/api/v2/anything-else", operator_id="op_123", payload={"x": 1})
         mock_request.assert_not_called()
         self.assertFalse(result["ok"])
         self.assertEqual(result["violation_type"], "forbidden_endpoint")
 
-    @mock.patch("core.sapphire.axis_adapter.requests.request")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     def test_boundary_rules_do_not_silently_degrade(self, mock_request):
         result = self.adapter.execute(
             trigger="user text should not be logged",
@@ -127,16 +132,22 @@ class AxisBoundaryEnforcementTests(unittest.TestCase):
         mock_request.assert_not_called()
         logs = self._read_log_lines()
         self.assertEqual(logs[-1]["violation_type"], "invalid_distortion_class")
-        self.assertEqual(logs[-1]["operator_id"], "op_321")
+        # S2: the operator ID is never written to the boundary log.
+        self.assertNotIn("operator_id", logs[-1])
+        self.assertFalse(logs[-1]["operator_id_present"])
         self.assertEqual(logs[-1]["payload_snapshot"]["type"], "dict")
         self.assertIn("classification", logs[-1]["payload_snapshot"]["keys"])
         # Ensure raw sensitive value is never written into the payload snapshot.
         snapshot_json = json.dumps(logs[-1]["payload_snapshot"])
         self.assertNotIn("not-allowed", snapshot_json)
 
-    @mock.patch("core.sapphire.axis_adapter.requests.request")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     def test_execute_sends_classification_contract(self, mock_request):
-        mock_request.return_value = _FakeResponse(200, {"ok": True})
+        # S2: execute succeeds only on a v1 envelope with a non-empty data.sessionId.
+        mock_request.return_value = _FakeResponse(
+            200,
+            {"ok": True, "version": "v1", "data": {"sessionId": "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1"}},
+        )
         result = self.adapter.execute(
             trigger="user text",
             classification="narrative",
