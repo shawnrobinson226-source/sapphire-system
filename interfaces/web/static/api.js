@@ -98,8 +98,51 @@ export const importChat = (messages) => fetchWithTimeout('/api/history/import', 
     body: JSON.stringify({ messages })
 }, 30000);
 
+// Tri-System tab token (S4): server-minted, bound to this browser session,
+// kept per tab in sessionStorage and sent as X-Tri-Tab-Token on chat sends.
+const TRI_TAB_TOKEN_KEY = 'sapphire_tri_tab_token';
+let triTabTokenRequest = null;
+
+const readTriTabToken = () => {
+    try { return sessionStorage.getItem(TRI_TAB_TOKEN_KEY) || ''; } catch { return ''; }
+};
+
+const storeTriTabToken = (token) => {
+    try {
+        if (token) sessionStorage.setItem(TRI_TAB_TOKEN_KEY, token);
+        else sessionStorage.removeItem(TRI_TAB_TOKEN_KEY);
+    } catch {}
+};
+
+// POST through fetchWithTimeout so the CSRF header is attached.
+const fetchTriTabToken = () => {
+    if (!triTabTokenRequest) {
+        triTabTokenRequest = fetchWithTimeout('/api/tri/tab-token', { method: 'POST' }, 10000)
+            .then(res => {
+                const token = res && typeof res.token === 'string' ? res.token : '';
+                storeTriTabToken(token);
+                return token;
+            })
+            .catch(() => '')
+            .finally(() => { triTabTokenRequest = null; });
+    }
+    return triTabTokenRequest;
+};
+
+const triTabHeaders = async () => {
+    const token = readTriTabToken() || await fetchTriTabToken();
+    return token ? { 'X-Tri-Tab-Token': token } : {};
+};
+
+// Server rejected this tab's token: drop it and fetch one new token.
+const refreshTriTabToken = () => {
+    storeTriTabToken('');
+    fetchTriTabToken();
+};
+
 // Shared SSE event processor
 const processSSEData = (data, handlers) => {
+    if (data.tri_token_invalid) refreshTriTabToken();
     const { onChunk, onToolStart, onToolEnd, onReload, onDone, onLegacyChunk, onStreamStarted, onIterationStart, onCapabilityState } = handlers;
     
     if (data.type === 'stream_started') {
@@ -177,7 +220,7 @@ export const streamChatContinue = async (text, prefill, onChunk, onComplete, onE
     try {
         const res = await fetch('/api/chat/stream', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...(await triTabHeaders()) },
             body: JSON.stringify({ text, prefill, skip_user_message: true }),
             signal
         });
@@ -254,7 +297,7 @@ export const streamChat = async (text, onChunk, onComplete, onError, signal = nu
         
         const res = await fetch('/api/chat/stream', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...(await triTabHeaders()) },
             body: JSON.stringify(body),
             signal
         });

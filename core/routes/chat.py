@@ -14,7 +14,7 @@ from core.auth import require_login, check_endpoint_rate
 from core.api_fastapi import get_system, _apply_chat_settings, PROJECT_ROOT
 from core.event_bus import publish, Events
 from core import prompts
-from core.des.web_tri_system import get_web_tri_system_bridge
+from core.des.web_tri_system import TRI_CAPACITY_MESSAGE, get_web_tri_registry
 from core.story_engine import STORY_TOOL_NAMES
 from core.stt.stt_null import NullWhisperClient as _NullWhisperClient
 from core.stt.utils import can_transcribe
@@ -212,6 +212,28 @@ async def get_history(request: Request, _=Depends(require_login), system=Depends
     }
 
 
+TRI_TAB_TOKEN_DENIED_DETAIL = "Tri-System tab tokens require a signed-in browser session."
+
+
+@router.post("/api/tri/tab-token")
+async def issue_tri_tab_token(request: Request, _=Depends(require_login)):
+    """Mint a tab token bound to this browser session's tri principal.
+
+    Browser sessions only (CSRF is enforced by middleware for them); API-key
+    callers are refused. The principal is random and lives only in the signed
+    session cookie.
+    """
+    if request.headers.get('X-API-Key') or not request.session.get('logged_in'):
+        raise HTTPException(status_code=403, detail=TRI_TAB_TOKEN_DENIED_DETAIL)
+    check_endpoint_rate(request, 'tri_tab_token', max_calls=30, window=60)
+    registry = get_web_tri_registry()
+    principal = registry.ensure_principal(request.session)
+    token = registry.issue_token(principal)
+    if token is None:
+        raise HTTPException(status_code=503, detail=TRI_CAPACITY_MESSAGE)
+    return {"token": token}
+
+
 @router.post("/api/chat")
 async def handle_chat(request: Request, _=Depends(require_login), system=Depends(get_system)):
     """Non-streaming chat endpoint."""
@@ -223,9 +245,11 @@ async def handle_chat(request: Request, _=Depends(require_login), system=Depends
 
     _sync_active_chat_settings(system)
 
-    hybrid_response = get_web_tri_system_bridge().handle(data['text'])
-    if hybrid_response is not None:
-        return {"response": hybrid_response}
+    tri = get_web_tri_registry().handle_request(request, data['text'])
+    if tri.text is not None:
+        if tri.token_invalid:
+            return {"response": tri.text, "tri_token_invalid": True}
+        return {"response": tri.text}
 
     system.web_active_inc()
     try:
@@ -253,11 +277,16 @@ async def handle_chat_stream(request: Request, _=Depends(require_login), system=
 
     _sync_active_chat_settings(system)
 
-    hybrid_response = get_web_tri_system_bridge().handle(data['text'])
-    if hybrid_response is not None:
+    tri = get_web_tri_registry().handle_request(request, data['text'])
+    if tri.text is not None:
+        hybrid_response = tri.text
+        done_event = {'done': True, 'hybrid': True}
+        if tri.token_invalid:
+            done_event['tri_token_invalid'] = True
+
         def generate_hybrid():
             yield f"data: {json.dumps({'type': 'content', 'text': hybrid_response})}\n\n"
-            yield f"data: {json.dumps({'done': True, 'hybrid': True})}\n\n"
+            yield f"data: {json.dumps(done_event)}\n\n"
 
         return StreamingResponse(
             generate_hybrid(),

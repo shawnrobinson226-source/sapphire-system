@@ -309,11 +309,14 @@ def test_web_stream_route_syncs_zero_tools_before_plugin_hooks(tmp_path, monkeyp
         system.llm_chat.function_manager.update_enabled_functions([settings.get("toolset", "all")])
 
     class NoHybridBridge:
-        def handle(self, text):
-            return None
+        # S4: stands in for the tab-token registry (no tri routing).
+        def handle_request(self, request, text):
+            from core.des.web_tri_system import TriResult
+
+            return TriResult(None)
 
     monkeypatch.setattr(chat_routes, "_apply_chat_settings", apply_only_toolset)
-    monkeypatch.setattr(chat_routes, "get_web_tri_system_bridge", lambda: NoHybridBridge())
+    monkeypatch.setattr(chat_routes, "get_web_tri_registry", lambda: NoHybridBridge())
     system = FakeWebSystem(chat)
 
     try:
