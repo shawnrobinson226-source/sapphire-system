@@ -45,17 +45,21 @@ class UISurfaceTests(unittest.TestCase):
             self.assertNotIn(phrase, lower)
 
     def _mock_success(self):
+        # S2: a verified AXIS execute result (v1 envelope data with sessionId).
         self.adapter.call_axis.return_value = {
             "ok": True,
             "status_code": 200,
             "data": {
-                "classification": "stable",
-                "protocol": ["first step", "second step", "third step"],
-                "action": "first step",
-                "outcome": "done",
-                "continuity": "cont-1",
+                "ok": True,
+                "sessionId": "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1",
+                "outcome": "reduced",
+                "protocol_output": "done",
             },
         }
+
+    def _append_legacy_entry(self, session_id: str, entry: dict):
+        """Write a pre-S2 stored entry directly, as legacy sessions hold them."""
+        self.session_store.append_entry(session_id, {"timestamp": "legacy", "trigger": "t", **entry})
 
     def test_creating_and_selecting_session(self):
         sid = self.app.create_new_session("op_100")
@@ -80,9 +84,13 @@ class UISurfaceTests(unittest.TestCase):
         output = self.app.render()
         self.assertIn("Latest Result", output)
         self.assertIn("=== AXIS RESULT ===", output)
-        self.assertIn("Classification: stable", output)
+        self.assertIn("Session: 0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1", output)
+        self.assertIn("Outcome: reduced", output)
+        self.assertIn("Protocol Output: done", output)
 
-    def test_gated_result_rendering(self):
+    def test_gated_response_without_session_id_renders_as_failure(self):
+        # S2: a gated body has no verified sessionId, so it is a failure and
+        # its AXIS-supplied message is never displayed.
         self.app.create_new_session("op_100")
         self.adapter.call_axis.return_value = {
             "ok": True,
@@ -91,8 +99,9 @@ class UISurfaceTests(unittest.TestCase):
         }
         self.app.submit_trigger("Need gate")
         output = self.app.render()
-        self.assertIn("=== SYSTEM PAUSE === Pause.", output)
-        self.assertNotIn("=== EXECUTION FAILURE ===", output)
+        self.assertIn("=== EXECUTION FAILURE ===", output)
+        self.assertNotIn("SYSTEM PAUSE", output)
+        self.assertNotIn("Pause.", output)
 
     def test_failure_rendering(self):
         self.app.create_new_session("op_100")
@@ -112,19 +121,20 @@ class UISurfaceTests(unittest.TestCase):
         sid = self.app.create_new_session("op_100")
         self._mock_success()
         self.app.submit_trigger("First")
-        self.adapter.call_axis.return_value = {
-            "ok": True,
-            "status_code": 200,
-            "data": {"gated": True, "gate_type": "breath", "message": "Pause."},
-        }
-        self.app.submit_trigger("Second")
+        # A legacy gated entry may hold AXIS free text; it renders with a
+        # fixed pause message instead.
+        self._append_legacy_entry(
+            sid,
+            {"axis": {}, "gated": {"gate_type": "breath", "message": "Pause."}, "result_type": "gated"},
+        )
         history = self.app.show_session(sid)
         self.assertEqual(len(history), 2)
         output = self.app.render()
         self.assertIn("Session History", output)
         self.assertIn("--- Entry [", output)
         self.assertIn("=== AXIS RESULT ===", output)
-        self.assertIn("=== SYSTEM PAUSE === Pause.", output)
+        self.assertIn("=== SYSTEM PAUSE === Legacy pause entry. Stored message is not displayed.", output)
+        self.assertNotIn("Pause.", output)
 
     def test_ui_does_not_expose_pipeline_metadata(self):
         self.app.create_new_session("op_100")
@@ -142,11 +152,26 @@ class UISurfaceTests(unittest.TestCase):
         output = self.app.render()
         self._assert_no_interpretation_text(output)
 
-    def test_protocol_step_order_preserved(self):
-        self.app.create_new_session("op_100")
-        self._mock_success()
-        self.app.submit_trigger("Protocol ordering")
+    def test_legacy_success_entry_protocol_step_order_preserved(self):
+        # S2: new results carry contract fields; legacy stored success entries
+        # keep their layout and still render.
+        sid = self.app.create_new_session("op_100")
+        self._append_legacy_entry(
+            sid,
+            {
+                "axis": {
+                    "classification": "stable",
+                    "protocol": ["first step", "second step", "third step"],
+                    "action": "first step",
+                    "outcome": "done",
+                    "continuity": "cont-1",
+                },
+                "result_type": "success",
+            },
+        )
+        self.app.show_session(sid)
         output = self.app.render()
+        self.assertIn("Classification: stable", output)
         p1 = output.index("1. first step")
         p2 = output.index("2. second step")
         p3 = output.index("3. third step")

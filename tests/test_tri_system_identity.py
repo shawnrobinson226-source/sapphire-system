@@ -1,7 +1,14 @@
 from core.des.axis_preview import build_axis_preview
 from core.des.tri_system_flow import TriSystemFlow
+from core.sapphire.session_service import SessionService
+from core.sapphire.session_store import SessionStore
 from ui.app import SapphireUIApp
 from ui.views import render_tri_state
+
+
+def _tmp_session_service(tmp_path):
+    """Never let a test fall back to the default user/sessions store."""
+    return SessionService(session_store=SessionStore(root_dir=tmp_path / "sessions"))
 
 
 DES_RESULT = {
@@ -418,9 +425,9 @@ def test_trace_contains_no_user_input_or_payload_fields():
     assert "operator_id" not in trace_text
 
 
-def test_tri_flow_mount_renders_result_preview_and_confirm():
+def test_tri_flow_mount_renders_result_preview_and_confirm(tmp_path):
     flow = make_flow()
-    app = SapphireUIApp(tri_flow_factory=lambda: flow)
+    app = SapphireUIApp(tri_flow_factory=lambda: flow, session_service=_tmp_session_service(tmp_path))
 
     state = app.start_tri_flow()
     assert state["type"] == "question"
@@ -439,10 +446,10 @@ def test_tri_flow_mount_renders_result_preview_and_confirm():
     assert "Type reject to cancel." in rendered
 
 
-def test_tri_question_render_does_not_include_hidden_mic_input():
+def test_tri_question_render_does_not_include_hidden_mic_input(tmp_path):
     axis_calls = []
     flow = make_flow(axis_executor=lambda **kwargs: (axis_calls.append(kwargs) or {"ok": True}, True))
-    app = SapphireUIApp(tri_flow_factory=lambda: flow)
+    app = SapphireUIApp(tri_flow_factory=lambda: flow, session_service=_tmp_session_service(tmp_path))
 
     app.start_tri_flow()
     rendered = app.render()
@@ -455,9 +462,9 @@ def test_tri_question_render_does_not_include_hidden_mic_input():
     assert axis_calls == []
 
 
-def test_ui_debug_trace_exposes_only_safe_events():
+def test_ui_debug_trace_exposes_only_safe_events(tmp_path):
     flow = make_flow()
-    app = SapphireUIApp(tri_flow_factory=lambda: flow)
+    app = SapphireUIApp(tri_flow_factory=lambda: flow, session_service=_tmp_session_service(tmp_path))
 
     app.start_tri_flow()
     app.submit_tri_answer("SECRET-UI-ANSWER")

@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-from core.sapphire import axis_adapter, axis_config, cli
+from core.sapphire import axis_adapter, axis_config, axis_http, cli
 from core.sapphire.axis_adapter import ALLOWED_ENDPOINTS, AxisAdapter
 from core.sapphire.axis_config import (
     AxisConfigError,
@@ -48,9 +48,10 @@ def adapter_requests(monkeypatch):
 
     def fake_request(method, url, **kwargs):
         calls.append({"method": method, "url": url, **kwargs})
-        return _FakeResponse(200, {"ok": True})
+        return _FakeResponse(200, {"ok": True, "version": "v1", "data": {}})
 
-    monkeypatch.setattr(axis_adapter.requests, "request", fake_request)
+    # S2: AxisAdapter sends through the strict transport (axis_http).
+    monkeypatch.setattr(axis_http.requests, "request", fake_request)
     monkeypatch.setattr(axis_adapter, "assert_axis_execution_allowed", lambda *a, **k: (True, {}))
     return calls
 

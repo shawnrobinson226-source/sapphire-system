@@ -36,24 +36,36 @@ class ExecutionServiceTests(unittest.TestCase):
         return [json.loads(line) for line in self.log_path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
     def test_valid_input_returns_success_shape(self):
+        # S2: success requires a verified AXIS execute result (data.sessionId);
+        # the result carries only named contract fields.
         self.adapter.call_axis.return_value = {
             "ok": True,
             "status_code": 200,
             "data": {
-                "classification": {"label": "x"},
-                "protocol": {"name": "p"},
-                "steps": [{"id": "s1"}, {"id": "s2"}],
-                "outcome": {"status": "ok"},
-                "continuity": {"id": "c1"},
+                "ok": True,
+                "sessionId": "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1",
+                "outcome": "reduced",
+                "clarity_rating": 7,
+                "steps_completed": 3,
+                "continuity_before": 40,
+                "continuity_after": 55,
+                "protocol_output": "done",
             },
         }
         result = self.service.execute("Ship patch", operator_id="op_123")
         self.assertTrue(result["ok"])
-        self.assertEqual(result["axis"]["classification"], {"label": "x"})
-        self.assertEqual(result["axis"]["protocol"], {"name": "p"})
-        self.assertEqual(result["axis"]["action"], {"id": "s1"})
-        self.assertEqual(result["axis"]["outcome"], {"status": "ok"})
-        self.assertEqual(result["axis"]["continuity"], {"id": "c1"})
+        self.assertEqual(
+            result["axis"],
+            {
+                "session_id": "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1",
+                "outcome": "reduced",
+                "clarity_rating": 7,
+                "steps_completed": 3,
+                "continuity_before": 40,
+                "continuity_after": 55,
+                "protocol_output": "done",
+            },
+        )
         self.assertEqual(result["pipeline"]["source"], "axis_adapter")
         self.assertEqual(result["pipeline"]["status_code"], 200)
         self.adapter.call_axis.assert_called_once_with(
@@ -99,12 +111,13 @@ class ExecutionServiceTests(unittest.TestCase):
         self.assertEqual(logs[-1]["violation_type"], "boundary_violation")
 
     def test_adapter_success_data_passes_through_without_reclassification(self):
+        # S2: only named contract fields are copied, unchanged; fields outside
+        # the contract (e.g. a classification from AXIS) are dropped.
         payload = {
-            "classification": {"bucket": "from-axis"},
-            "protocol": {"id": "proto-1"},
-            "action": {"type": "next-step"},
+            "sessionId": "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1",
             "outcome": {"result": "done"},
-            "continuity": {"token": "abc"},
+            "protocol_output": "proto-1",
+            "classification": {"bucket": "from-axis"},
         }
         self.adapter.call_axis.return_value = {"ok": True, "status_code": 200, "data": payload}
         request_obj = {
@@ -118,11 +131,10 @@ class ExecutionServiceTests(unittest.TestCase):
         }
         result = self.service.execute(request_obj)
         self.assertTrue(result["ok"])
-        self.assertEqual(result["axis"]["classification"], payload["classification"])
-        self.assertEqual(result["axis"]["protocol"], payload["protocol"])
-        self.assertEqual(result["axis"]["action"], payload["action"])
-        self.assertEqual(result["axis"]["outcome"], payload["outcome"])
-        self.assertEqual(result["axis"]["continuity"], payload["continuity"])
+        self.assertEqual(
+            result["axis"],
+            {"session_id": "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1", "outcome": {"result": "done"}, "protocol_output": "proto-1"},
+        )
         self.adapter.call_axis.assert_called_once_with(
             "POST",
             "/api/v2/execute",
@@ -149,10 +161,15 @@ class ExecutionServiceTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertEqual(result["error_type"], "validation_error")
         self.assertEqual(result["safe_details"]["field"], "axis_payload")
-        self.assertIn("distortion_class", result["safe_details"]["unknown_fields"])
+        # S2: caller-supplied field names are never echoed; only a count.
+        self.assertEqual(result["safe_details"]["unknown_field_count"], 1)
+        self.assertNotIn("distortion_class", json.dumps(result))
+        self.assertNotIn("distortion_class", self.log_path.read_text(encoding="utf-8"))
         self.adapter.call_axis.assert_not_called()
 
-    def test_gated_success_passes_through_gate_shape(self):
+    def test_gated_response_without_session_id_is_failure(self):
+        # S2: gated bodies carry no verified sessionId, so they are failures
+        # and their AXIS-supplied message is not passed through.
         self.adapter.call_axis.return_value = {
             "ok": True,
             "status_code": 200,
@@ -163,12 +180,14 @@ class ExecutionServiceTests(unittest.TestCase):
             },
         }
         result = self.service.execute("Need a pause", operator_id="op_111")
-        self.assertTrue(result["ok"])
-        self.assertTrue(result["gated"])
-        self.assertEqual(result["gate_type"], "breath")
-        self.assertEqual(result["message"], "Pause and breathe.")
+        self.assertFalse(result["ok"])
+        self.assertNotIn("gated", result)
+        self.assertEqual(result["error_type"], "axis_error")
+        self.assertEqual(result["safe_details"], {"kind": "missing_session_id", "status_code": 200})
+        self.assertNotIn("Pause and breathe.", json.dumps(result))
 
-    def test_structured_axis_error_json_is_preserved(self):
+    def test_structured_axis_error_json_is_not_passed_through(self):
+        # S2: AXIS's own error string and version are never returned.
         self.adapter.call_axis.return_value = {
             "ok": False,
             "status_code": 403,
@@ -181,8 +200,10 @@ class ExecutionServiceTests(unittest.TestCase):
         result = self.service.execute("Guarded request", operator_id="op_333")
         self.assertFalse(result["ok"])
         self.assertEqual(result["error_type"], "axis_error")
-        self.assertEqual(result["message"], "Guard blocked session")
-        self.assertEqual(result["safe_details"], {"version": "v2.3.1"})
+        self.assertEqual(result["message"], "AXIS request failed.")
+        self.assertEqual(result["safe_details"], {"kind": None, "status_code": 403})
+        self.assertNotIn("Guard blocked session", json.dumps(result))
+        self.assertNotIn("v2.3.1", json.dumps(result))
 
     def test_non_json_or_unusable_axis_error_falls_back_to_generic(self):
         self.adapter.call_axis.return_value = {

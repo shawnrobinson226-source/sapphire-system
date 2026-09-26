@@ -56,22 +56,19 @@ def main() -> int:
             print(f"--- Entry [{timestamp}] ---")
             result_type = entry.get("result_type")
             if result_type == "gated":
-                output = render_gated(
-                    {
-                        "gated": True,
-                        "message": (entry.get("gated") or {}).get("message", ""),
-                        "gate_type": (entry.get("gated") or {}).get("gate_type"),
-                    }
-                )
+                # Legacy entry: its stored message is never re-displayed.
+                output = render_gated({"gated": True})
             elif result_type == "success":
                 output = render_success({"ok": True, "axis": entry.get("axis", {})})
             else:
                 failure = entry.get("failure") or {}
+                # The stored message is never displayed; render_failure uses
+                # fixed text and only allowlisted kind / valid status.
                 output = render_failure(
                     {
                         "ok": False,
                         "error_type": failure.get("error_type"),
-                        "message": failure.get("message"),
+                        "safe_details": failure.get("safe_details"),
                     }
                 )
             print(output)

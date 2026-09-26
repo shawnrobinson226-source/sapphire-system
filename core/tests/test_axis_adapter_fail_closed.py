@@ -9,8 +9,9 @@ issue an HTTP request. Behavior differs on logging, confirmed against source:
   - zero_tools_mode      -> returns a boundary_failure but writes NO log line
     (it fails closed silently; see the observation flagged for C5)
 
-Hermeticity: core.sapphire.axis_adapter.requests is mocked entirely and the
-guard (assert_axis_execution_allowed) is mocked so tests never depend on global
+Hermeticity: the strict transport's HTTP entry point
+(core.sapphire.axis_http.requests.request, used by AxisAdapter since S2) is
+mocked and the guard (assert_axis_execution_allowed) is mocked so tests never depend on global
 _system state or the real network. A positive-control test proves a valid call
 does reach requests, so the not-called assertions are meaningful.
 """
@@ -64,7 +65,7 @@ class AxisAdapterFailClosedTests(unittest.TestCase):
     def _read_log_lines(self):
         return [json.loads(line) for line in self._read_raw().splitlines() if line.strip()]
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_zero_tools_mode_blocks_without_http_or_log(self, guard, req):
         guard.return_value = (
@@ -81,25 +82,26 @@ class AxisAdapterFailClosedTests(unittest.TestCase):
             result["message"], "AXIS execution blocked because Zero tools mode is active."
         )
         self.assertEqual(result["endpoint"], "POST /api/v2/execute")
-        self.assertEqual(result["operator_id"], "op_123")
-        # The in-memory return dict passes the payload through raw under
-        # "payload_snapshot" (this branch writes nothing to disk). Redaction
-        # applies on the persisted log path, exercised in the invalid-op test.
-        self.assertEqual(result["payload_snapshot"], {"trigger": "SECRET-TRIGGER"})
-        req.request.assert_not_called()
+        # S2: the result no longer echoes the operator ID or the payload.
+        self.assertNotIn("operator_id", result)
+        self.assertNotIn("payload_snapshot", result)
+        self.assertNotIn("op_123", json.dumps(result))
+        self.assertNotIn("SECRET-TRIGGER", json.dumps(result))
+        req.assert_not_called()
         # zero_tools_mode fails closed WITHOUT writing a violation-log entry.
         self.assertEqual(self._read_log_lines(), [])
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_zero_tools_mode_nulls_blank_operator_id_in_result(self, guard, req):
         guard.return_value = (False, {"error": "blocked"})
         result = self.adapter.call_axis("POST", "/api/v2/execute", "   ")
         self.assertEqual(result["violation_type"], "zero_tools_mode")
-        self.assertIsNone(result["operator_id"])
-        req.request.assert_not_called()
+        # S2: the operator ID is never part of the result.
+        self.assertNotIn("operator_id", result)
+        req.assert_not_called()
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_invalid_operator_id_blocks_logs_and_makes_no_http_call(self, guard, req):
         guard.return_value = (True, {"zero_tools_mode": False})
@@ -112,42 +114,46 @@ class AxisAdapterFailClosedTests(unittest.TestCase):
         self.assertEqual(result["violation_type"], "invalid_operator_id")
         self.assertEqual(result["message"], "operator_id must be a non-empty string.")
         self.assertEqual(result["endpoint"], "POST /api/v2/execute")
-        self.assertIsNone(result["operator_id"])
-        self.assertIsNone(result["payload_snapshot"])
+        self.assertNotIn("operator_id", result)
+        self.assertNotIn("payload_snapshot", result)
         # No HTTP call escapes this branch.
-        req.request.assert_not_called()
+        req.assert_not_called()
         # Exactly one violation-log line, correct type, operator_id nulled.
         lines = self._read_log_lines()
         self.assertEqual(len(lines), 1)
         entry = lines[0]
         self.assertEqual(entry["violation_type"], "invalid_operator_id")
         self.assertEqual(entry["endpoint"], "POST /api/v2/execute")
-        self.assertIsNone(entry["operator_id"])
+        # The sink records only whether an operator ID was supplied.
+        self.assertNotIn("operator_id", entry)
+        self.assertFalse(entry["operator_id_present"])
         # Payload redacted via the C2-proven _payload_snapshot contract: value
-        # shapes only, and the raw trigger never reaches the log file.
-        self.assertEqual(entry["payload_snapshot"]["value_shapes"]["trigger"]["type"], "str")
+        # shapes only, and the raw trigger never reaches the log file. S2 logs
+        # only allowlisted field names, nested under "fields".
+        fields = entry["payload_snapshot"]["value_shapes"]["fields"]
+        self.assertEqual(fields["value_shapes"]["trigger"]["type"], "str")
         self.assertNotIn("SECRET-TRIGGER", self._read_raw())
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_invalid_operator_id_variants_all_fail_closed(self, guard, req):
         guard.return_value = (True, {})
         for bad in ("", "   ", None, 123):
             result = self.adapter.call_axis("GET", "/api/v2/analytics", bad)
             self.assertEqual(result["violation_type"], "invalid_operator_id", bad)
-            self.assertIsNone(result["operator_id"])
-        req.request.assert_not_called()
+            self.assertNotIn("operator_id", result)
+        req.assert_not_called()
 
-    @mock.patch("core.sapphire.axis_adapter.requests")
+    @mock.patch("core.sapphire.axis_http.requests.request")
     @mock.patch("core.sapphire.axis_adapter.assert_axis_execution_allowed")
     def test_valid_call_reaches_http_and_writes_no_violation_log(self, guard, req):
         # Positive control: guard allows + endpoint allowed + operator valid ->
         # requests IS called, so the not-called assertions above are meaningful.
         guard.return_value = (True, {})
-        req.request.return_value = _FakeResponse(200, {"ok": True})
+        req.return_value = _FakeResponse(200, {"ok": True, "version": "v1", "data": {}})
         result = self.adapter.call_axis("GET", "/api/v2/analytics", "op_123")
-        req.request.assert_called_once()
-        _, kwargs = req.request.call_args
+        req.assert_called_once()
+        _, kwargs = req.call_args
         self.assertEqual(kwargs["headers"]["x-operator-id"], "op_123")
         self.assertTrue(result["ok"])
         self.assertEqual(self._read_log_lines(), [])

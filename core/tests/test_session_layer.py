@@ -33,15 +33,19 @@ class SessionLayerTests(unittest.TestCase):
         self.tmp_root.rmdir()
 
     def _mock_success(self):
+        # S2: a verified AXIS execute result (v1 envelope data with sessionId).
         self.adapter.call_axis.return_value = {
             "ok": True,
             "status_code": 200,
             "data": {
-                "classification": "stable",
-                "protocol": {"steps": ["a", "b"]},
-                "action": "a",
-                "outcome": "ok",
-                "continuity": "c-1",
+                "ok": True,
+                "sessionId": "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1",
+                "outcome": "reduced",
+                "clarity_rating": 7,
+                "steps_completed": 3,
+                "continuity_before": 40,
+                "continuity_after": 55,
+                "protocol_output": "done",
             },
         }
 
@@ -62,7 +66,8 @@ class SessionLayerTests(unittest.TestCase):
         self.assertEqual(len(loaded["entries"]), 1)
         entry = loaded["entries"][0]
         self.assertEqual(entry["result_type"], "success")
-        self.assertEqual(entry["axis"]["classification"], "stable")
+        self.assertEqual(entry["axis"]["session_id"], "0b7f3c1e-8a55-4d0b-9a44-3c0f5ad2e6a1")
+        self.assertEqual(entry["axis"]["outcome"], "reduced")
 
     def test_session_retrieval_returns_full_history(self):
         session = self.session_service.create_session("op_1")
@@ -86,9 +91,11 @@ class SessionLayerTests(unittest.TestCase):
         before = deepcopy(result)
         loaded = self.session_service.get_session(session["session_id"])
         self.assertEqual(result, before)
-        self.assertEqual(loaded["entries"][0]["axis"]["continuity"], "c-1")
+        self.assertEqual(loaded["entries"][0]["axis"]["continuity_after"], 55)
 
-    def test_gated_responses_stored_correctly(self):
+    def test_gated_response_without_session_id_is_stored_as_failure(self):
+        # S2: a gated body has no verified sessionId, so it is a failure and
+        # its AXIS-supplied message is never stored.
         session = self.session_service.create_session("op_1")
         self.adapter.call_axis.return_value = {
             "ok": True,
@@ -98,9 +105,10 @@ class SessionLayerTests(unittest.TestCase):
         self.execution_service.execute("Need pause", operator_id="op_1", session_id=session["session_id"])
         loaded = self.session_service.get_session(session["session_id"])
         entry = loaded["entries"][0]
-        self.assertEqual(entry["result_type"], "gated")
-        self.assertEqual(entry["gated"]["gate_type"], "breath")
-        self.assertEqual(entry["gated"]["message"], "Pause.")
+        self.assertEqual(entry["result_type"], "failure")
+        self.assertNotIn("gated", entry)
+        self.assertEqual(entry["axis"], {})
+        self.assertNotIn("Pause.", repr(entry))
 
     def test_failure_responses_stored_correctly(self):
         session = self.session_service.create_session("op_1")
@@ -117,7 +125,8 @@ class SessionLayerTests(unittest.TestCase):
         self.assertEqual(entry["result_type"], "failure")
         self.assertEqual(entry["failure"]["error_type"], "boundary_violation")
 
-    def test_structured_axis_error_message_is_stored_without_mutation(self):
+    def test_structured_axis_error_message_is_never_stored(self):
+        # S2: AXIS's own error string is no longer passed through.
         session = self.session_service.create_session("op_1")
         self.adapter.call_axis.return_value = {
             "ok": False,
@@ -129,12 +138,13 @@ class SessionLayerTests(unittest.TestCase):
             },
         }
         result = self.execution_service.execute("Guarded", operator_id="op_1", session_id=session["session_id"])
-        self.assertEqual(result["message"], "Guard blocked session")
+        self.assertEqual(result["message"], "AXIS request failed.")
         loaded = self.session_service.get_session(session["session_id"])
         entry = loaded["entries"][0]
         self.assertEqual(entry["result_type"], "failure")
         self.assertEqual(entry["failure"]["error_type"], "axis_error")
-        self.assertEqual(entry["failure"]["message"], "Guard blocked session")
+        self.assertEqual(entry["failure"]["message"], "AXIS request failed.")
+        self.assertNotIn("Guard blocked session", repr(loaded))
 
     def test_pipeline_metadata_is_not_stored(self):
         session = self.session_service.create_session("op_1")

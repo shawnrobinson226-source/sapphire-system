@@ -23,23 +23,19 @@ def render_history_entry(entry: dict[str, Any]) -> str:
     result_type = entry.get("result_type")
 
     if result_type == "gated":
-        body = render_gated(
-            {
-                "ok": True,
-                "gated": True,
-                "gate_type": (entry.get("gated") or {}).get("gate_type"),
-                "message": (entry.get("gated") or {}).get("message", ""),
-            }
-        )
+        # Legacy entry: its stored message is never re-displayed.
+        body = render_gated({"ok": True, "gated": True})
     elif result_type == "success":
         body = render_success({"ok": True, "axis": entry.get("axis", {})})
     else:
         failure = entry.get("failure") or {}
+        # The stored message is never displayed; render_failure uses fixed
+        # text and only allowlisted kind / valid status from safe_details.
         body = render_failure(
             {
                 "ok": False,
                 "error_type": failure.get("error_type"),
-                "message": failure.get("message"),
+                "safe_details": failure.get("safe_details"),
             }
         )
     return f"{header}\n{body}"
