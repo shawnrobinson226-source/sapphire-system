@@ -21,6 +21,7 @@ from core import prompts
 from core.chat.chat import LLMChat
 from core.chat.history import ChatSessionManager
 from core.chat.llm_providers import LLMResponse
+from core.des.web_tri_system import TriResult
 from core.routes import chat as chat_routes
 from core.routes import content as content_routes
 
@@ -86,8 +87,9 @@ class FakeRequest:
 
 
 class NoHybridBridge:
-    def handle(self, text):
-        return None
+    # S4: stands in for the tab-token registry (no tri routing).
+    def handle_request(self, request, text):
+        return TriResult(None)
 
 
 async def _collect_sse(response):
@@ -129,7 +131,7 @@ def web(tmp_path, monkeypatch):
     monkeypatch.setattr(chat, "_select_provider", lambda: ("fake", provider, ""))
     monkeypatch.setattr("core.chat.chat.get_generation_params", lambda *a, **k: {})
     monkeypatch.setattr("core.chat.chat_streaming.get_generation_params", lambda *a, **k: {})
-    monkeypatch.setattr(chat_routes, "get_web_tri_system_bridge", lambda: NoHybridBridge())
+    monkeypatch.setattr(chat_routes, "get_web_tri_registry", lambda: NoHybridBridge())
     monkeypatch.setattr(chat_routes, "check_endpoint_rate", lambda *a, **k: None)
     # Active chat uses the "default" spice set, which enables every category but flirty.
     chat.session_manager.update_chat_settings({"spice_set": "default", "toolset": "none"})

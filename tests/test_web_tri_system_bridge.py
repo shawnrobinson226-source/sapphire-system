@@ -205,12 +205,15 @@ def test_chat_route_returns_hybrid_response_before_normal_chat(monkeypatch):
             return "normal"
 
     class FakeBridge:
-        def handle(self, text):
+        # S4: stands in for the tab-token registry.
+        def handle_request(self, request, text):
+            from core.des.web_tri_system import TriResult
+
             assert text == "tri"
-            return "hybrid response"
+            return TriResult("hybrid response")
 
     system = FakeSystem()
-    monkeypatch.setattr(chat_routes, "get_web_tri_system_bridge", lambda: FakeBridge())
+    monkeypatch.setattr(chat_routes, "get_web_tri_registry", lambda: FakeBridge())
 
     response = asyncio.run(chat_routes.handle_chat(FakeRequest(), _=None, system=system))
 
