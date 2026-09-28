@@ -1,12 +1,14 @@
-"""Local-first Sapphire UI shell built on execution/session/renderer layers."""
+"""Local-first Sapphire UI shell built on session/renderer layers and the tri flow.
+
+S5: direct AXIS execution (submit_trigger) was removed. AXIS is reached only
+through the governed tri flow: DES decision, preview, operator confirm.
+"""
 
 from __future__ import annotations
 
 from typing import Any, Callable
 
 from core.des.tri_system_flow import TriSystemFlow
-from core.sapphire.axis_adapter import AxisAdapter
-from core.sapphire.execution_service import ExecutionService
 from core.sapphire.session_service import SessionService
 from core.sapphire.session_store import SessionStore
 from ui.components import AppShell
@@ -19,10 +21,8 @@ class SapphireUIApp:
     def __init__(
         self,
         *,
-        execution_service: ExecutionService | None = None,
         session_service: SessionService | None = None,
         state: UIState | None = None,
-        axis_base_url: str | None = None,
         tri_flow: TriSystemFlow | None = None,
         tri_flow_factory: Callable[[], TriSystemFlow] | None = None,
     ):
@@ -31,12 +31,6 @@ class SapphireUIApp:
             session_store = SessionStore()
             session_service = SessionService(session_store=session_store)
         self.session_service = session_service
-
-        if execution_service is None:
-            # AXIS_BASE_URL is resolved by the adapter at request time, not here.
-            adapter = AxisAdapter(axis_base_url=axis_base_url)
-            execution_service = ExecutionService(axis_adapter=adapter, session_service=self.session_service)
-        self.execution_service = execution_service
         self.tri_flow_factory = tri_flow_factory or TriSystemFlow
         self.tri_flow = tri_flow or self.tri_flow_factory()
 
@@ -70,25 +64,6 @@ class SapphireUIApp:
         self.state.session_history = list(session.get("entries", []))
         self.state.safe_error = ""
         return True
-
-    def submit_trigger(self, trigger: str) -> dict:
-        clean_operator_id = self._clean_non_empty(self.state.operator_id, "operator_id")
-        clean_trigger = self._clean_non_empty(trigger, "trigger")
-        self.state.loading = True
-        try:
-            result = self.execution_service.execute(
-                clean_trigger,
-                operator_id=clean_operator_id,
-                session_id=self.state.session_id or None,
-            )
-            self.state.latest_response = result
-            if self.state.session_id:
-                session = self.session_service.get_session(self.state.session_id)
-                self.state.session_history = list((session or {}).get("entries", []))
-            self.state.safe_error = ""
-            return result
-        finally:
-            self.state.loading = False
 
     def show_session(self, session_id: str) -> list[dict[str, Any]]:
         clean_session_id = self._clean_non_empty(session_id, "session_id")
@@ -138,7 +113,7 @@ def main() -> int:
     app = SapphireUIApp()
     print("Sapphire UI Surface")
     while True:
-        command = input("Command (new/use/submit/show/render/tri/tri-trace/exit): ").strip().lower()
+        command = input("Command (new/use/show/render/tri/tri-trace/exit): ").strip().lower()
         if command == "exit":
             return 0
         if command == "new":
@@ -154,14 +129,6 @@ def main() -> int:
             session_id = input("Session ID: ").strip()
             ok = app.select_session(operator_id, session_id)
             print("ok" if ok else app.state.safe_error)
-            continue
-        if command == "submit":
-            trigger = input("Trigger: ").strip()
-            try:
-                app.submit_trigger(trigger)
-                print(app.render())
-            except ValueError as exc:
-                print(str(exc))
             continue
         if command == "show":
             session_id = input("Session ID: ").strip()

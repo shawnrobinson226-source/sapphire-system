@@ -20,8 +20,7 @@ import requests
 
 from core.sapphire import axis_adapter, axis_http, cli, renderer
 from core.sapphire.axis_adapter import AxisAdapter
-from core.sapphire.execution_service import REMOTE_FAILURE_KINDS, ExecutionService
-from core.sapphire.session_service import SessionService
+from core.sapphire.axis_contract import REMOTE_FAILURE_KINDS
 from core.sapphire.session_store import SessionStore
 from core.security import violations
 
@@ -437,46 +436,10 @@ def test_transport_adapter_and_tools_never_leak_credentials(http, monkeypatch, c
     assert_no_markers(repr(transport), adapter, get, tools, tools_get, caplog.text)
 
 
-@pytest.fixture
-def service_env(tmp_path):
-    store = SessionStore(root_dir=tmp_path / "sessions")
-    session_service = SessionService(session_store=store)
-    service = ExecutionService(axis_adapter=AxisAdapter(), session_service=session_service)
-    session = session_service.create_session(OPERATOR)
-    return service, session_service, session["session_id"], store
-
-
-@pytest.mark.parametrize("case", [c[1] for c in LEAK_CASES], ids=[c[0] for c in LEAK_CASES])
-def test_execution_service_sessions_logs_and_rendering_never_leak(
-    http, monkeypatch, caplog, violation_log, service_env, case
-):
-    from ui.views import render_history_entry, render_result
-
-    service, session_service, session_id, _ = service_env
-    monkeypatch.setenv(TOKEN_ENV, TOKEN)
-    monkeypatch.setenv(BYPASS_ENV, BYPASS)
-    http(**case)
-    with caplog.at_level(logging.DEBUG):
-        result = service.execute("t", operator_id=OPERATOR, session_id=session_id)
-    stored = session_service.get_session(session_id)
-    rendered = [render_result(result)] + [render_history_entry(e) for e in stored["entries"]]
-    log = violation_log.read_text(encoding="utf-8") if violation_log.exists() else ""
-    assert_no_markers(result, stored, log, caplog.text, *rendered)
-
-
-def test_execution_service_contains_foreign_exception_text(http, monkeypatch, violation_log, service_env):
-    service, session_service, session_id, _ = service_env
-    monkeypatch.setenv(TOKEN_ENV, TOKEN)
-    http(exc=RuntimeError(f"unexpected {TOKEN}"))
-    result = service.execute("t", operator_id=OPERATOR, session_id=session_id)
-    assert result["ok"] is False
-    log = violation_log.read_text(encoding="utf-8") if violation_log.exists() else ""
-    assert_no_markers(result, session_service.get_session(session_id), log)
-
-
 @pytest.mark.parametrize("kind", NEW_KINDS)
-def test_new_kinds_surface_through_service_and_renderer(http, monkeypatch, violation_log, service_env, kind):
-    service, session_service, session_id, _ = service_env
+def test_new_kinds_surface_through_adapter_and_renderer(http, monkeypatch, violation_log, kind):
+    # S5: ExecutionService was retired; the adapter reference and the renderer
+    # still agree on the controlled kinds.
     fake = http(response=ok_execute())
     if kind == "auth_not_configured":
         pass  # token unset
@@ -487,20 +450,16 @@ def test_new_kinds_surface_through_service_and_renderer(http, monkeypatch, viola
         monkeypatch.setenv(TOKEN_ENV, TOKEN)
         monkeypatch.setattr(axis_http, "resolve_axis_base_url", lambda explicit=None: "http://axis.example")
         monkeypatch.setattr(axis_http, "build_axis_url", lambda base, path: base + path)
-    result = service.execute("t", operator_id=OPERATOR, session_id=session_id)
+    result = AxisAdapter().call_axis("POST", EXECUTE, OPERATOR, payload=dict(EXECUTE_PAYLOAD))
     assert fake.calls == []
-    assert result == {
-        "ok": False,
-        "error_type": "axis_error",
-        "message": "AXIS request failed.",
-        "safe_details": {"kind": kind, "status_code": None},
-    }
+    assert result == {"ok": False, "status_code": None, "error": kind}
     assert kind in REMOTE_FAILURE_KINDS
-    text = renderer.render_failure(result)
+    text = renderer.render_failure(
+        {"ok": False, "error_type": "axis_error", "safe_details": {"kind": result["error"], "status_code": None}}
+    )
     assert f"Kind: {kind}" in text
-    stored = session_service.get_session(session_id)["entries"]
-    assert len(stored) == 1 and stored[0]["result_type"] == "failure"
-    assert_no_markers(result, stored, violation_log.read_text(encoding="utf-8"), text)
+    log = violation_log.read_text(encoding="utf-8") if violation_log.exists() else ""
+    assert_no_markers(result, log, text)
 
 
 def test_renderer_drops_kinds_outside_allowlist():
@@ -511,24 +470,19 @@ def test_renderer_drops_kinds_outside_allowlist():
     assert_no_markers(text)
 
 
-def test_cli_output_never_contains_credentials(http, monkeypatch, capsys, tmp_path):
+def test_cli_makes_no_axis_request_with_credentials_set(http, monkeypatch, capsys, tmp_path):
+    # S5: the CLI has no direct execution path; a trigger argument is rejected
+    # by argparse before any request, and output never carries credentials.
     monkeypatch.setenv(TOKEN_ENV, TOKEN)
     monkeypatch.setenv(BYPASS_ENV, BYPASS)
-    http(response=FakeResponse(401, body={"error": "unauthorized"}))
+    fake = http(response=ok_execute())
     monkeypatch.setattr(cli, "SessionStore", lambda: SessionStore(root_dir=tmp_path / "sessions"))
-    for extra in ([], ["--json"]):
-        monkeypatch.setattr("sys.argv", ["sapphire-cli", "t", "--operator-id", OPERATOR, *extra])
-        assert cli.main() == 0
-    out = capsys.readouterr().out
-    assert "Kind: http_error" in out and "Status: 401" in out
-    assert_no_markers(out)
-
-    monkeypatch.delenv(TOKEN_ENV)
     monkeypatch.setattr("sys.argv", ["sapphire-cli", "t", "--operator-id", OPERATOR])
-    assert cli.main() == 0
-    out = capsys.readouterr().out
-    assert "Kind: auth_not_configured" in out
-    assert_no_markers(out)
+    with pytest.raises(SystemExit):
+        cli.main()
+    captured = capsys.readouterr()
+    assert fake.calls == []
+    assert_no_markers(captured.out, captured.err)
 
 
 # ---- tri-system flow ----

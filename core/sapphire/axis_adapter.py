@@ -1,5 +1,11 @@
 """Sapphire AXIS adapter: strict boundary + request mediation only.
 
+S5: no runtime path constructs this adapter. The CLI and SapphireUIApp direct
+execution paths and ExecutionService were retired; the governed tri flow sends
+through plugins/axis_integration/axis_tools._execute_axis. The adapter is kept
+as an inert, tested reference for the endpoint allowlist, payload allowlist,
+boundary-violation logging and the distortion-class lock (execute()).
+
 Every request goes through core.sapphire.axis_http.request_axis (one request,
 redirects never followed, status first, v1 envelope). Execute additionally
 requires a non-empty data.sessionId (core.sapphire.axis_contract).
@@ -27,7 +33,9 @@ from core.sapphire.axis_config import AXIS_NOT_CONFIGURED, AxisConfigError
 from core.sapphire.axis_contract import (
     AXIS_EXECUTE_FIELDS,
     EXECUTE_ENDPOINT,
+    KIND_MISSING_SESSION_ID,
     has_execute_session_id,
+    safe_status,
 )
 from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 from core.sapphire.distortion_lock import ALLOWED_DISTORTION_CLASSES
@@ -39,8 +47,6 @@ ALLOWED_ENDPOINTS = {
     ("GET", "/api/v2/operator-profile"),
 }
 
-KIND_MISSING_SESSION_ID = "missing_session_id"
-
 FORBIDDEN_ENDPOINT_LABEL = "forbidden_endpoint"
 
 _BOUNDARY_MESSAGES = {
@@ -50,13 +56,6 @@ _BOUNDARY_MESSAGES = {
     "invalid_payload": "Request contains fields outside the AXIS contract.",
     "invalid_distortion_class": "classification is not allowed by Sapphire lock.",
 }
-
-
-def safe_status(value: Any) -> int | None:
-    """Return an HTTP status only when it is an int in 100-599."""
-    if isinstance(value, int) and not isinstance(value, bool) and 100 <= value <= 599:
-        return value
-    return None
 
 
 def payload_summary(payload: Any) -> dict | None:

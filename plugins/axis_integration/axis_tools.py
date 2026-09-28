@@ -1,5 +1,11 @@
 """
-AXIS (VANTA) integration tools for Sapphire.
+AXIS (VANTA) request helpers for Sapphire.
+
+S5: this module registers no model tools. It keeps the helpers that governed
+callers import directly:
+- _execute_axis: the confirmed tri-system flow (core/des/tri_system_flow.py).
+- _fetch_axis_operator_profile: the Test AXIS Identity settings route.
+- _fetch_axis_analytics: retained with the same guards; no caller today.
 """
 
 import logging
@@ -12,55 +18,7 @@ from core.sapphire.axis_execution_guard import assert_axis_execution_allowed
 
 logger = logging.getLogger(__name__)
 
-ENABLED = True
-EMOJI = "A"
-AVAILABLE_FUNCTIONS = [
-    "fetch_axis_analytics",
-    "fetch_axis_operator_profile",
-]
-
 DEFAULT_TIMEOUT_SECONDS = axis_http.DEFAULT_TIMEOUT_SECONDS
-
-TOOLS = [
-    {
-        "type": "function",
-        "is_local": False,
-        "network": True,
-        "function": {
-            "name": "fetch_axis_analytics",
-            "description": "Fetch AXIS analytics data.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "operator_id": {
-                        "type": "string",
-                        "description": "Operator ID passed in x-operator-id header.",
-                    }
-                },
-                "required": ["operator_id"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "is_local": False,
-        "network": True,
-        "function": {
-            "name": "fetch_axis_operator_profile",
-            "description": "Fetch AXIS operator profile data.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "operator_id": {
-                        "type": "string",
-                        "description": "Operator ID passed in x-operator-id header.",
-                    }
-                },
-                "required": ["operator_id"],
-            },
-        },
-    },
-]
 
 
 def _validate_operator_id(operator_id: str) -> Tuple[Dict[str, Any] | None, bool]:
@@ -172,26 +130,3 @@ def _fetch_axis_analytics(operator_id: str) -> Tuple[Dict[str, Any], bool]:
 
 def _fetch_axis_operator_profile(operator_id: str) -> Tuple[Dict[str, Any], bool]:
     return _request_axis("GET", "operator-profile", operator_id)
-
-
-def execute(function_name, arguments, config, plugin_settings=None):
-    arguments = arguments or {}
-
-    if function_name == "execute_axis":
-        return _execute_axis(
-            trigger=arguments.get("trigger", ""),
-            operator_id=arguments.get("operator_id", ""),
-            classification=arguments.get("classification", ""),
-            next_action=arguments.get("next_action", ""),
-            stability=arguments.get("stability"),
-            reference=arguments.get("reference"),
-            impact=arguments.get("impact"),
-        )
-
-    if function_name == "fetch_axis_analytics":
-        return _fetch_axis_analytics(operator_id=arguments.get("operator_id", ""))
-
-    if function_name == "fetch_axis_operator_profile":
-        return _fetch_axis_operator_profile(operator_id=arguments.get("operator_id", ""))
-
-    return {"error": f"Unknown function '{function_name}'."}, False

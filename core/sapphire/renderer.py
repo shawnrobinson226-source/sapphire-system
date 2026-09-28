@@ -5,8 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from core.sapphire.axis_adapter import safe_status
-from core.sapphire.execution_service import REMOTE_FAILURE_KINDS
+from core.sapphire.axis_contract import REMOTE_FAILURE_KINDS, safe_status
 
 
 def _to_text(value: Any, default: str = "N/A") -> str:

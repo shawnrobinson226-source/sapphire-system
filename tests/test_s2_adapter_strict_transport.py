@@ -1,4 +1,9 @@
-"""S2: AxisAdapter on the strict transport; ExecutionService consumes only verified results.
+"""S2: AxisAdapter on the strict transport.
+
+S5: ExecutionService and the CLI / SapphireUIApp direct execution paths were
+retired. AxisAdapter is kept as an inert reference, so its boundary and
+transport behaviour stays covered here; session history rendering is covered
+with stored entries.
 
 Fully offline: tests/offline_guard.py's no_network fixture (loaded by path,
 since tests/ is not a package) blocks every real socket connect, and the
@@ -21,9 +26,8 @@ import pytest
 import requests
 
 from core.sapphire import axis_adapter, axis_contract, axis_http, cli, renderer
-from core.sapphire.axis_adapter import AxisAdapter, safe_status
-from core.sapphire.execution_service import ExecutionService
-from core.sapphire.session_service import SessionService
+from core.sapphire.axis_adapter import AxisAdapter
+from core.sapphire.axis_contract import safe_status
 from core.sapphire.session_store import SessionStore
 from core.security import violations
 
@@ -153,14 +157,6 @@ def store(tmp_path):
     return SessionStore(root_dir=tmp_path / "sessions")
 
 
-@pytest.fixture
-def service_env(store):
-    session_service = SessionService(session_store=store)
-    service = ExecutionService(axis_adapter=AxisAdapter(), session_service=session_service)
-    session = session_service.create_session(OPERATOR)
-    return service, session_service, session["session_id"]
-
-
 def envelope(data):
     return {"ok": True, "version": "v1", "data": data}
 
@@ -203,10 +199,6 @@ def assert_no_markers(*blobs):
 
 def log_text(path):
     return path.read_text(encoding="utf-8") if path.exists() else ""
-
-
-def entries(session_service, session_id):
-    return session_service.get_session(session_id)["entries"]
 
 
 # ---- offline guard is loaded and active ----
@@ -294,9 +286,10 @@ def test_execute_contract_rule(data, expected):
                                              (True, None), ("200", None), (None, None), (200.0, None)])
 def test_safe_status(value, expected):
     assert safe_status(value) == expected
+    assert axis_adapter.safe_status is safe_status
 
 
-# ---- remote failures: adapter and ExecutionService ----
+# ---- remote failures: adapter ----
 
 SSO_302 = redirect(302)
 
@@ -354,35 +347,8 @@ def test_adapter_remote_failure_is_controlled(kwargs, kind, status, http, violat
     assert_no_markers(result, log_text(violation_log), caplog.text)
 
 
-@pytest.mark.parametrize(
-    "kwargs, kind, status", [c[1:] for c in FAILURE_CASES], ids=[c[0] for c in FAILURE_CASES]
-)
-def test_service_remote_failure_is_controlled(kwargs, kind, status, http, service_env, violation_log, caplog):
-    service, session_service, session_id = service_env
-    fake = http(**kwargs)
-    with caplog.at_level(logging.DEBUG):
-        result = service.execute(TRIGGER, operator_id=OPERATOR, session_id=session_id)
-
-    assert result == {
-        "ok": False,
-        "error_type": "axis_error",
-        "message": "AXIS request failed.",
-        "safe_details": {"kind": kind, "status_code": status},
-    }
-    assert len(fake.calls) == 1
-    assert fake.calls[0]["allow_redirects"] is False
-
-    stored = entries(session_service, session_id)
-    assert len(stored) == 1
-    assert stored[0]["result_type"] == "failure"
-    assert stored[0]["axis"] == {}
-    assert stored[0]["failure"] == {"error_type": "axis_error", "message": "AXIS request failed."}
-    assert_no_markers(result, stored, log_text(violation_log), caplog.text)
-
-
-def test_sso_redirect_chain_is_never_followed_or_success(http, service_env, violation_log):
+def test_sso_redirect_chain_is_never_followed_or_success(http, violation_log):
     """If the redirect were followed, the chain would end in a 'successful' envelope."""
-    service, session_service, session_id = service_env
 
     def handler(method, url, **kwargs):
         if kwargs.get("allow_redirects", True):
@@ -391,35 +357,26 @@ def test_sso_redirect_chain_is_never_followed_or_success(http, service_env, viol
 
     fake = http(handler=handler)
     adapter_result = AxisAdapter().call_axis("POST", "/api/v2/execute", OPERATOR, payload=dict(EXECUTE_PAYLOAD))
-    service_result = service.execute(TRIGGER, operator_id=OPERATOR, session_id=session_id)
 
     assert adapter_result == {"ok": False, "status_code": 302, "error": "redirect"}
-    assert service_result["ok"] is False
-    assert service_result["safe_details"] == {"kind": "redirect", "status_code": 302}
-    assert len(fake.calls) == 2
-    assert all(call["allow_redirects"] is False for call in fake.calls)
-    assert [e["result_type"] for e in entries(session_service, session_id)] == ["failure"]
+    assert len(fake.calls) == 1
+    assert fake.calls[0]["allow_redirects"] is False
 
 
 # ---- configuration ----
 
-def test_missing_base_url_makes_zero_requests(monkeypatch, http, service_env, violation_log):
+def test_missing_base_url_makes_zero_requests(monkeypatch, http, violation_log):
     monkeypatch.delenv("AXIS_BASE_URL", raising=False)
-    service, session_service, session_id = service_env
     fake = http(response=FakeResponse(200, body=envelope(verified_data())))
 
     adapter_result = AxisAdapter().call_axis("POST", "/api/v2/execute", OPERATOR, payload=dict(EXECUTE_PAYLOAD))
-    service_result = service.execute(TRIGGER, operator_id=OPERATOR, session_id=session_id)
 
     assert fake.calls == []
     assert adapter_result["ok"] is False
     assert adapter_result["error"] == "axis_not_configured"
     assert adapter_result["reason"] == "missing"
     assert adapter_result["status_code"] is None
-    assert service_result["error_type"] == "axis_not_configured"
-    assert service_result["safe_details"] == {"reason": "missing"}
-    assert [e["result_type"] for e in entries(session_service, session_id)] == ["failure"]
-    assert_no_markers(adapter_result, service_result, log_text(violation_log))
+    assert_no_markers(adapter_result, log_text(violation_log))
 
 
 def test_explicit_base_url_is_honored_over_environment(http):
@@ -429,24 +386,6 @@ def test_explicit_base_url_is_honored_over_environment(http):
     )
     assert result["ok"] is True
     assert fake.calls[0]["url"] == EXPLICIT_BASE + "/api/v2/execute"
-
-
-def test_ui_app_explicit_base_url_reaches_transport(http, store):
-    from ui.app import SapphireUIApp
-
-    fake = http(response=FakeResponse(200, body=envelope(verified_data())))
-    app = SapphireUIApp(
-        axis_base_url=EXPLICIT_BASE,
-        session_service=SessionService(session_store=store),
-        tri_flow_factory=lambda: None,
-    )
-    app.create_new_session(OPERATOR)
-    result = app.submit_trigger(TRIGGER)
-
-    assert result["ok"] is True
-    assert len(fake.calls) == 1
-    assert fake.calls[0]["url"] == EXPLICIT_BASE + "/api/v2/execute"
-    assert fake.calls[0]["allow_redirects"] is False
 
 
 # ---- verified success ----
@@ -467,75 +406,6 @@ def test_adapter_verified_success_returns_validated_data(http):
         "Authorization": "Bearer test-service-token-0123456789abcdef",
     }
     assert call["allow_redirects"] is False
-
-
-def test_service_verified_success_appends_exactly_one_success(http, service_env, violation_log):
-    service, session_service, session_id = service_env
-    data = dict(verified_data(), classification=BODY_MARKER, extra={"x": BODY_MARKER})
-    http(response=FakeResponse(200, body=envelope(data)))
-
-    result = service.execute(TRIGGER, operator_id=OPERATOR, session_id=session_id)
-
-    assert result == {
-        "ok": True,
-        "axis": {
-            "session_id": SESSION_ID,
-            "outcome": "reduced",
-            "clarity_rating": 7,
-            "steps_completed": 3,
-            "continuity_before": 40,
-            "continuity_after": 55,
-            "protocol_output": "done",
-        },
-        "pipeline": {"source": "axis_adapter", "status_code": 200},
-    }
-    stored = entries(session_service, session_id)
-    assert len(stored) == 1
-    assert stored[0]["result_type"] == "success"
-    assert stored[0]["axis"] == result["axis"]
-    assert stored[0]["trigger"] == TRIGGER
-    assert_no_markers(result, stored, log_text(violation_log))
-
-
-def test_service_success_copies_only_present_contract_fields(http, service_env):
-    service, _, _ = service_env
-    http(response=FakeResponse(200, body=envelope({"sessionId": f"  {SESSION_ID}  "})))
-    result = service.execute(TRIGGER, operator_id=OPERATOR)
-    assert result["ok"] is True
-    assert result["axis"] == {"session_id": SESSION_ID}
-
-
-def test_service_rejects_adapter_success_without_session_id():
-    """Defense in depth: a (mocked) adapter claiming ok without sessionId is not success."""
-
-    class LyingAdapter:
-        def call_axis(self, *args, **kwargs):
-            return {"ok": True, "status_code": 200, "data": {"outcome": BODY_MARKER}}
-
-    result = ExecutionService(axis_adapter=LyingAdapter()).execute(TRIGGER, operator_id=OPERATOR)
-    assert result["ok"] is False
-    assert result["safe_details"] == {"kind": "missing_session_id", "status_code": 200}
-    assert_no_markers(result)
-
-
-def test_service_unexpected_exception_is_generic(service_env, violation_log):
-    _, session_service, session_id = service_env
-
-    class ExplodingAdapter:
-        def call_axis(self, *args, **kwargs):
-            raise RuntimeError(f"{EXC_MARKER} {AXIS_BASE}")
-
-    service = ExecutionService(axis_adapter=ExplodingAdapter(), session_service=session_service)
-    result = service.execute(TRIGGER, operator_id=OPERATOR, session_id=session_id)
-
-    assert result == {
-        "ok": False,
-        "error_type": "axis_error",
-        "message": "AXIS request failed unexpectedly.",
-        "safe_details": {"exception_type": "RuntimeError"},
-    }
-    assert entries(session_service, session_id) == []
-    assert_no_markers(result, log_text(violation_log))
 
 
 # ---- local guards: zero requests, no echo ----
@@ -582,23 +452,6 @@ def test_zero_tools_blocks_with_zero_requests_and_no_echo(monkeypatch, http, vio
     assert_no_markers(result, log_text(violation_log))
 
 
-def test_zero_tools_blocks_service_with_no_success_entry(monkeypatch, http, service_env, violation_log):
-    service, session_service, session_id = service_env
-    monkeypatch.setattr(axis_adapter, "assert_axis_execution_allowed", lambda *a, **k: (False, {"error": "x"}))
-    fake = http(response=FakeResponse(200, body=envelope(verified_data())))
-
-    result = service.execute(
-        {"trigger": TRIGGER, "operator_id": OPERATOR, "next_action": VALUE_MARKER}, session_id=session_id
-    )
-
-    assert fake.calls == []
-    assert result["error_type"] == "boundary_violation"
-    assert result["safe_details"] == {"violation_type": "zero_tools_mode", "endpoint": "POST /api/v2/execute"}
-    stored = entries(session_service, session_id)
-    assert [e["result_type"] for e in stored] == ["failure"]
-    assert_no_markers(result, stored, log_text(violation_log))
-
-
 @pytest.mark.parametrize("bad", ["", "   ", None, 123])
 def test_invalid_operator_id_makes_zero_requests(bad, http, violation_log):
     fake = http(response=FakeResponse(200, body=envelope(verified_data())))
@@ -609,14 +462,6 @@ def test_invalid_operator_id_makes_zero_requests(bad, http, violation_log):
     assert result["error"] == "boundary_violation"
     assert result["violation_type"] == "invalid_operator_id"
     assert "operator_id" not in result
-    assert_no_markers(result, log_text(violation_log))
-
-
-def test_service_missing_operator_id_makes_zero_requests(http, violation_log):
-    fake = http(response=FakeResponse(200, body=envelope(verified_data())))
-    result = ExecutionService(axis_adapter=AxisAdapter()).execute({"trigger": VALUE_MARKER})
-    assert fake.calls == []
-    assert result["error_type"] == "validation_error"
     assert_no_markers(result, log_text(violation_log))
 
 
@@ -637,24 +482,6 @@ def test_adapter_get_with_payload_makes_zero_requests(http, violation_log):
     result = AxisAdapter().call_axis("GET", "/api/v2/analytics", OPERATOR, payload={KEY_MARKER: VALUE_MARKER})
     assert fake.calls == []
     assert result["violation_type"] == "invalid_payload"
-    assert_no_markers(result, log_text(violation_log))
-
-
-def test_service_unknown_payload_field_makes_zero_requests(http, service_env, violation_log):
-    service, session_service, session_id = service_env
-    fake = http(response=FakeResponse(200, body=envelope(verified_data())))
-    result = service.execute(
-        {"trigger": TRIGGER, "operator_id": OPERATOR, KEY_MARKER: VALUE_MARKER}, session_id=session_id
-    )
-
-    assert fake.calls == []
-    assert result == {
-        "ok": False,
-        "error_type": "validation_error",
-        "message": "Request contains fields outside the AXIS contract.",
-        "safe_details": {"field": "axis_payload", "unknown_field_count": 1},
-    }
-    assert entries(session_service, session_id) == []
     assert_no_markers(result, log_text(violation_log))
 
 
@@ -867,12 +694,18 @@ def test_failure_types_render_fixed_text(error_type, text):
     assert output == f"=== EXECUTION FAILURE ===\nType: {error_type}\nMessage: {text}"
 
 
-def test_new_remote_failure_renders_allowlisted_kind_and_valid_status(http, service_env):
+def test_remote_failure_renders_allowlisted_kind_and_valid_status():
     from ui.views import render_result
 
-    service, _, session_id = service_env
-    http(response=FakeResponse(403, body=error_envelope(AXIS_ERR_MARKER)))
-    output = render_result(service.execute(TRIGGER, operator_id=OPERATOR, session_id=session_id))
+    # Shape of a remote-failure result recorded before S5.
+    output = render_result(
+        {
+            "ok": False,
+            "error_type": "axis_error",
+            "message": AXIS_ERR_MARKER,
+            "safe_details": {"kind": "http_error", "status_code": 403},
+        }
+    )
 
     assert output.splitlines() == [
         "=== EXECUTION FAILURE ===",
