@@ -346,7 +346,7 @@ def identity_client(monkeypatch, axis_tools_allowed):
 
     monkeypatch.delenv("SAPPHIRE_OPERATOR_ID", raising=False)
     monkeypatch.setattr(axis_execution_guard, "assert_axis_execution_allowed", lambda *a, **k: (True, {}))
-    app.dependency_overrides[require_login] = lambda: None
+    monkeypatch.setitem(app.dependency_overrides, require_login, lambda: None)  # restored after the test
     original = settings.get("OPERATOR_ID", "")
     settings.set("OPERATOR_ID", OPERATOR, persist=False)
     yield TestClient(app)

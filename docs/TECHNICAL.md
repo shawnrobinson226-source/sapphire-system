@@ -190,15 +190,20 @@ Cache TTL can be 5m (default) or 1h for longer sessions.
 
 ### Password / API Key
 
-One bcrypt hash serves as login password, API key (`X-API-Key` header), and session secret.
+One bcrypt hash (`secret_key`) serves as the login password verifier and the API key (`X-API-Key` header). Browser session cookies are signed with a separate random secret (`session_secret`), so holding the API key does not let anyone forge a session cookie.
 
-| OS | Path |
-|----|------|
-| Linux | `~/.config/sapphire/secret_key` |
-| macOS | `~/Library/Application Support/Sapphire/secret_key` |
-| Windows | `%APPDATA%\Sapphire\secret_key` |
+| File | Linux | macOS | Windows |
+|------|-------|-------|---------|
+| `secret_key` | `~/.config/sapphire/secret_key` | `~/Library/Application Support/Sapphire/secret_key` | `%APPDATA%\Sapphire\secret_key` |
+| `session_secret` | `~/.config/sapphire/session_secret` | `~/Library/Application Support/Sapphire/session_secret` | `%APPDATA%\Sapphire\session_secret` |
+
+`session_secret` is created on first start (atomically, safe if two processes start together) and reused on every restart. If it cannot be read or created, Sapphire refuses to start rather than using a temporary key. On Linux/macOS it is created with mode 0600. On Windows the mode bits are not an access control; the file is protected only by the ACLs it inherits from the config directory (by default your user profile under `%APPDATA%`).
+
+Login issues a fresh session (the pre-login cookie's CSRF token and Tri-System principal are discarded). The CSRF middleware skips its check only for a valid `X-API-Key`.
 
 **Reset password:** Delete the `secret_key` file and restart.
+
+**Log out every browser session:** Delete the `session_secret` file and restart. Upgrading to S4.1 does this once automatically: sessions signed with the old shared secret are rejected and users must log in again.
 
 ### Credential Manager
 

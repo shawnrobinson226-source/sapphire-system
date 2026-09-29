@@ -16,9 +16,12 @@ from starlette.middleware.sessions import SessionMiddleware
 import config
 from core.auth import (
     require_login, require_setup, check_rate_limit,
-    generate_csrf_token, validate_csrf, get_client_ip
+    generate_csrf_token, validate_csrf, get_client_ip, is_valid_api_key,
 )
-from core.setup import get_password_hash, save_password_hash, verify_password, is_setup_complete
+from core.setup import (
+    get_password_hash, save_password_hash, verify_password, is_setup_complete,
+    load_or_create_session_secret,
+)
 from core.event_bus import publish, Events
 from core import prompts
 
@@ -169,8 +172,9 @@ async def log_requests(request: Request, call_next):
 async def csrf_protection(request: Request, call_next):
     """Validate CSRF token on state-changing requests from browser sessions."""
     if request.method not in ("GET", "HEAD", "OPTIONS"):
-        # API key auth (internal/tool calls) Ã¢â‚¬â€ skip CSRF
-        if not request.headers.get('X-API-Key'):
+        # Only a VALID API key (internal/tool calls) skips CSRF. A missing,
+        # empty or wrong X-API-Key alongside a logged-in cookie is still checked.
+        if not is_valid_api_key(request.headers.get('X-API-Key')):
             # Form-based endpoints handle their own CSRF
             if request.url.path not in ("/login", "/setup"):
                 if request.session.get('logged_in'):
@@ -204,10 +208,12 @@ async def security_headers(request: Request, call_next):
 
 
 # Session middleware - added AFTER HTTP middleware so it's outermost (Starlette LIFO)
-_password_hash = get_password_hash()
+# S4.1: cookies are signed with a dedicated persistent random secret, never the
+# password hash / API key. Startup fails (SessionSecretError) if it cannot be
+# loaded or persisted; there is no ephemeral fallback.
 app.add_middleware(
     SessionMiddleware,
-    secret_key=_password_hash if _password_hash else secrets.token_hex(32),
+    secret_key=load_or_create_session_secret(),
     session_cookie="sapphire_session",
     max_age=30 * 24 * 60 * 60,  # 30 days
     same_site="lax",
@@ -340,8 +346,13 @@ async def login_submit(request: Request):
         return RedirectResponse(url="/login?error=config", status_code=302)
 
     if verify_password(password, password_hash):
+        # S4.1: issue a fresh session. Nothing from the pre-login cookie
+        # (CSRF token, tri_principal, anything else) survives; the S4 tab-token
+        # route mints a new tri_principal on first use.
+        request.session.clear()
         request.session['logged_in'] = True
         request.session['username'] = getattr(config, 'AUTH_USERNAME', 'user')
+        request.session['csrf_token'] = secrets.token_hex(32)
         logger.info(f"Successful login from {client_ip}")
         return RedirectResponse(url="/", status_code=302)
     else:
