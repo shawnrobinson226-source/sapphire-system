@@ -41,14 +41,12 @@ def _sync_active_chat_settings(system):
 
         fm = system.llm_chat.function_manager
         pre_chat_handlers = hook_runner.get_handlers("pre_chat")
-        axis_runtime_active = any(handler[2] == "axis-runtime" for handler in pre_chat_handlers)
         logger.warning(
-            "[ZERO_TOOLS_DEBUG] route_start settings_toolset=%s current_toolset=%s enabled_tools=%s zero_tools_mode=%s axis_runtime_hook_active=%s pre_chat_handlers=%s",
+            "[ZERO_TOOLS_DEBUG] route_start settings_toolset=%s current_toolset=%s enabled_tools=%s zero_tools_mode=%s pre_chat_handlers=%s",
             settings.get("toolset") or settings.get("ability"),
             getattr(fm, "current_toolset_name", None),
             fm.get_enabled_function_names(),
             fm.is_zero_tools_mode() if hasattr(fm, "is_zero_tools_mode") else False,
-            axis_runtime_active,
             [handler[2] for handler in pre_chat_handlers],
         )
     except Exception:

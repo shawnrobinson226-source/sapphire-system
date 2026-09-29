@@ -13,7 +13,6 @@ from core.sapphire.axis_config import (
     resolve_axis_base_url,
     validate_axis_base_url,
 )
-from core.sapphire.execution_service import ExecutionService
 from core.sapphire.session_service import SessionService
 from core.sapphire.session_store import SessionStore
 from core.security import violations
@@ -163,7 +162,7 @@ def test_no_hardcoded_axis_destination_remains():
     assert not hasattr(axis_tools, "BASE_URL")
 
 
-# ---- AxisAdapter / ExecutionService ----
+# ---- AxisAdapter (inert reference since S5) ----
 
 def test_adapter_construction_does_not_require_configuration(no_axis_env):
     AxisAdapter()
@@ -222,24 +221,21 @@ def test_adapter_operator_identity_precedes_url_resolution(no_axis_env, violatio
     assert result["violation_type"] == "invalid_operator_id"
 
 
-def test_execution_service_reports_axis_not_configured_not_axis_error(
-    tmp_path, monkeypatch, violation_log, adapter_requests
+def test_adapter_execute_reports_axis_not_configured_without_leaking_url(
+    monkeypatch, violation_log, adapter_requests
 ):
     secret_url = "http://s3cr3t-host.example"
     monkeypatch.setenv("AXIS_BASE_URL", secret_url)
-    service = ExecutionService(
-        axis_adapter=AxisAdapter(),
-        session_service=SessionService(session_store=SessionStore(root_dir=tmp_path / "sessions")),
-    )
 
-    result = service.execute("trigger text", operator_id="op_1")
+    result = AxisAdapter().call_axis("POST", "/api/v2/execute", "op_1", payload={"trigger": "trigger text"})
 
     assert result["ok"] is False
-    assert result["error_type"] == "axis_not_configured"
-    assert result["safe_details"] == {"reason": "https_required"}
+    assert result["error"] == "axis_not_configured"
+    assert result["reason"] == "https_required"
     assert adapter_requests == []
     assert "s3cr3t-host" not in json.dumps(result)
-    assert "s3cr3t-host" not in violation_log.read_text(encoding="utf-8")
+    log = violation_log.read_text(encoding="utf-8") if violation_log.exists() else ""
+    assert "s3cr3t-host" not in log
 
 
 # ---- axis_tools (plugin + tri-system + settings path) ----
@@ -374,8 +370,8 @@ def test_ui_app_constructs_and_runs_non_axis_operations_without_config(
     assert app.show_session(session_id) == []
     assert app.start_tri_flow()["type"] == "question"
 
-    result = app.submit_trigger("trigger text")
-    assert result["error_type"] == "axis_not_configured"
+    # S5: the UI has no direct AXIS execution path.
+    assert not hasattr(app, "submit_trigger")
     assert adapter_requests == []
 
 
@@ -399,31 +395,21 @@ def test_cli_session_commands_work_without_config(
     assert adapter_requests == []
 
 
-def test_cli_execute_without_config_fails_clearly_without_request(
+def test_cli_has_no_direct_axis_execution(
     tmp_path, monkeypatch, capsys, no_axis_env, violation_log, adapter_requests
 ):
+    # S5: a bare trigger is no longer accepted and nothing is sent to AXIS.
     monkeypatch.chdir(tmp_path)
-    code, out = _run_cli(monkeypatch, capsys, "trigger text", "--operator-id", "op_1", "--json")
-    assert json.loads(out)["error_type"] == "axis_not_configured"
+    monkeypatch.setattr(sys, "argv", ["sapphire-cli", "trigger text", "--operator-id", "op_1"])
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main()
+    assert excinfo.value.code == 2
+    assert not hasattr(cli, "ExecutionService")
+    assert not hasattr(cli, "AxisAdapter")
+
+    code, _ = _run_cli(monkeypatch, capsys, "--operator-id", "op_1")
+    assert code == 1
     assert adapter_requests == []
-
-
-def test_cli_explicit_axis_base_url_is_validated_and_used(
-    tmp_path, monkeypatch, capsys, no_axis_env, violation_log, adapter_requests
-):
-    monkeypatch.chdir(tmp_path)
-    # S3: execute fails closed without a service token.
-    monkeypatch.setenv("AXIS_SERVICE_TOKEN", "test-service-token-0123456789abcdef")
-    _, out = _run_cli(
-        monkeypatch, capsys, "t", "--operator-id", "op_1", "--json", "--axis-base-url", "http://axis.example"
-    )
-    assert json.loads(out)["safe_details"] == {"reason": "https_required"}
-    assert adapter_requests == []
-
-    _run_cli(
-        monkeypatch, capsys, "t", "--operator-id", "op_1", "--json", "--axis-base-url", "https://axis.example/"
-    )
-    assert adapter_requests[0]["url"] == "https://axis.example/api/v2/execute"
 
 
 # ---- malformed URLs (urlsplit / hostname ValueError) ----
@@ -454,23 +440,15 @@ def test_bracketed_ipv6_with_bad_port_is_invalid_port():
 
 
 @pytest.mark.parametrize("value", MALFORMED_BASE_URLS)
-def test_malformed_url_through_adapter_and_service_makes_no_request(
-    value, tmp_path, monkeypatch, violation_log, adapter_requests
+def test_malformed_url_through_adapter_makes_no_request(
+    value, monkeypatch, violation_log, adapter_requests
 ):
     monkeypatch.setenv("AXIS_BASE_URL", value)
 
     result = AxisAdapter().call_axis("GET", "/api/v2/analytics", "op_1")
     assert result["error"] == "axis_not_configured"
     assert result["reason"] == "malformed_url"
-
-    service = ExecutionService(
-        axis_adapter=AxisAdapter(),
-        session_service=SessionService(session_store=SessionStore(root_dir=tmp_path / "sessions")),
-    )
-    service_result = service.execute("trigger text", operator_id="op_1")
-    assert service_result["error_type"] == "axis_not_configured"
-    assert service_result["safe_details"] == {"reason": "malformed_url"}
-    assert "s3cr3t" not in json.dumps(service_result)
+    assert "s3cr3t" not in json.dumps(result)
     assert adapter_requests == []
 
 

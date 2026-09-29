@@ -66,8 +66,11 @@ Plugins that belong to older VANTA/System V1/AXIS-runtime work and must not defi
 
 Current plugins:
 
-- `axis-runtime`
 - `vanta-execution`
+
+Removed in S5:
+
+- `axis-runtime`. Its pre_chat hook ran a separate DES -> AXIS flow over raw HTTP (no strict transport, no service auth headers) and echoed exception and response text. It was deleted rather than isolated; the governed web tri bridge is the only chat path to AXIS.
 
 Rules:
 
@@ -107,6 +110,7 @@ Rules:
 - Disabled by default unless a specific governed workflow requires them.
 - External mutation requires operator gating.
 - AXIS execution tools must not be broadly LLM-callable.
+- Since S5, `axis-integration` registers no model tools and no hooks (its manifest declares no capabilities). `plugins/axis_integration/axis_tools.py` is a helper module imported directly by governed callers: `_execute_axis` by the tri flow (`core/des/tri_system_flow.py`) and `_fetch_axis_operator_profile` by the Test AXIS Identity settings route. Enabling or disabling the plugin does not change either caller.
 - Device, message, and API mutations must be scoped, logged safely, and reversible where possible.
 
 ### CRITICAL RISK
@@ -136,8 +140,7 @@ Plugins that may stay enabled:
 
 Plugins that may stay enabled only in controlled local/operator development:
 
-- `axis-integration`, only if AXIS execution remains operator-gated elsewhere
-- `axis-runtime`, only for legacy testing and not as canonical runtime
+- `axis-integration` (no model tools or hooks since S5; enabling it exposes nothing to the LLM)
 - `vanta-execution`, only for legacy/System V1 inspection
 
 Plugins that must stay disabled in normal governed runtime:

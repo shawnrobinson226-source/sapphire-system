@@ -1,36 +1,30 @@
-"""Lightweight Sapphire CLI entry for AXIS-aligned execution service."""
+"""Lightweight Sapphire CLI for local session history.
+
+S5: direct AXIS execution was removed from this CLI. Execution reaches AXIS
+only through the governed tri flow (DES decision, preview, operator confirm).
+This entry point creates sessions and displays stored session timelines.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
 
-from core.sapphire.axis_adapter import AxisAdapter
-from core.sapphire.execution_service import ExecutionService
 from core.sapphire.renderer import render_failure, render_gated, render_success
 from core.sapphire.session_service import SessionService
 from core.sapphire.session_store import SessionStore
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Sapphire execution surface CLI")
-    parser.add_argument("trigger", nargs="?", help="User trigger text")
+    parser = argparse.ArgumentParser(description="Sapphire session history CLI")
     parser.add_argument("--operator-id", required=False, help="Operator identifier")
     parser.add_argument("--json", action="store_true", dest="as_json", help="Print raw structured response")
     parser.add_argument("--new-session", action="store_true", help="Create a new session and print its session_id")
-    parser.add_argument("--session", dest="session_id", help="Execute within an existing session")
     parser.add_argument("--show-session", dest="show_session_id", help="Show stored session timeline")
-    parser.add_argument(
-        "--axis-base-url",
-        default=None,
-        help="AXIS base URL, e.g. https://axis.example (default: the AXIS_BASE_URL environment variable)",
-    )
     args = parser.parse_args()
 
-    adapter = AxisAdapter(axis_base_url=args.axis_base_url)
     session_store = SessionStore()
     session_service = SessionService(session_store=session_store)
-    service = ExecutionService(axis_adapter=adapter, session_service=session_service)
 
     if args.new_session:
         if not args.operator_id:
@@ -74,26 +68,8 @@ def main() -> int:
             print(output)
         return 0
 
-    if not args.operator_id:
-        print(render_failure({"error_type": "validation_error", "message": "operator_id is required."}))
-        return 1
-    if not args.trigger:
-        print(render_failure({"error_type": "validation_error", "message": "trigger is required."}))
-        return 1
-
-    result = service.execute(args.trigger, operator_id=args.operator_id, session_id=args.session_id)
-    if args.as_json:
-        print(json.dumps(result, ensure_ascii=True))
-        return 0
-
-    if result.get("gated"):
-        output = render_gated(result)
-    elif result.get("ok"):
-        output = render_success(result)
-    else:
-        output = render_failure(result)
-    print(output)
-    return 0
+    parser.print_usage()
+    return 1
 
 
 if __name__ == "__main__":

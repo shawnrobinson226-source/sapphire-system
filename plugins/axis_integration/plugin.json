@@ -1,10 +1,6 @@
 {
   "name": "axis-integration",
-  "version": "1.0.0",
-  "description": "AXIS (VANTA) API integration plugin",
-  "capabilities": {
-    "tools": [
-      "axis_tools.py"
-    ]
-  }
+  "version": "1.1.0",
+  "description": "AXIS (VANTA) request helpers for governed Sapphire callers. Registers no model tools.",
+  "capabilities": {}
 }
