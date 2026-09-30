@@ -8,14 +8,17 @@ Config locations by platform:
 - Linux: ~/.config/sapphire/
 
 Files stored:
-- secret_key: bcrypt hash for auth
+- secret_key: bcrypt hash for auth (login password verifier; also the API key)
+- session_secret: random key that signs browser session cookies (S4.1)
 - socks_config: SOCKS5 proxy credentials
 - claude_api_key: Anthropic API key
 """
 import os
+import re
 import sys
 import json
 import logging
+import secrets
 import shutil
 from pathlib import Path
 
@@ -55,6 +58,12 @@ CONFIG_DIR = get_config_dir()
 SECRET_KEY_FILE = CONFIG_DIR / 'secret_key'
 SOCKS_CONFIG_FILE = CONFIG_DIR / 'socks_config'
 CLAUDE_API_KEY_FILE = CONFIG_DIR / 'claude_api_key'
+SESSION_SECRET_FILE = CONFIG_DIR / 'session_secret'
+
+# Overrides where the session signing secret is stored (tests point it at a
+# temporary directory so importing the app never touches the real config dir).
+SESSION_SECRET_PATH_ENV = 'SAPPHIRE_SESSION_SECRET_FILE'
+_SESSION_SECRET_PATTERN = re.compile(r'[A-Za-z0-9_-]{64,}')
 
 
 def ensure_config_directory() -> bool:
@@ -163,6 +172,73 @@ def delete_password_hash() -> bool:
     except Exception as e:
         logger.error(f"Failed to delete password hash: {e}")
         return False
+
+
+class SessionSecretError(RuntimeError):
+    """The session signing secret could not be loaded or persisted.
+
+    Raised instead of falling back to an ephemeral key: a per-process key would
+    silently log everyone out on restart and diverge between processes.
+    """
+
+
+def get_session_secret_path() -> Path:
+    """Where the session signing secret lives (overridable for tests)."""
+    override = os.environ.get(SESSION_SECRET_PATH_ENV, '').strip()
+    return Path(override) if override else SESSION_SECRET_FILE
+
+
+def _read_session_secret(path: Path) -> str:
+    value = path.read_text(encoding='ascii').strip()
+    if not _SESSION_SECRET_PATTERN.fullmatch(value):
+        # Never overwrite an existing file we cannot validate; fail closed.
+        raise SessionSecretError(f"Session secret file is invalid: {path}")
+    return value
+
+
+def load_or_create_session_secret(path: Path | None = None) -> str:
+    """Return the persistent session signing secret, creating it once.
+
+    Independent of the password hash / API key. Creation is atomic and safe
+    against concurrent starters: the secret is written and flushed to a private
+    temp file, then hard-linked into place, which fails if another process got
+    there first; the loser reads the winner's file. Any failure raises
+    SessionSecretError (fail closed); an ephemeral key is never substituted.
+
+    On POSIX the file is created 0600. On Windows the mode only toggles the
+    read-only flag; protection comes from the ACLs of the containing directory
+    (by default %APPDATA%/Sapphire, inherited from the user profile).
+    """
+    path = Path(path) if path is not None else get_session_secret_path()
+    try:
+        if path.exists():
+            return _read_session_secret(path)
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        secret = secrets.token_urlsafe(48)  # 64 chars, 384 bits
+        tmp = path.with_name(f".{path.name}.{secrets.token_hex(8)}.tmp")
+        fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        try:
+            with os.fdopen(fd, 'w', encoding='ascii') as handle:
+                handle.write(secret)
+                handle.flush()
+                os.fsync(handle.fileno())
+            try:
+                os.link(tmp, path)
+            except FileExistsError:
+                pass  # another process created it first; use theirs
+        finally:
+            try:
+                tmp.unlink()
+            except FileNotFoundError:
+                pass
+        return _read_session_secret(path)
+    except SessionSecretError:
+        raise
+    except Exception as exc:
+        raise SessionSecretError(
+            f"Cannot load or persist the session secret at {path}: {type(exc).__name__}"
+        ) from exc
 
 
 def get_socks_credentials() -> tuple[str | None, str | None]:

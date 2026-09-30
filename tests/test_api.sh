@@ -27,21 +27,32 @@ echo ""
 rm -f "$COOKIE_FILE"
 
 # Step 1: Login to get session cookie
+# The login form is CSRF-protected: fetch /login first for the pre-login
+# token, then post it back. Login issues a fresh session with a NEW CSRF
+# token (S4.1), which is read from the index page for later POST/DELETE calls.
 echo -e "${YELLOW}[1] Logging in...${NC}"
-LOGIN_RESPONSE=$(curl -k -s -c "$COOKIE_FILE" "$BASE_URL/login" \
-  -d "password=$PASSWORD" \
-  -w "\n%{http_code}" \
-  -L)
+LOGIN_PAGE=$(curl -k -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" "$BASE_URL/login")
+LOGIN_CSRF=$(echo "$LOGIN_PAGE" | sed -n 's/.*name="csrf_token" value="\([^"]*\)".*/\1/p' | head -1)
 
-HTTP_CODE=$(echo "$LOGIN_RESPONSE" | tail -1)
+LOGIN_LOCATION=$(curl -k -s -o /dev/null -c "$COOKIE_FILE" -b "$COOKIE_FILE" "$BASE_URL/login" \
+  --data-urlencode "password=$PASSWORD" \
+  --data-urlencode "csrf_token=$LOGIN_CSRF" \
+  -w "%{redirect_url}")
 
-if [ "$HTTP_CODE" = "200" ]; then
+if [ -n "$LOGIN_CSRF" ] && [ "$LOGIN_LOCATION" = "$BASE_URL/" ]; then
     echo -e "${GREEN}✓ Login successful${NC}"
     ((TESTS_PASSED++))
 else
-    echo -e "${RED}✗ Login failed (HTTP $HTTP_CODE)${NC}"
+    echo -e "${RED}✗ Login failed (redirect: ${LOGIN_LOCATION:-none})${NC}"
     ((TESTS_FAILED++))
     echo "Exiting - cannot proceed without authentication"
+    exit 1
+fi
+
+CSRF_TOKEN=$(curl -k -s -c "$COOKIE_FILE" -b "$COOKIE_FILE" "$BASE_URL/" \
+  | sed -n 's/.*name="csrf-token" content="\([^"]*\)".*/\1/p' | head -1)
+if [ -z "$CSRF_TOKEN" ]; then
+    echo -e "${RED}✗ Could not read the session CSRF token${NC}"
     exit 1
 fi
 echo ""
@@ -93,7 +104,7 @@ echo ""
 
 # Step 5: Activate "work" ability
 echo -e "${YELLOW}[5] Activating 'work' ability...${NC}"
-ACTIVATE=$(curl -k -s -b "$COOKIE_FILE" -X POST "$BASE_URL/api/abilities/work/activate")
+ACTIVATE=$(curl -k -s -b "$COOKIE_FILE" -H "X-CSRF-Token: $CSRF_TOKEN" -X POST "$BASE_URL/api/abilities/work/activate")
 echo "$ACTIVATE" | python3 -m json.tool 2>/dev/null
 
 if echo "$ACTIVATE" | grep -q '"status".*"success"'; then
@@ -123,7 +134,7 @@ echo ""
 
 # Step 7: Enable custom function set
 echo -e "${YELLOW}[7] Enabling custom function set...${NC}"
-CUSTOM=$(curl -k -s -b "$COOKIE_FILE" -X POST "$BASE_URL/api/functions/enable" \
+CUSTOM=$(curl -k -s -b "$COOKIE_FILE" -H "X-CSRF-Token: $CSRF_TOKEN" -X POST "$BASE_URL/api/functions/enable" \
   -H "Content-Type: application/json" \
   -d '{"functions": ["get_memories", "search_memory"]}')
 echo "$CUSTOM" | python3 -m json.tool 2>/dev/null
@@ -140,7 +151,7 @@ echo ""
 
 # Step 8: Save custom ability
 echo -e "${YELLOW}[8] Saving custom ability 'test_research'...${NC}"
-SAVE=$(curl -k -s -b "$COOKIE_FILE" -X POST "$BASE_URL/api/abilities/custom" \
+SAVE=$(curl -k -s -b "$COOKIE_FILE" -H "X-CSRF-Token: $CSRF_TOKEN" -X POST "$BASE_URL/api/abilities/custom" \
   -H "Content-Type: application/json" \
   -d '{"name": "test_research", "functions": ["get_memories", "search_memory"]}')
 echo "$SAVE" | python3 -m json.tool 2>/dev/null
@@ -171,7 +182,7 @@ echo ""
 
 # Step 10: Activate custom ability
 echo -e "${YELLOW}[10] Activating custom ability...${NC}"
-ACTIVATE_CUSTOM=$(curl -k -s -b "$COOKIE_FILE" -X POST "$BASE_URL/api/abilities/test_research/activate")
+ACTIVATE_CUSTOM=$(curl -k -s -b "$COOKIE_FILE" -H "X-CSRF-Token: $CSRF_TOKEN" -X POST "$BASE_URL/api/abilities/test_research/activate")
 echo "$ACTIVATE_CUSTOM" | python3 -m json.tool 2>/dev/null
 
 if echo "$ACTIVATE_CUSTOM" | grep -q '"status".*"success"'; then
@@ -186,7 +197,7 @@ echo ""
 
 # Step 11: Delete custom ability
 echo -e "${YELLOW}[11] Deleting custom ability...${NC}"
-DELETE=$(curl -k -s -b "$COOKIE_FILE" -X DELETE "$BASE_URL/api/abilities/test_research")
+DELETE=$(curl -k -s -b "$COOKIE_FILE" -H "X-CSRF-Token: $CSRF_TOKEN" -X DELETE "$BASE_URL/api/abilities/test_research")
 echo "$DELETE" | python3 -m json.tool 2>/dev/null
 
 if echo "$DELETE" | grep -q '"status".*"success"'; then
@@ -201,7 +212,7 @@ echo ""
 
 # Step 12: Try to delete built-in ability (should fail)
 echo -e "${YELLOW}[12] Attempting to delete built-in ability (should fail)...${NC}"
-DELETE_BUILTIN=$(curl -k -s -b "$COOKIE_FILE" -X DELETE "$BASE_URL/api/abilities/all")
+DELETE_BUILTIN=$(curl -k -s -b "$COOKIE_FILE" -H "X-CSRF-Token: $CSRF_TOKEN" -X DELETE "$BASE_URL/api/abilities/all")
 echo "$DELETE_BUILTIN" | python3 -m json.tool 2>/dev/null
 
 if echo "$DELETE_BUILTIN" | grep -q '"error".*"Cannot delete built-in"'; then
@@ -216,7 +227,7 @@ echo ""
 
 # Step 13: Reset to default ability
 echo -e "${YELLOW}[13] Resetting to default ability...${NC}"
-RESET=$(curl -k -s -b "$COOKIE_FILE" -X POST "$BASE_URL/api/abilities/default/activate")
+RESET=$(curl -k -s -b "$COOKIE_FILE" -H "X-CSRF-Token: $CSRF_TOKEN" -X POST "$BASE_URL/api/abilities/default/activate")
 echo "$RESET" | python3 -m json.tool 2>/dev/null
 
 if echo "$RESET" | grep -q '"status".*"success"'; then

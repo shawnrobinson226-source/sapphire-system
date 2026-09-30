@@ -7,6 +7,10 @@ Sapphire runs a single FastAPI server on port 8073 (HTTPS). Every endpoint below
 ### Browser Session
 Log in at `/login` with your password. Sessions last 30 days.
 
+Session cookies are signed with a dedicated random secret stored in `session_secret` in the same config directory (see the table below). It is created on first start and is independent of your password and API key. Sapphire refuses to start if it cannot read or create this file. Each successful login issues a fresh session with a new CSRF token.
+
+Upgrading to this version (S4.1) invalidates existing browser sessions once, because they were signed with the old shared secret: everyone must log in again. Deleting `session_secret` and restarting logs out every browser session.
+
 ### API Key (Programmatic Access)
 For scripts or external tools, send your API key as a header:
 
@@ -15,7 +19,7 @@ curl -k https://localhost:8073/api/status \
   -H "X-API-Key: $(cat ~/.config/sapphire/secret_key)"
 ```
 
-The key is the bcrypt hash stored in your config directory:
+The key is the bcrypt hash stored in your config directory (it is also the password verifier, so keep it private; it is no longer used to sign session cookies):
 
 | OS | Path |
 |----|------|
@@ -26,7 +30,9 @@ The key is the bcrypt hash stored in your config directory:
 This file is created during initial setup. To reset, delete it and restart Sapphire.
 
 ### CSRF
-CSRF tokens are required for browser sessions on POST/PUT/DELETE requests. API key auth **bypasses CSRF** — no extra headers needed.
+CSRF tokens are required for browser sessions on POST/PUT/DELETE requests (send the session's token as `X-CSRF-Token`). A **valid** API key skips the CSRF check — no extra headers needed. A missing, empty or wrong `X-API-Key` does not: a request that also carries a logged-in session cookie still needs `X-CSRF-Token`.
+
+API-key callers cannot use the Tri-System flow; it requires a signed-in browser session.
 
 ### Rate Limiting
 5 attempts per 60 seconds per IP on auth endpoints.
@@ -303,7 +309,8 @@ Sapphire API reference for programmatic access.
 AUTH:
 - Browser: Session cookie via /login
 - Programmatic: X-API-Key header with bcrypt hash from secret_key file
-- API key bypasses CSRF
+- Only a valid API key bypasses CSRF; a wrong or empty X-API-Key does not
+- Session cookies are signed with a separate random session_secret file (not the API key)
 - Rate limit: 5 attempts/60s per IP
 
 KEY ENDPOINTS:

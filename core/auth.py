@@ -40,9 +40,25 @@ def validate_csrf(request: Request, token: Optional[str] = None) -> bool:
     return token is not None and token == session_token
 
 
+def is_valid_api_key(api_key: Optional[str]) -> bool:
+    """True only for a non-empty X-API-Key that matches the configured key.
+
+    Single check shared by require_login and the CSRF middleware, so a missing,
+    empty or wrong header never counts as API-key auth.
+    """
+    if not isinstance(api_key, str) or not api_key:
+        return False
+    from core.setup import get_password_hash
+
+    stored = get_password_hash()
+    if not stored:
+        return False
+    return secrets.compare_digest(api_key.encode("utf-8"), stored.encode("utf-8"))
+
+
 async def require_login(request: Request):
     """Dependency that requires login. Raises HTTPException if not logged in."""
-    from core.setup import is_setup_complete, get_password_hash
+    from core.setup import is_setup_complete
 
     if not is_setup_complete():
         raise HTTPException(status_code=307, headers={"Location": "/setup"})
@@ -52,11 +68,8 @@ async def require_login(request: Request):
         return True
 
     # API key auth (internal/tool calls from same process, e.g. meta.py)
-    api_key = request.headers.get('X-API-Key')
-    if api_key:
-        stored_hash = get_password_hash()
-        if stored_hash and secrets.compare_digest(api_key, stored_hash):
-            return True
+    if is_valid_api_key(request.headers.get('X-API-Key')):
+        return True
 
     # Not authenticated
     if request.url.path.startswith('/api/'):

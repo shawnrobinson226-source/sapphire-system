@@ -4,6 +4,7 @@ import logging
 import os
 from unittest import mock
 
+import pytest
 from fastapi.testclient import TestClient
 
 from core.api_fastapi import app
@@ -11,8 +12,14 @@ from core.auth import require_login
 from core.identity.operator import resolve_operator_id
 from core.settings_manager import settings
 
-app.dependency_overrides[require_login] = lambda: None
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def _skip_login(monkeypatch):
+    # Scoped to this module's tests. A module-level override leaked into every
+    # other test module collected in the same run and disabled require_login.
+    monkeypatch.setitem(app.dependency_overrides, require_login, lambda: None)
 
 
 def _restore_operator_id(original):
