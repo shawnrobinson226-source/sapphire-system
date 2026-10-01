@@ -196,6 +196,7 @@ Three independent secrets live in the config directory. `secret_key` is the bcry
 |------|-------|-------|---------|
 | `secret_key` | `~/.config/sapphire/secret_key` | `~/Library/Application Support/Sapphire/secret_key` | `%APPDATA%\Sapphire\secret_key` |
 | `session_secret` | `~/.config/sapphire/session_secret` | `~/Library/Application Support/Sapphire/session_secret` | `%APPDATA%\Sapphire\session_secret` |
+| `api_key` | `~/.config/sapphire/api_key` | `~/Library/Application Support/Sapphire/api_key` | `%APPDATA%\Sapphire\api_key` |
 
 `session_secret` is created on first start (atomically, safe if two processes start together) and reused on every restart. If it cannot be read or created, Sapphire refuses to start rather than using a temporary key. On Linux/macOS it is created with mode 0600. On Windows the mode bits are not an access control; the file is protected only by the ACLs it inherits from the config directory (by default your user profile under `%APPDATA%`).
 
