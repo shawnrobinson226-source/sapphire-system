@@ -44,13 +44,14 @@ def is_valid_api_key(api_key: Optional[str]) -> bool:
     """True only for a non-empty X-API-Key that matches the configured key.
 
     Single check shared by require_login and the CSRF middleware, so a missing,
-    empty or wrong header never counts as API-key auth.
+    empty or wrong header never counts as API-key auth. S4.2: the key is the
+    dedicated random API key; the password hash is never accepted.
     """
     if not isinstance(api_key, str) or not api_key:
         return False
-    from core.setup import get_password_hash
+    from core.setup import get_api_key
 
-    stored = get_password_hash()
+    stored = get_api_key()
     if not stored:
         return False
     return secrets.compare_digest(api_key.encode("utf-8"), stored.encode("utf-8"))

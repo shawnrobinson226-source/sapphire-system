@@ -190,7 +190,7 @@ Cache TTL can be 5m (default) or 1h for longer sessions.
 
 ### Password / API Key
 
-One bcrypt hash (`secret_key`) serves as the login password verifier and the API key (`X-API-Key` header). Browser session cookies are signed with a separate random secret (`session_secret`), so holding the API key does not let anyone forge a session cookie.
+Three independent secrets live in the config directory. `secret_key` is the bcrypt login password verifier only. `api_key` is a random key for internal `X-API-Key` callers; the password hash is never accepted as an API key (S4.2). `session_secret` signs browser session cookies (S4.1). Startup fails if `api_key` or `session_secret` cannot be loaded or created. On Windows these files sit in `%APPDATA%\Sapphire`, protected by the user-profile ACLs that folder inherits; POSIX mode bits do not apply there.
 
 | File | Linux | macOS | Windows |
 |------|-------|-------|---------|
@@ -438,7 +438,9 @@ LLM PROVIDERS:
 - Privacy mode blocks cloud, whitelist-based for configurable endpoints
 
 CREDENTIALS:
-- ~/.config/sapphire/secret_key: Password/API key hash
+- ~/.config/sapphire/secret_key: Password hash (login only)
+- ~/.config/sapphire/api_key: Internal API key (S4.2)
+- ~/.config/sapphire/session_secret: Session cookie signing secret (S4.1)
 - ~/.config/sapphire/credentials.json: LLM, SOCKS, email, bitcoin, SSH, HA
 - Not in user/ directory, not in backups
 - Sensitive fields Fernet-encrypted (machine identity key)

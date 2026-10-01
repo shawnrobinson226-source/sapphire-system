@@ -172,7 +172,7 @@ def setup_complete(monkeypatch):
     import core.setup as setup
 
     monkeypatch.setattr(setup, "is_setup_complete", lambda: True)
-    monkeypatch.setattr(setup, "get_password_hash", lambda: API_KEY)
+    monkeypatch.setattr(setup, "get_api_key", lambda: API_KEY)
 
 
 def _session_secret():
