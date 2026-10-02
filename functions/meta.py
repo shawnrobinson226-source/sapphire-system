@@ -287,11 +287,10 @@ TOOLS = [
 
 def _get_api_headers():
     """Get headers with API key for internal requests."""
-    from core.setup import get_password_hash
-    api_key = get_password_hash()
+    from core.setup import get_api_key
     return {
         'Content-Type': 'application/json',
-        'X-API-Key': api_key or ''
+        'X-API-Key': get_api_key()
     }
 
 

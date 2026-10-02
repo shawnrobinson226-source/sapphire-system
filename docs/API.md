@@ -16,18 +16,20 @@ For scripts or external tools, send your API key as a header:
 
 ```bash
 curl -k https://localhost:8073/api/status \
-  -H "X-API-Key: $(cat ~/.config/sapphire/secret_key)"
+  -H "X-API-Key: $(cat ~/.config/sapphire/api_key)"
 ```
 
-The key is the bcrypt hash stored in your config directory (it is also the password verifier, so keep it private; it is no longer used to sign session cookies):
+The key is a random value stored in its own `api_key` file in your config directory. Keep it private. It is separate from the login password hash and from the session signing secret (S4.2):
 
 | OS | Path |
 |----|------|
-| Linux | `~/.config/sapphire/secret_key` |
-| macOS | `~/Library/Application Support/Sapphire/secret_key` |
-| Windows | `%APPDATA%\Sapphire\secret_key` |
+| Linux | `~/.config/sapphire/api_key` |
+| macOS | `~/Library/Application Support/Sapphire/api_key` |
+| Windows | `%APPDATA%\Sapphire\api_key` |
 
-This file is created during initial setup. To reset, delete it and restart Sapphire.
+The file is created on first start and reused on every restart. If it cannot be read or created, or its contents are invalid, Sapphire refuses to start. To rotate the key, delete the file and restart Sapphire.
+
+The old method of sending the bcrypt password hash from `secret_key` as `X-API-Key` no longer works: the hash is rejected with 401. Scripts that read `secret_key` must switch to `api_key`.
 
 ### CSRF
 CSRF tokens are required for browser sessions on POST/PUT/DELETE requests (send the session's token as `X-CSRF-Token`). A **valid** API key skips the CSRF check — no extra headers needed. A missing, empty or wrong `X-API-Key` does not: a request that also carries a logged-in session cookie still needs `X-CSRF-Token`.
@@ -308,7 +310,7 @@ Sapphire API reference for programmatic access.
 
 AUTH:
 - Browser: Session cookie via /login
-- Programmatic: X-API-Key header with bcrypt hash from secret_key file
+- Programmatic: X-API-Key header with the random key from the api_key file (the password hash from secret_key is rejected)
 - Only a valid API key bypasses CSRF; a wrong or empty X-API-Key does not
 - Session cookies are signed with a separate random session_secret file (not the API key)
 - Rate limit: 5 attempts/60s per IP

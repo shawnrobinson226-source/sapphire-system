@@ -20,7 +20,7 @@ from core.auth import (
 )
 from core.setup import (
     get_password_hash, save_password_hash, verify_password, is_setup_complete,
-    load_or_create_session_secret,
+    load_or_create_session_secret, get_api_key,
 )
 from core.event_bus import publish, Events
 from core import prompts
@@ -207,9 +207,13 @@ async def security_headers(request: Request, call_next):
     return response
 
 
+# S4.2: load the internal API key now so startup fails (ApiKeyError) if it
+# cannot be loaded or persisted, instead of failing on the first API call.
+get_api_key()
+
 # Session middleware - added AFTER HTTP middleware so it's outermost (Starlette LIFO)
 # S4.1: cookies are signed with a dedicated persistent random secret, never the
-# password hash / API key. Startup fails (SessionSecretError) if it cannot be
+# password hash or the API key. Startup fails (SessionSecretError) if it cannot be
 # loaded or persisted; there is no ephemeral fallback.
 app.add_middleware(
     SessionMiddleware,

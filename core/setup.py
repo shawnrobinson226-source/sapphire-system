@@ -8,8 +8,9 @@ Config locations by platform:
 - Linux: ~/.config/sapphire/
 
 Files stored:
-- secret_key: bcrypt hash for auth (login password verifier; also the API key)
+- secret_key: bcrypt hash for auth (login password verifier only)
 - session_secret: random key that signs browser session cookies (S4.1)
+- api_key: random key for internal X-API-Key callers (S4.2)
 - socks_config: SOCKS5 proxy credentials
 - claude_api_key: Anthropic API key
 """
@@ -59,10 +60,12 @@ SECRET_KEY_FILE = CONFIG_DIR / 'secret_key'
 SOCKS_CONFIG_FILE = CONFIG_DIR / 'socks_config'
 CLAUDE_API_KEY_FILE = CONFIG_DIR / 'claude_api_key'
 SESSION_SECRET_FILE = CONFIG_DIR / 'session_secret'
+API_KEY_FILE = CONFIG_DIR / 'api_key'
 
 # Overrides where the session signing secret is stored (tests point it at a
 # temporary directory so importing the app never touches the real config dir).
 SESSION_SECRET_PATH_ENV = 'SAPPHIRE_SESSION_SECRET_FILE'
+API_KEY_PATH_ENV = 'SAPPHIRE_API_KEY_FILE'
 _SESSION_SECRET_PATTERN = re.compile(r'[A-Za-z0-9_-]{64,}')
 
 
@@ -182,37 +185,49 @@ class SessionSecretError(RuntimeError):
     """
 
 
+class ApiKeyError(RuntimeError):
+    """The internal API key could not be loaded or persisted (S4.2).
+
+    Raised instead of falling back to the password hash or an ephemeral key.
+    """
+
+
 def get_session_secret_path() -> Path:
     """Where the session signing secret lives (overridable for tests)."""
     override = os.environ.get(SESSION_SECRET_PATH_ENV, '').strip()
     return Path(override) if override else SESSION_SECRET_FILE
 
 
-def _read_session_secret(path: Path) -> str:
+def get_api_key_path() -> Path:
+    """Where the internal API key lives (overridable for tests)."""
+    override = os.environ.get(API_KEY_PATH_ENV, '').strip()
+    return Path(override) if override else API_KEY_FILE
+
+
+def _read_secret(path: Path, error_cls: type) -> str:
     value = path.read_text(encoding='ascii').strip()
     if not _SESSION_SECRET_PATTERN.fullmatch(value):
         # Never overwrite an existing file we cannot validate; fail closed.
-        raise SessionSecretError(f"Session secret file is invalid: {path}")
+        raise error_cls(f"Secret file is invalid: {path}")
     return value
 
 
-def load_or_create_session_secret(path: Path | None = None) -> str:
-    """Return the persistent session signing secret, creating it once.
+def _load_or_create_secret(path: Path, error_cls: type) -> str:
+    """Return the persistent random secret at path, creating it once.
 
-    Independent of the password hash / API key. Creation is atomic and safe
-    against concurrent starters: the secret is written and flushed to a private
-    temp file, then hard-linked into place, which fails if another process got
-    there first; the loser reads the winner's file. Any failure raises
-    SessionSecretError (fail closed); an ephemeral key is never substituted.
+    Creation is atomic and safe against concurrent starters: the secret is
+    written and flushed to a private temp file, then hard-linked into place,
+    which fails if another process got there first; the loser reads the
+    winner's file. Any failure raises error_cls (fail closed); an ephemeral
+    key is never substituted.
 
     On POSIX the file is created 0600. On Windows the mode only toggles the
     read-only flag; protection comes from the ACLs of the containing directory
     (by default %APPDATA%/Sapphire, inherited from the user profile).
     """
-    path = Path(path) if path is not None else get_session_secret_path()
     try:
         if path.exists():
-            return _read_session_secret(path)
+            return _read_secret(path, error_cls)
 
         path.parent.mkdir(parents=True, exist_ok=True)
         secret = secrets.token_urlsafe(48)  # 64 chars, 384 bits
@@ -232,13 +247,48 @@ def load_or_create_session_secret(path: Path | None = None) -> str:
                 tmp.unlink()
             except FileNotFoundError:
                 pass
-        return _read_session_secret(path)
-    except SessionSecretError:
+        return _read_secret(path, error_cls)
+    except error_cls:
         raise
     except Exception as exc:
-        raise SessionSecretError(
-            f"Cannot load or persist the session secret at {path}: {type(exc).__name__}"
+        raise error_cls(
+            f"Cannot load or persist the secret at {path}: {type(exc).__name__}"
         ) from exc
+
+
+def load_or_create_session_secret(path: Path | None = None) -> str:
+    """Return the persistent session signing secret, creating it once.
+
+    Independent of the password hash and the API key. Raises SessionSecretError
+    on any failure (see _load_or_create_secret).
+    """
+    path = Path(path) if path is not None else get_session_secret_path()
+    return _load_or_create_secret(path, SessionSecretError)
+
+
+_api_key_cache: str | None = None
+
+
+def load_or_create_api_key(path: Path | None = None) -> str:
+    """Return the persistent internal API key, creating it once (S4.2).
+
+    Independent of the password hash and the session secret. Raises
+    ApiKeyError on any failure (see _load_or_create_secret).
+    """
+    path = Path(path) if path is not None else get_api_key_path()
+    return _load_or_create_secret(path, ApiKeyError)
+
+
+def get_api_key() -> str:
+    """The API key for this process: loaded once, then held in memory.
+
+    The app loads it at import (startup fails closed if it cannot); the cache
+    keeps a deleted or replaced file from changing the key mid-run.
+    """
+    global _api_key_cache
+    if _api_key_cache is None:
+        _api_key_cache = load_or_create_api_key()
+    return _api_key_cache
 
 
 def get_socks_credentials() -> tuple[str | None, str | None]:

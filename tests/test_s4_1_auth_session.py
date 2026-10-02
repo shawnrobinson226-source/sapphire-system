@@ -38,6 +38,7 @@ no_network = _offline_guard.no_network
 
 PASSWORD = "s4-1-correct-password"
 PASSWORD_HASH = bcrypt.hashpw(PASSWORD.encode(), bcrypt.gensalt(rounds=4)).decode()
+API_KEY = "s4-2-internal-api-key-" + "k" * 48
 SESSION_COOKIE = "sapphire_session"
 BASE_URL = "https://testserver"
 COOKIE_DOMAIN = "testserver.local"
@@ -48,7 +49,7 @@ CSRF = "s4-1-logged-in-csrf"
 
 @pytest.fixture(autouse=True)
 def configured(monkeypatch):
-    """Setup complete with a known password hash; the hash is also the API key.
+    """Setup complete with a known password hash and a separate API key (S4.2).
 
     Also removes any require_login dependency override another test module
     installed at import time, so authentication runs for real here.
@@ -57,6 +58,7 @@ def configured(monkeypatch):
     for module in (setup, api_fastapi):
         monkeypatch.setattr(module, "is_setup_complete", lambda: True)
         monkeypatch.setattr(module, "get_password_hash", lambda: PASSWORD_HASH)
+    monkeypatch.setattr(setup, "get_api_key", lambda: API_KEY)
     auth._rate_limits.clear()
     auth._endpoint_limits.clear()
     yield
@@ -272,11 +274,12 @@ def test_login_with_bad_csrf_does_not_log_in():
 # ---- 3. API key validation and CSRF ----
 
 @pytest.mark.parametrize("value, expected", [
-    (PASSWORD_HASH, True),
+    (API_KEY, True),
+    (PASSWORD_HASH, False),  # S4.2: the old hash-as-key is rejected
     ("", False),
     (None, False),
     ("wrong-key", False),
-    (PASSWORD_HASH + "x", False),
+    (API_KEY + "x", False),
     ("é" * 10, False),
 ])
 def test_is_valid_api_key(value, expected):
@@ -284,7 +287,7 @@ def test_is_valid_api_key(value, expected):
 
 
 def test_is_valid_api_key_false_when_not_configured(monkeypatch):
-    monkeypatch.setattr(setup, "get_password_hash", lambda: None)
+    monkeypatch.setattr(setup, "get_api_key", lambda: None)
     assert auth.is_valid_api_key("anything") is False
 
 
@@ -303,12 +306,12 @@ def test_missing_empty_or_wrong_api_key_does_not_bypass_csrf(headers):
 
 def test_valid_api_key_skips_csrf_with_cookie_present():
     client = _client(_logged_in())
-    assert client.post("/logout", headers={"X-API-Key": PASSWORD_HASH}).status_code == 200
+    assert client.post("/logout", headers={"X-API-Key": API_KEY}).status_code == 200
 
 
 def test_valid_api_key_alone_authenticates_internal_calls():
     client = _client()
-    assert client.post("/logout", headers={"X-API-Key": PASSWORD_HASH}).status_code == 200
+    assert client.post("/logout", headers={"X-API-Key": API_KEY}).status_code == 200
 
 
 def test_wrong_api_key_alone_is_unauthenticated():
@@ -321,7 +324,7 @@ def test_wrong_api_key_alone_is_unauthenticated():
 
 def test_api_key_caller_is_denied_a_tri_tab_token():
     client = _client(_logged_in())
-    response = client.post("/api/tri/tab-token", headers={"X-API-Key": PASSWORD_HASH})
+    response = client.post("/api/tri/tab-token", headers={"X-API-Key": API_KEY})
     assert response.status_code == 403
     assert response.json() == {"detail": chat_routes.TRI_TAB_TOKEN_DENIED_DETAIL}
 
@@ -345,7 +348,7 @@ def test_tab_token_is_bound_to_the_minting_session():
     assert registry._lookup(token, "another-session-principal") is None
 
     class _Request:
-        headers = {"X-API-Key": PASSWORD_HASH, TRI_TAB_TOKEN_HEADER: token}
+        headers = {"X-API-Key": API_KEY, TRI_TAB_TOKEN_HEADER: token}
         session = {"logged_in": True, "tri_principal": principal_a}
 
     # A valid API key never reaches a tri flow, even with a bound token.

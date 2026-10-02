@@ -26,6 +26,8 @@ def pytest_configure(config):
     os.environ["SAPPHIRE_TEST_REAL_SESSION_SECRET_STATE"] = state
     _SESSION_SECRET_DIR = tempfile.mkdtemp(prefix="sapphire-test-session-secret-")
     os.environ["SAPPHIRE_SESSION_SECRET_FILE"] = os.path.join(_SESSION_SECRET_DIR, "session_secret")
+    # S4.2: same for the internal API key.
+    os.environ["SAPPHIRE_API_KEY_FILE"] = os.path.join(_SESSION_SECRET_DIR, "api_key")
 
 
 def pytest_unconfigure(config):
