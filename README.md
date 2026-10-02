@@ -58,7 +58,7 @@ Sapphire:
 
 ## Current State
 
-As of main at c0319be (the S4.2 merge).
+Status as of the S4.2 merge (c0319be).
 
 Sapphire displays. DES decides. AXIS governs. The Operator authorizes. Sapphire
 runs the interface and orchestration, and it never substitutes its own
@@ -72,10 +72,10 @@ created.
 
 The web TRI flow is entered explicitly with the message "tri" or "/tri"
 (case-insensitive, surrounding whitespace ignored) and runs through the per-tab
-bridge: DES decision, preview, Operator confirmation, then AXIS. Chat messages
-outside an active TRI flow go to normal chat and do not enter DES. This path is
-covered by code audit and offline tests. No live end-to-end run against AXIS
-has been recorded since S5 retired the direct-execution paths.
+bridge: DES decision, preview, Operator confirmation, then AXIS execution.
+Chat messages outside an active TRI flow go to normal chat and do not enter
+DES. This path is covered by code audit and offline tests. No live end-to-end
+run against AXIS has been recorded since S5 retired the direct-execution paths.
 
 Open before live confirmation: test containment, a real-browser two-tab
 isolation check, credential setup, and the S6 decision on the inert
