@@ -1,5 +1,7 @@
 # TRI-SYSTEM V2 Identity Layer
 
+Status: dated record. For the current state, see the Current State section of README.md.
+
 ## Scope
 
 V2 adds a Sapphire-side operator identity helper for the tri-system flow.
@@ -24,13 +26,13 @@ Whitespace-only values are rejected.
 
 ## Prompt Behavior
 
-If `SAPPHIRE_OPERATOR_ID` is missing or invalid, Sapphire prompts for operator identity only after the operator confirms AXIS execution.
+If neither `SAPPHIRE_OPERATOR_ID` nor the saved `OPERATOR_ID` setting holds a valid value, the terminal tri flow prompts for operator identity only after the operator confirms AXIS execution. The web flow never prompts and fails closed.
 
 Declining execution does not read or prompt for operator identity.
 
 Prompted identity is scoped to the current run/process only.
 
-Operator identity is not persisted to disk.
+Prompted identity is not persisted to disk. The `OPERATOR_ID` setting, when saved in Settings, is.
 
 ## Boundary Rules
 
@@ -42,7 +44,7 @@ AXIS governs.
 
 Sapphire does not place `operator_id` in DES trigger, start, answer, result, or preview payloads.
 
-Sapphire passes `operator_id` only to the existing AXIS execution tool at execution time.
+Sapphire passes `operator_id` to AXIS only at execution time and in the read-only Test AXIS Identity check.
 
 No auto-execution exists.
 

@@ -1,5 +1,7 @@
 # Sapphire Tri-System Web Runtime Lock
 
+Status: dated record. For the current state, see the Current State section of README.md.
+
 ## Current System Law
 
 Sapphire displays and orchestrates.
@@ -39,15 +41,16 @@ Sapphire Web
 
 AXIS execution is allowed only after an explicit operator confirm while a pending Hybrid execution exists.
 
-## Required Environment Variable
+## Operator Identity Source
 
-Sapphire Web Hybrid confirm requires:
+Sapphire Web Hybrid confirm resolves the operator ID from, in order:
 
 ```text
 SAPPHIRE_OPERATOR_ID
+OPERATOR_ID setting
 ```
 
-If `SAPPHIRE_OPERATOR_ID` is missing, empty, or invalid, Hybrid confirm fails closed with a visible Tri-System error. Sapphire does not prompt for operator ID from the web request path.
+If neither holds a valid value, Hybrid confirm fails closed with a visible Tri-System error. Sapphire does not prompt for operator ID from the web request path.
 
 ## Intentionally Not Included
 
@@ -79,7 +82,7 @@ tests/test_tri_system_identity.py
 
 ## Known Unrelated Failing Test
 
-`tests/test_browser_mic_binding.py` contains an unrelated failure: it still expects browser `SpeechRecognition`, while the current mic implementation uses Sapphire's local STT recording path.
+At lock time, `tests/test_browser_mic_binding.py` failed because it expected browser `SpeechRecognition`. That assertion was removed on 2026-08-09; the test's current result is not recorded here.
 
 ## Lock Boundary
 

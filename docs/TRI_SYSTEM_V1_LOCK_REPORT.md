@@ -1,5 +1,7 @@
 # TRI-SYSTEM V1 Lock Report
 
+Status: dated record. For the current state, see the Current State section of README.md.
+
 ## Status
 
 TRI-SYSTEM V1 is locked.

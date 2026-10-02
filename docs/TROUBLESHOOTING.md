@@ -18,13 +18,13 @@
 - Try http:// and https://
 - Delete cookies for this site
 - Test in private browsing window
-- Delete secret key `~/.config/sapphire/secret_key`
+- Log in again. A 403 "CSRF validation failed" means the page's token no longer matches your session, for example after logging in again in another tab.
 - Restart Sapphire app
 
 **Blank page or "Unauthorized"**
 - Clear browser cookies for localhost:8073
 - Try incognito window
-- Delete `~/.config/sapphire/secret_key` and restart the app
+- Log in again at `/login`. Delete `secret_key` only if you have forgotten the password. It is in the config directory (Linux: `~/.config/sapphire/`, Windows: `%APPDATA%\Sapphire\`). Then set a new password at `/setup` straight away, because until you do, the setup page is open to anyone who can reach the app. Existing browser sessions stay logged in; to end them, also delete `session_secret` and restart.
 
 **Certificate warning on first visit**
 - Expected with self-signed certs. Accept once (Advanced → Proceed) and the browser remembers it.
@@ -218,10 +218,11 @@ pkill -f "python main.py"
 
 # Remove user data (keeps code)
 rm -rf user/
-rm ~/.config/sapphire/secret_key
+rm ~/.config/sapphire/secret_key ~/.config/sapphire/session_secret ~/.config/sapphire/api_key
 
 # Restart
 python main.py
 ```
+On Windows the same three files are in `%APPDATA%\Sapphire\`. Stored provider credentials in `credentials.json` are kept.
 
 You'll need to re-run setup and reconfigure settings.

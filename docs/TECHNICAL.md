@@ -202,7 +202,7 @@ Three independent authentication secrets live in the config directory. `secret_k
 
 Login issues a fresh session (the pre-login cookie's CSRF token and Tri-System principal are discarded). The CSRF middleware skips its check only for a valid `X-API-Key`.
 
-**Reset password:** Delete the `secret_key` file and restart.
+**Reset password:** Delete the `secret_key` file, then set a new password at `/setup`. Existing browser sessions stay logged in; to end them, also delete `session_secret` and restart.
 
 **Log out every browser session:** Delete the `session_secret` file and restart. Upgrading to S4.1 does this once automatically: sessions signed with the old shared secret are rejected and users must log in again.
 

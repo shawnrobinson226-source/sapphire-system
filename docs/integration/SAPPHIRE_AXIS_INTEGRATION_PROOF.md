@@ -108,7 +108,7 @@ AXIS executed successfully.
   not on a live path, and the tri flow's classification comes from a fixed
   DES friction-type map in `core/des/axis_preview.py`)
 - AXIS endpoints restricted to (since S5 there is no runtime allowlist check:
-  the live callers are `_execute_axis` and `_fetch_axis_*`, which can only
+  the live callers are `_execute_axis` and `_fetch_axis_operator_profile`, which can only
   build these paths):
   - POST /api/v2/execute
   - GET /api/v2/analytics
