@@ -190,7 +190,7 @@ Cache TTL can be 5m (default) or 1h for longer sessions.
 
 ### Password / API Key
 
-Three independent secrets live in the config directory. `secret_key` is the bcrypt login password verifier only. `api_key` is a random key for internal `X-API-Key` callers; the password hash is never accepted as an API key (S4.2). `session_secret` signs browser session cookies (S4.1). Startup fails if `api_key` or `session_secret` cannot be loaded or created. On Windows these files sit in `%APPDATA%\Sapphire`, protected by the user-profile ACLs that folder inherits; POSIX mode bits do not apply there.
+Three independent secrets live in the config directory. `secret_key` is the bcrypt login password verifier only. `api_key` is a random key for internal `X-API-Key` callers; the password hash is never accepted as an API key (S4.2). `session_secret` signs browser session cookies (S4.1). Startup fails if `api_key` or `session_secret` cannot be loaded or created. On Windows these files sit in `%APPDATA%\Sapphire` and inherit the access controls of that folder; POSIX mode bits do not apply there.
 
 | File | Linux | macOS | Windows |
 |------|-------|-------|---------|

@@ -35,7 +35,7 @@ AXIS remains the deterministic source-of-truth engine.
 
 Sapphire calls AXIS; Sapphire does not redefine AXIS.
 
-AXIS owns classification, scoring, continuity, outcomes, and contracts. Sapphire acts as host/runtime and execution surface around those AXIS outputs.
+AXIS owns scoring, continuity, outcomes, and contracts. Sapphire acts as host/runtime and execution surface around those AXIS outputs.
 
 ## High-Level Architecture
 
@@ -56,11 +56,33 @@ Sapphire:
 - `interfaces/`: UI/web integration assets
 - `tests/` and `core/tests/`: validation and boundary enforcement tests
 
-## Current Scope / Stopping Point
+## Current State
 
-- Sapphire execution surface is implemented as an orchestration and rendering layer.
-- AXIS remains external source-of-truth authority.
-- This repository does not implement AXIS decision authority internally.
+As of main at c0319be (the S4.2 merge).
+
+Sapphire displays. DES decides. AXIS governs. The Operator authorizes. Sapphire
+runs the interface and orchestration, and it never substitutes its own
+decision logic for DES or AXIS.
+
+Three independent authentication secrets live in the config directory.
+`secret_key` is the login password verifier only. `session_secret` signs
+browser session cookies. `api_key` authenticates internal `X-API-Key` callers.
+Startup fails closed if `api_key` or `session_secret` cannot be loaded or
+created.
+
+The web TRI flow is entered explicitly with the message "tri" or "/tri"
+(case-insensitive, surrounding whitespace ignored) and runs through the per-tab
+bridge: DES decision, preview, Operator confirmation, then AXIS. Chat messages
+outside an active TRI flow go to normal chat and do not enter DES. This path is
+covered by code audit and offline tests. No live end-to-end run against AXIS
+has been recorded since S5 retired the direct-execution paths.
+
+Open before live confirmation: test containment, a real-browser two-tab
+isolation check, credential setup, and the S6 decision on the inert
+AxisAdapter.
+
+S1 through S5, S4.1 and S4.2 are recorded in the merged pull requests and
+commit history.
 
 ## Manual Public Metadata Actions Still Required
 
