@@ -35,7 +35,7 @@ AXIS remains the deterministic source-of-truth engine.
 
 Sapphire calls AXIS; Sapphire does not redefine AXIS.
 
-AXIS owns scoring, continuity, outcomes, and contracts. Sapphire acts as host/runtime and execution surface around those AXIS outputs.
+AXIS owns scoring, continuity, outcomes, and contracts. Sapphire acts as host/runtime and orchestration layer around those AXIS outputs.
 
 ## High-Level Architecture
 
